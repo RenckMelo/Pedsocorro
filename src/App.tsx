@@ -49,6 +49,37 @@ import {
   Plus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { UBS_CATALOG_DISEASES } from './ubsCatalog';
+
+// --- Mental Health Screening Constants ---
+const PHQ9_QUESTIONS = [
+  "Pouco interesse ou prazer em fazer as coisas",
+  "Sentir-se para baixo, deprimido(a) ou sem perspectiva",
+  "Dificuldade para adormecer ou dormir demais, ou acordar no meio da noite",
+  "Sentir-se cansado(a) ou com pouca energia",
+  "Falta de apetite ou comer demais",
+  "Sentir-se mal consigo mesmo(a) ou achar que é um fracasso para si ou sua família",
+  "Dificuldade para se concentrar nas coisas (ex: ler notícias, ver televisão)",
+  "Mover-se ou falar tão lentamente que outras pessoas percebem, ou o oposto: inquietação",
+  "Pensamentos de que seria melhor morrer ou se machucar de alguma maneira"
+];
+
+const GAD7_QUESTIONS = [
+  "Sentir-se nervoso(a), ansioso(a) ou muito tenso(a)",
+  "Não ser capaz de parar ou controlar as preocupações",
+  "Preocupar-se demais com diversas coisas diferentes",
+  "Dificuldade para relaxar",
+  "Ficar tão inquieto(a) que é difícil permanecer sentado(a)",
+  "Ficar facilmente irritável ou aborrecido(a)",
+  "Sentir medo, como se algo terrível pudesse acontecer"
+];
+
+const MENTAL_OPTIONS = [
+  { value: 0, label: "Nenhum dia" },
+  { value: 1, label: "Vários dias" },
+  { value: 2, label: "Mais da metade dos dias" },
+  { value: 3, label: "Quase todos os dias" }
+];
 
 // --- Types ---
 type AppSection = 'dashboard' | 'drugs' | 'calculators' | 'flowcharts' | 'prescriptions' | 'summaries' | 'history' | 'lab' | 'emergency' | 'ambulatorio' | 'ubs';
@@ -3582,6 +3613,66 @@ function EmergencyModule({ onSelect }: { onSelect: (d: typeof PRESCRIPTIONS[0]) 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
+          {search && (
+            <button 
+              onClick={() => setSearch('')}
+              className="p-3 text-slate-400 hover:text-slate-600 mr-2"
+            >
+              <XCircle size={20} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Main UPA Chief Complaints Selector */}
+      <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-2">
+            <ClipboardList size={16} className="text-rose-600" />
+            Queixas Principais mais Comuns na UPA (Pronto Atendimento)
+          </h4>
+          {search && (
+            <button 
+              onClick={() => setSearch('')} 
+              className="text-[10px] font-black text-rose-600 uppercase tracking-widest hover:underline"
+            >
+              Limpar Filtro
+            </button>
+          )}
+        </div>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          {[
+            { label: 'Dor Torácica', icon: Heart, term: 'Infarto' },
+            { label: 'Falta de Ar / Sibilos', icon: Wind, term: 'Asma' },
+            { label: 'Cefaleia Intensa', icon: Zap, term: 'Hipertensiva' },
+            { label: 'Déficit Neurológico', icon: Brain, term: 'AVC' },
+            { label: 'Alergia / Anafilaxia', icon: ShieldAlert, term: 'Anafilaxia' },
+            { label: 'Dor Abdominal Aguda', icon: ClipboardList, term: 'Apendicite' },
+            { label: 'Febre / Sepse', icon: AlertTriangle, term: 'Sepse' },
+            { label: 'Palpitações / Ritmo', icon: Activity, term: 'FA' },
+            { label: 'Crise Convulsiva', icon: Zap, term: 'Convulsiva' },
+            { label: 'Pielonefrite / Dor Lombar', icon: Stethoscope, term: 'Pielonefrite' },
+          ].map((comp) => {
+            const Icon = comp.icon;
+            const isActive = search.toLowerCase() === comp.term.toLowerCase();
+            return (
+              <button
+                key={comp.label}
+                onClick={() => setSearch(isActive ? '' : comp.term)}
+                className={`flex items-center gap-2.5 p-3 rounded-2xl border text-left transition-all ${
+                  isActive 
+                    ? 'bg-rose-500/10 border-rose-500 text-rose-700 dark:text-rose-450 font-black shadow-sm ring-1 ring-rose-500/30'
+                    : 'bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-150 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'
+                }`}
+              >
+                <div className={`p-1.5 rounded-lg ${isActive ? 'bg-rose-500 text-white' : 'bg-slate-200/50 dark:bg-slate-850 text-slate-500'}`}>
+                  <Icon size={14} />
+                </div>
+                <span className="text-[11px] leading-tight font-sans tracking-tight">{comp.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -3633,38 +3724,7 @@ function EmergencyModule({ onSelect }: { onSelect: (d: typeof PRESCRIPTIONS[0]) 
   );
 }
 
-// ==================== UBS (Atenção Básica) Module ====================
-
-const PHQ9_QUESTIONS = [
-  "Pouco interesse ou prazer em fazer as coisas",
-  "Sentir-se para baixo, deprimido(a) ou sem perspectiva",
-  "Dificuldade de pegar no sono, manter o sono ou dormir demais",
-  "Sentir-se cansado(a) ou com pouca energia",
-  "Pouco apetite ou comendo demais",
-  "Sentir-se mal consigo mesmo(a) ou achar que é um fracasso ou decepcionou a família",
-  "Dificuldade para se concentrar nas coisas, como ler o jornal ou assistir TV",
-  "Lentidão para falar ou se mover, a ponto de ser notada; ou o oposto: agitação física",
-  "Pensamentos de que seria melhor morrer ou de se machucar de alguma forma"
-];
-
-const GAD7_QUESTIONS = [
-  "Sentir-se nervoso(a), ansioso(a) ou muito tenso(a)",
-  "Não conseguir parar ou controlar as preocupações",
-  "Preocupar-se muito com diversas coisas diferentes",
-  "Dificuldade para relaxar",
-  "Ficar tão inquieto(a) que é difícil permanecer sentado(a)",
-  "Ficar facilmente irritável ou aborrecido(a)",
-  "Sentir medo como se algo horrível fosse acontecer"
-];
-
-const MENTAL_OPTIONS = [
-  { label: "Nenhuma vez", value: 0 },
-  { label: "Vários dias", value: 1 },
-  { label: "Mais da metade dos dias", value: 2 },
-  { label: "Quase todos os dias", value: 3 }
-];
-
-const UBS_CATALOG_DISEASES = [
+const REMOVED_PREV_CATALOG = [
   {
     id: "drge",
     name: "Doença do Refluxo Gastroesofágico (DRGE)",
@@ -3673,12 +3733,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Disfagia (dificuldade de engolir), odinofagia (dor para engolir), sangramento digestivo (hematêmese/melena), anemia ferropriva inexplicável, perda ponderal involuntária rápida, ou início dos sintomas após os 50 anos: solicitar Endoscopia Digestiva Alta (EDA) com urgência para afastar neoplasia.",
     treatment: [
       {
-        title: "Medidas Comportamentais (Cruciais)",
-        desc: "Evitar deitar-se até 2-3 horas após as refeições. Elevar a cabeceira da cama em 15cm. Evitar refeições volumosas à noite, tabaco, álcool, café, chocolate e alimentos gordurosos."
+        title: "1ª Linha - Inibidor de Bomba de Prótons (IBP) e Comportamental",
+        desc: "Omeprazol 20mg a 40mg VO ao dia, pela manhã, em jejum absoluto 30 minutos antes do café da manhã, por 4 a 8 semanas consecutivos. Orientar exaustivamente medidas comportamentais: elevar cabeceira da cama em 15cm, evitar deitar-se até 2-3 horas após as refeições, fracionar alimentação e suspender tabaco/álcool/café/gorduras."
       },
       {
-        title: "Tratamento de 1ª Escolha (SUS)",
-        desc: "Omeprazol 20mg a 40mg VO ao dia, rigorosamente 30 minutos antes do café da manhã, por 4 a 8 semanas. Se persistência, pode ser fracionado em 2x/dia (café e jantar)."
+        title: "2ª Linha - Otimização Recalcitrante / Substituição e Coadjuvação",
+        desc: "Se falha clínica após 4 semanas, fracionar Omeprazol para 20mg a 40mg VO 12/12h (30 min antes do café e antes do jantar) por mais 4 semanas, ou substituir por Pantoprazol 40mg VO ao dia. Em queixas de esvaziamento retardado (plenitude), associar Domperidona 10mg ou Bromoprida 10mg VO até de 8/8h antes das refeições."
       }
     ]
   },
@@ -3686,16 +3746,16 @@ const UBS_CATALOG_DISEASES = [
     id: "hipo",
     name: "Hipotireoidismo Clínico e Subclínico",
     category: "Metabólicas/Endócrinas",
-    diagnostic: "TSH elevado (> 4.5 mUI/L) com T4 Livre baixo caracteriza hipotireoidismo clínico. TSH elevado com T4 Livre normal caracteriza hipotireoidismo subclínico (tratar apenas se TSH > 10, gestante, anticorpos anti-TPO positivos elevados ou sintomas muito exuberantes em jovens).",
-    alarm: "Coma mixedematoso (situação de terapia intensiva rara caracterizada por hipotermia extrema, bradicardia, hipoventilação e letargia grave) - encaminhar imediatamente ao pronto-socorro.",
+    diagnostic: "TSH elevado (> 4.5 mUI/L) com T4 Livre baixo caracteriza hipotireoidismo clínico. TSH elevado com T4 Livre normal caracteriza hipotireoidismo subclínico (tratar apenas se TSH > 10, gestante, anticorpos anti-TPO altamente positivos ou sintomas muito exuberantes em jovens).",
+    alarm: "Coma mixedematoso (situação de terapia intensiva rara caracterizada por hipotermia extrema, bradicardia severa, hipoventilação, edema generalizado duro e letargia grave) - encaminhar imediatamente ao pronto-socorro.",
     treatment: [
       {
-        title: "Levotiroxina Sódica (Puran T4 / Synthroid)",
-        desc: "Dose média de reposição de 1,6 mcg/kg/dia para adultos sem comorbidades. Tomar pela manhã, em jejum absoluto, aguardando 30 a 60 minutos para o café da manhã."
+        title: "1ª Linha - Reposição Fisiológica Padrão de Levotiroxina (Adulto)",
+        desc: "Prescrever Levotiroxina Sódica (Puran T4/Synthroid). Dose inicial plena de reposição de 1,6 mcg/kg/dia para adultos sem comorbidades cardíacas. Tomar pela manhã, em jejum absoluto, aguardando de 30 a 60 minutos para realizar alimentação diária ou tomar outras medicações."
       },
       {
-        title: "Idosos ou Cardiopatas (Regra de Ouro)",
-        desc: "Iniciar com dose extremamente baixa: 12.5 mcg a 25 mcg VO ao dia. Ajustes lentos (incrementos de 12.5 a 25 mcg) a cada 4-6 semanas conforme TSH sérico para evitar arritmias (FA) e infarto."
+        title: "2ª Linha - Ajuste e Introdução Cautelosa em Idosos / Cardiopatas",
+        desc: "Introdução super cautelosa em idosos ou pacientes coronariopatas: iniciar com dose muito baixa, de 12.5 mcg a 25 mcg VO ao dia. Ajustes lentos com incrementos graduais de 12.5 mcg a 25 mcg a cada 4 a 6 semanas de acordo com dosagem laboratorial de TSH para mitigar risco de arritmias ou isquemia miocárdica."
       }
     ],
     interactiveType: "hypothyroid"
@@ -3708,12 +3768,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Crise asmática grave (fala entrecortada, musculatura acessória ativa, cianose, sibilância silenciosa 'tórax silencioso', SatO2 < 90%): iniciar oxigenoterapia, 3 a 4 ciclos de Salbutamol inalatório (ou Fenoterol 10-20 gotas) de 20/20min e Corticoide sistêmico (Prednisolona 40mg VO ou Hidrocortisona EV) e acionar transporte de emergência.",
     treatment: [
       {
-        title: "Tratamento de Manutenção / GINA Stepwise (SUS)",
-        desc: "Medicamento base é o Corticoide Inalatório (CI) associado ou não a LABA (Broncodilatador de longa duração)."
+        title: "1ª Linha - Corticoide Inalatório Exclusivo ou Resgate S.O.S. (GINA Step 1-2)",
+        desc: "Medicamento essencial de controle: Beclometasona spray oral 250mcg/dose (1 a 2 jatos VO de 12/12h de uso fixo diário) ou Budesonida inalador em pó (200mcg VO de 12/12h). Prescrever Salbutamol spray 100mcg/dose (2 jatos de resgate S.O.S se sintomas de broncoespasmo). Higienizar a boca pós-inalação preventiva (evitar candidíase)."
       },
       {
-        title: "Medicamentos SUS Disponíveis",
-        desc: "Beclometasona spray oral 250mcg/dose ou Budesonida inalador pó seco (100mcg, 200mcg ou 400mcg). Salbutamol spray 100mcg/dose para resgate SOS nas crises."
+        title: "2ª Linha - Associação CI + LABA Regular (GINA Step 3-4)",
+        desc: "Se controle inadequado (persistência de uso de resgate, despertares noturnos freqüentes), associar broncodilatador de longa duração (LABA): prescrever Budesonida + Formoterol (200/6mcg ou 400/12mcg) 1 a 2 inalações de 12/12h de uso fixo contínuo. Alavancar adesão e correção da técnica do inalador."
       }
     ],
     interactiveType: "asma"
@@ -3726,12 +3786,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Exacerbação aguda (aumento da dispneia, do volume de escarro e da purulência do escarro): iniciar SABA/SAMA de horário, avaliar uso de Amoxicilina + Clavulanato ou Azitromicina por 5-7 dias se escarro purulento, e Prednisona 40mg VO por 5 dias.",
     treatment: [
       {
-        title: "Cessação do Tabagismo + Vacinação",
-        desc: "Medida mais eficaz para frear a queda de função pulmonar. Vacinação anual contra Influenza e antipneumocócica (Pneumo 23) são obrigatórias na UBS."
+        title: "1ª Linha - Cessação do Tabaco + Broncodilatador de Curta / Longa Ação Isolado",
+        desc: "Parada tabágica imediata (freia a perda funcional). Adotar vacinação anual contra Influenza e anti-pneumocócica (Pneumo 23) na UBS. Sintomático de base: Brometo de Ipratrópio (SAMA) 4 jatos VO de 6/6h fixos, ou introduzir LAMA isolada (Tiotrópio 18mcg inalação diária)."
       },
       {
-        title: "Tratamento Farmacológico de Longa Duração (SUS)",
-        desc: "Uso de broncodilatador de longa ação associado (LABA + LAMA). Casos com exacerbações frequentes (>2 por ano ou 1 internação) e eosinófilos > 300 requerem a adição de Corticoide Inalatório (Budesonida + Formoterol de manutenção)."
+        title: "2ª Linha - Terapia Dupla (LABA + LAMA) ou Tripla (LABA + LAMA + CI)",
+        desc: "Para dispneia moderada a severa (GOLD Grupo B ou E): prescrever associação de longa duração LABA + LAMA (ex: Formoterol + Tiotrópio). Adicionar Corticoide Inalatório (Budesonida 400mcg de 12/12h) se histórico de ≥2 exacerbações agudas ao ano e níveis de eosinófilos séricos > 300/mcL."
       }
     ]
   },
@@ -3743,16 +3803,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Xantomas tendinosos, arco corneal antes dos 45 anos ou LDL > 190 mg/dL: alta suspeita de Hipercolesterolemia Familiar (HF) heterozigótica. Alto risco coronariano precoce.",
     treatment: [
       {
-        title: "Terapia Não Farmacológica: Dieta e Atividade Física",
-        desc: "Substituir gorduras saturadas/trans por poli-insaturadas. Atividade física aeróbica moderada a intensa > 150 minutos por semana."
+        title: "1ª Linha - Modificações Dietéticas Intensas e ESTATINAS de Média Potência",
+        desc: "Implementar redução rigorosa de gorduras saturadas/trans, carboidratos simples e inserção de fibras e atividade física regular. Farmacoterapia base: Sinvastatina 20mg a 40mg VO à noite (redução do LDL de 20-30%). Monitorar queixas musculares severas e colher transaminases (ALT/AST) se suspeita de miopatia."
       },
       {
-        title: "Sinvastatina (SUS - 1ª Escolha Geral)",
-        desc: "Dose de 20mg a 40mg VO à noite (redução modesta do LDL). Monitorar queixas de mialgia extrema e colher transaminases (ALT/AST) se sintomas."
-      },
-      {
-        title: "Atorvastatina (SUS - Alto Risco)",
-        desc: "Dose de 10mg, 20mg, 40mg ou 80mg VO/dia em qualquer horário. Utilizada para metas agressivas no paciente coronariopata ou infartado prévio."
+        title: "2ª Linha - ESTATINAS de Alta Potência / Associação com Ezetimiba",
+        desc: "Para pacientes de Alto/Muito Alto risco cardiovascular (ex: coronariopata crônico, diabético com lesão ou infarto prévio) onde o alvo é restrito (LDL < 50mg/dL): prescrever Atorvastatina 40mg a 80mg VO/dia em dose única ou Rosuvastatina 20mg VO/dia. Se alvo não for alcançado, associar Ezetimiba 10mg VO ao dia."
       }
     ],
     interactiveType: "cholesterol"
@@ -3765,12 +3821,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Pacientes motivados a parar que sofrem de fissura intensa ou recaídas frequentes. Acompanhar em grupos específicos ou consultas individuais semanais no primeiro mês.",
     treatment: [
       {
-        title: "Terapia de Reposição de Nicotina (TRN)",
-        desc: "Adesivos transdérmicos de Nicotina (21mg/dia, 14mg/dia e 7mg/dia) em programa de redução gradual por 8-12 semanas. Gomas ou Pastilhas de Nicotina 2mg para alívio rápido das fissuras."
+        title: "1ª Linha - Apoio Cognitivo Comportamental e Terapia de Reposição de Nicotina (TRN)",
+        desc: "Participação ativa em grupos de cessação estruturados. Apoio com Adesivo Transdérmico de Nicotina (21mg, 14mg ou 7mg de acordo com o total de cigarros/dia) associado a Nicotina Gomas/Pastilhas 2mg (resgatar fissura aguda S.O.S., máx, 10-12/dia) em cronograma regressivo por 12 semanas."
       },
       {
-        title: "Cloridrato de Bupropiona (Antidepressivo)",
-        desc: "Dose de 150mg VO pela manhã por 3 dias; a partir do 4º dia aumentar para 150mg de 12/12h. O paciente escolhe o 'Dia D' de cessação absoluta entre o 8º e o 14º dia de uso. Contraindicado em epilépticos ou bulímicos."
+        title: "2ª Linha - Cloridrato de Bupropiona Isolada ou Associada",
+        desc: "Indicado para dependência moderada a grave com fissura persistente. Prescrever Bupropiona 150mg VO ao dia nos primeiros 3 dias; a partir do 4º dia elevar para 150mg VO de 12/12h. O 'Dia D' de parada total deve ocorrer entre o 8º e o 14º dia de uso. Pode ser associada ao adesivo de Nicotina. Contraindicado em portadores de epilepsia ou transtornos alimentares."
       }
     ],
     interactiveType: "fagerstrom"
@@ -3783,12 +3839,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Hemoptise maciça (sangramento respiratório severo), dispneia grave, dor torácica intensa, ou rebaixamento do nível de consciência (risco de meningite tuberculosa) - encaminhar para internamento hospitalar.",
     treatment: [
       {
-        title: "Esquema Básico RIPE (Ministério da Saúde) - Fase de Ataque (Meses 1 e 2)",
-        desc: "Comprimido de Dose Fixa Combinada (Rifampicina 150mg + Isoniazida 75mg + Pirazinamida 400mg + Etambutol 275mg). Uso diário em jejum. Geralmente 4 comprimidos juntos para adultos de 50-70kg."
+        title: "1ª Linha - Fase de Ataque (Esquema Básico RIPE - Meses 1 e 2)",
+        desc: "Prescrever comprimidos de dose fixa combinada SUS RIPE (Rifampicina 150mg + Isoniazida 75mg + Pirazinamida 400mg + Etambutol 275mg) tomados em jejum diário. Dose padrão para adultos de 50-70kg: 4 comprimidos juntos em dose única matinal diária por 2 meses inteiros."
       },
       {
-        title: "Fase de Manutenção (Meses 3 a 6)",
-        desc: "Apenas Rifampicina (R) + Isoniazida (I) por mais 4 meses completos. A adesão deve ser monitorada via Tratamento Diretamente Observado (TDO) na UBS."
+        title: "2ª Linha - Fase de Manutenção (Esquema RI - Meses 3 a 6)",
+        desc: "Após 2 meses de ataque e baciloscopia de controle, transicionar para Rifampicina + Isoniazida (suspender Pirazinamida e Etambutol) por mais 4 meses adicionais (completando 6 meses de terapêutica). O tratamento deve ser monitorado sob a estratégia de TDO (Tratamento Diretamente Observado) de forma obrigatória!"
       }
     ]
   },
@@ -3800,12 +3856,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Neurite aguda (dor neuropática súbita intensa no nervo periférico com perda recente de força na mão ou pé): iniciar Prednisona 1mg/kg/dia imediatamente para evitar deformidade física irreversível e acionar o especialista de referência.",
     treatment: [
       {
-        title: "Paucibacilar (≤ 5 lesões de pele; Baciloscopia Negativa)",
-        desc: "Duração: 6 doses mensais supervisionadas em até 9 meses. Esquema: Rifampicina 600mg (mensal supervisionada) + Dapsona 100mg (mensal supervisionada + 100mg autoadministrado diário)."
+        title: "1ª Linha - Esquema Paucibacilar (≤ 5 lesões cutâneas e Sem Troncos Acometidos)",
+        desc: "Duração: 6 doses mensais supervisionadas aplicadas em até 9 meses. Esquema de Poliquimioterapia (PQT): Rifampicina 600mg (mensal supervisionada na UBS) + Dapsona 100mg (mensal supervisionada + 100mg VO diários autoadministrados em domicílio pelo paciente)."
       },
       {
-        title: "Multibacilar (> 5 lesões ou nervos acometidos ou Baciloscopia Positiva)",
-        desc: "Duração: 12 doses mensais supervisionadas em até 18 meses. Esquema: Rifampicina 600mg (mensal supervisionada) + Clofazimina 300mg (mensal supervisionada) + Dapsona 100mg (supervisionada) + Clofazimina 50mg/dia e Dapsona 100mg/dia autoadministrados em domicílio."
+        title: "2ª Linha - Esquema Multibacilar (> 5 lesões de pele ou > 1 tronco nervoso acometido)",
+        desc: "Duração: 12 doses mensais supervisionadas aplicadas em até 18 meses. Composição terapêutica tripla: Rifampicina 600mg (mensal supervisionada) + Clofazimina 300mg (mensal supervisionada) + Dapsona 100mg (mensal supervisionada) associado a doses diárias em domicílio: Dapsona 100mg/dia + Clofazimina 50mg/dia VO."
       }
     ]
   },
@@ -3817,12 +3873,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Sinais de Alarme (surgem no período de defervescência - febre cedendo): Dor abdominal intensa e contínua, vômitos persistentes, acúmulo de líquidos (ascite/derrame pleural), sangramento de mucosa, hipotensão postural/lipotimia, letargia ou irritabilidade, aumento súbito de hematócrito e queda rápida de plaquetas.",
     treatment: [
       {
-        title: "Hidratação Oral Imediata Vigorosa (Grupo A)",
-        desc: "Formula prática: 60 ml/kg/dia. Sendo 1/3 com Soro de Reidratação Oral (SRO) fornecido pelo SUS e 2/3 com líquidos caseiros (água, sucos, água de coco). Ex: Paciente de 70kg necessita de 4.2 litros ao dia!"
+        title: "1ª Linha - Hidratação Oral Imediata Exaustiva (Manejo Grupo A - Ambulatorial)",
+        desc: "Prescrever hidratação vigorosa precoce: 60 ml/kg/dia VO. Sendo 1/3 executado com Soro de Reidratação Oral (SRO) fornecido pelo SUS e 2/3 com líquidos caseiros (água de coco, sucos, água filtrada). Sintomáticos permitidos de horário: Dipirona 1g de 6/6h ou Paracetamol 750mg de 6/6h. AINES/AAS são terminantemente proibidos!"
       },
       {
-        title: "Proibições Absolutas",
-        desc: "É terminantemente proibido o uso de Ácido Acetilsalicílico (AAS), Ibuprofeno, Nimesulida, Diclofenaco ou outros AINES devido ao risco aumentado de sangramento grave e plaquetopenia secundária. Sintomático de escolha: Dipirona ou Paracetamol."
+        title: "2ª Linha - Hidratação Venosa Imediata de Emergência (Manejo Grupos B/C/D)",
+        desc: "Indicado se sinais de alarme ou recusa/intolerância oral severa. Iniciar expansão volêmica venosa na UBS: Soro Fisiológico (SF 0.9%) ou Ringer Lactato 10 ml/kg na primeira hora, repetindo conforme monitorização laboratorial e micro-hematócritos seriados. Encaminhar para estabilização/observação de 24h."
       }
     ],
     interactiveType: "dengue"
@@ -3835,12 +3891,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Anemia grave em idosos ou pacientes cardiopatas (Hb < 7-8 g/dL) ou sintomas de insuficiência cardíaca congestiva de alto débito (taquicardia, dispneia de repouso, turgência jugular) - encaminhar ao pronto atendimento para transfusão de concentrado de hemácias monitorizada.",
     treatment: [
       {
-        title: "Sulfato Ferroso Oral (Adulto)",
-        desc: "Dose terapêutica: 120mg a 200mg de Ferro Elementar por dia (cada comprimido de Sulfato Ferroso de 200mg contém 40mg de Ferro Elementar). Prescrever 3 a 4 comprimidos diários VO, preferivelmente 1 hora antes das refeições ou associados a alimentos ricos em Vitamina C."
+        title: "1ª Linha - Reposição Oral de Sulfato Ferroso de Alta Dose (SUS)",
+        desc: "Dose terapêutica padrão: 120mg a 200mg de Ferro Elementar por dia para adultos. Prescrever de 3 a 5 comprimidos de Sulfato Ferroso 200mg (cada unidade possui 40mg de ferro metal) divididos ao longo do dia, administrados idealmente 1 hora antes das refeições ou acompanhados de suco cítrico (vitamina C). Manter até Hb normal + 3 meses."
       },
       {
-        title: "Sulfato Ferroso (Pediatria)",
-        desc: "Dose terapêutica infantil: 3 a 6 mg/kg/dia de ferro elementar, fracionado em 2x/dia. Manter tratamento até normalização e por mais 3 meses para repor os estoques corporais."
+        title: "2ª Linha - Reposição de Alta Tolerância / Ferro Intramuscular / Sacarato de Ferro",
+        desc: "Em intolerância gastrointestinal intratável (epigastralgia severa, constipação) ou distúrbios de absorção intestinal: prescrever Ferro Quelato ou Ferro Hidróxido Polimaltosado. Se refratariedade e anemia limitante, encaminhar para reposição venosa especializada com Sacarato de Hidróxido de Ferro (Noripurum EV) ou Dextrano de Ferro."
       }
     ]
   },
@@ -3852,12 +3908,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Artrite séptica concomitante (febre alta, calafrios, toxemia, incapacidade absoluta de mobilização articular): realizar punção articular urgente para análise de líquido sinovial.",
     treatment: [
       {
-        title: "Tratamento da Crise de Gota Aguda (Alívio da Dor)",
-        desc: "NÃO iniciar ou alterar dose de Alopurinol durante a crise de dor (risco de piora pela alteração abrupta de urato sérico). Colchicina 0.5mg de 8/8h até resolução da dor (máximo de 3 comprimidos/dia), associado a AINE potente (ex: Ibuprofeno 600mg de 8/8h) se função renal normal."
+        title: "1ª Linha - Crise Aguda: Controle Álgico Agressivo de Curto Curso",
+        desc: "NÃO iniciar ou alterar dose de Alopurinol durante a crise de dor (risco de piora pela oscilação abrupta de urato). Prescrever Colchicina 0.5mg de 8/8h (limitar a 3 comprimidos ao dia) associado a AINE potente (Ibuprofeno 600mg de 8/8h ou Cetoprofeno 100mg de 12/12h por 3 a 5 dias). Se insuficiência renal, usar Prednisona 20mg a 40mg/dia."
       },
       {
-        title: "Manejo Profilático Crônico",
-        desc: "Alopurinol 100mg a 300mg VO ao dia (ajustar pela função renal). Adicionar dose protetora de Colchicina baixa (0.5mg/dia) nos primeiros 3 a 6 meses de introdução do Alopurinol de modo a dirimir novos episódios."
+        title: "2ª Linha - Prevenção de Crises Crônicas e Hipouricemiatória",
+        desc: "Indicado se ≥ 2 crises ano ou presença de tofos: iniciar Alopurinol 100mg VO ao dia (ajustar rigorosamente pelo clearence de creatinina, máximo de 300mg/dia). É mandatório associar dose protetora de Colchicina baixa (0.5mg VO ao dia) nos primeiros 3 a 6 meses de introdução do Alopurinol para prevenir novas crises secundárias."
       }
     ]
   },
@@ -3869,16 +3925,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Suboclusão intestinal por carga massiva de vermes (síndrome de obstrução de Löffler por Ascaris): contraindicado o uso de Albendazol por risco de migração errática maciça. Tratar com Piperazina e Óleo Mineral e transferir ao pronto socorro.",
     treatment: [
       {
-        title: "Tratamento de Helmintíases Clássicas (Ascaris, Oxiurus, Ancilostomose)",
-        desc: "Albendazol 400mg VO em dose única para adultos e crianças > 2 anos. Mebendazol 100mg VO de 12/12h por 3 dias completos como alternativa."
+        title: "1ª Linha - Tratamento Empírico de Amplo Espectro / Monodose (SUS)",
+        desc: "Prescrever Albendazol 400mg VO em dose única para maiores de 2 anos (repetir em 14 dias se suspeita forte de Enterobíase ou Himenolepíase). Co-indicar tratamento de todos os familiares para evitar reinfestação por ovos persistentes de Oxiurus."
       },
       {
-        title: "Estrongiloidíase e Escabiose",
-        desc: "Ivermectina 200 mcg/kg VO em dose única, repetindo em 14 dias para erradicar larvas remanescentes das autoinfecções."
-      },
-      {
-        title: "Giardíase e Amebíase Intestinal",
-        desc: "Metronidazol 250mg VO de 8/8h por 5-7 dias (Giardíase) ou 500mg de 8/8h por 7-10 dias (Amebíase). Secnidazol 2g VO em dose única como alternativa de alta adesão."
+        title: "2ª Linha - Antimicrobianos Direcionados e Outros Vermífugos",
+        desc: "Se infecções específicas ou refratariedade ao tratamento inicial: para Amebíase/Giardíase, utilizar Metronidazol 250mg VO de 8/8h por 5 a 7 dias, ou Secnidazol 2g dose única (adultos). Para infecções multirresistentes, utilizar Nitazoxanida (Annita) 500mg VO de 12/12h por 3 dias inteiros pós-refeições."
       }
     ]
   },
@@ -3890,16 +3942,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Sarna Crostosa (Norueguesa) em imunodeprimidos ou idosos, com crostas hiperqueratósicas pelo corpo inteiro contendo milhões de ácaros - requer isolamento de contato rigoroso e cuidados complexos.",
     treatment: [
       {
-        title: "Permetrina Loção 5% (Tratamento de Escolha)",
-        desc: "Aplicar a loção do pescoço para baixo na pele à noite ao deitar-se. Lavar de manhã após 8 a 12 horas. Repetir impreterivelmente após 7 dias. Tratar todos os contatos domiciliares simultaneamente!"
+        title: "1ª Linha - Permetrina Tópica 5% / Escabicida de Escolha",
+        desc: "Aplicar a Permetrina loção a 5% em todo o corpo, rigorosamente do pescoço para baixo, insistindo em dobras e fendas interdigitais. Realizar a aplicação à noite antes de deitar-se. Lavar por completo pela manhã, após 8 a 12 horas de contato na pele. Repetir impreterivelmente após 7 dias. Tratar concomitantemente todos os coabitantes."
       },
       {
-        title: "Higienização Ambiental",
-        desc: "Lavar roupas cotidianas, toalhas e lençóis em água quente ou guardá-los em sacos plásticos herméticos fechados por 7 dias."
-      },
-      {
-        title: "Ivermectina Oral Coadjuvante",
-        desc: "Dose de 200 mcg/kg VO em dose única, devendo-se repetir após 7 a 14 dias se lesões disseminadas."
+        title: "2ª Linha - Ivermectina Oral Sistêmica",
+        desc: "Indicado para infestações severas, falha da terapia tópica ou surtos epidêmicos fechados: prescrever Ivermectina 200 mcg/kg VO em dose única, devendo-se repetir a dose após exatamente 14 dias. Co-indicar lavagem rigorosa e fervura de roupas de cama e toalhas."
       }
     ]
   },
@@ -3911,8 +3959,12 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Fasciíte Necrosante (dor desproporcional ao aspecto visual, bolhas hemorrágicas, crepitação gasosa na palpação da pele e rápida instabilidade/choque séptico): emergência cirúrgica máxima. Encaminhar para desbridamento urgente.",
     treatment: [
       {
-        title: "Tratamento de Escolha (SUS)",
-        desc: "Sintomáticos de dor + Elevação do membro acometido durante o repouso. Cefalexina 500mg VO de 6/6h por 7 a 10 dias inteiros. Amoxicilina + Clavulanato 500/125mg de 8/8h é alternativa em mordeduras de animais."
+        title: "1ª Linha - Antibioticoterapia Oral Clássica e Elevação de Membro",
+        desc: "Prescrever Cefalexina 500mg VO de 6/6h por 10 dias completos. Co-indicar repouso absoluto com o membro superior ou inferior constantemente elevado acima da linha do quadril. Sintomáticos: Dipirona 1g se dor ou febre."
+      },
+      {
+        title: "2ª Linha - Larga Cobertura / Penicilina Benzatina / Casos de Repetição",
+        desc: "Se suspeita de Staphylococcus aureus de maior agressividade ou intolerância à Cefalexina: prescrever Amoxicilina + Clavulanato 500/125mg VO de 8/8h por 10 dias. Para profilaxia de erisipela de repetição recorrente (≥3 episódios/ano): instituir Penicilina G Benzatina 1.200.000 UI IM profundo de 21 em 21 dias por até 1-2 anos."
       }
     ]
   },
@@ -3924,28 +3976,397 @@ const UBS_CATALOG_DISEASES = [
     alarm: "Presença de sangramento uterino anormal pós-menopausa (investigar espessamento endometrial por ultrassonografia transvaginal urgente para descartar hiperplasia endometrial ou malignidade).",
     treatment: [
       {
-        title: "Terapia de Reposição Hormonal (TRH) - Regra do Útero",
-        desc: "SE A MULHER POSSUI ÚTERO: É obrigatório associar Progestagênio ao Estrogênio para evitar hiperplasia endometrial. Esquema SUS comum: Estrogênios Conjugados 0,3mg a 0,625mg/dia VO associado a Acetato de Medroxiprogesterona 2.5mg a 5mg/dia VO."
+        title: "1ª Linha - Terapia de Reposição Hormonal (TRH) Padrão SUS",
+        desc: "SE TEM ÚTERO (Mandatório associar progesterona para proteção endometrial): prescrever Estrogênios Conjugados 0.3mg a 0.625mg/dia VO de forma contínua associado ao Acetato de Medroxiprogesterona 2.5mg a 5mg/dia VO. SE NÃO TEM ÚTERO: Pode-se prescrever Estrogênio isolado de forma contínua."
       },
       {
-        title: "Mulheres Histerectomizadas (Sem Útero)",
-        desc: "Pode receber exclusivamente Estrogênio isolado de forma contínua (estrogênios conjugados ou estrogênio em gel/adesivo transdérmico)."
+        title: "2ª Linha - Terapia Não-Hormonal de Alívio (Contraindicações a TRH)",
+        desc: "Se a paciente tem contraindicação absoluta (antecedente de câncer de mama/endométrio, trombose venosa, doença coronariana): prescrever inibidor seletivo de recaptação de serotonina/noradrenalina para fogachos, como Succinato de Desvenlafaxina 50mg ao dia ou Cloridrato de Venlafaxina 37.5mg a 75mg VO ao dia."
+      }
+    ]
+  },
+  {
+    id: "lombalgia",
+    name: "Lombalgia Crônica e Aguda (Dor Lombar)",
+    category: "Outros",
+    diagnostic: "Comumente de caráter mecânico-postural. Dor na região lombar ou lombosacra que pode se irradiar para a nádega ou coxa. Diagnóstico essencialmente clínico, dispensando exames de imagem em episódios agudos autolimitados.",
+    alarm: "Sinais de Alarme (Saddle anesthesia/anestesia em sela, perda súbita de força de membros inferiores, perda de controle esfincteriano (bexiga/intestino), febre inexplicada ou histórico de neoplasia): suspeita imediata de Síndrome da Cauda Equina ou Metástase Óssea. Encaminhar para emergência.",
+    treatment: [
+      {
+        title: "1ª Linha - Analgésicos Simples e Condutas Funcionais",
+        desc: "Prescrever Dipirona 1g VO de 6/6h associado ao calor local por 15-20 minutos, 3x ao dia. Desmistificar o repouso prolongado (repouso absoluto prolongado atrofia e piora a reabilitação - incentivar retorno gradual precoce às atividades do lar)."
       },
       {
-        title: "Contraindicações Absolutas da TRH",
-        desc: "Histórico de Câncer de Mama ou Endométrio, Tromboembolismo Venoso ativo/prévio, Cardiopatia Isquêmica, Doença Hepática Aguda Grave ou Sangramento vaginal sem diagnóstico."
+        title: "2ª Linha - Curso Curto de AINES e Relaxante Muscular Estruturado",
+        desc: "Se dor limitante persistente na primeira linha: associar Ibuprofeno 600mg VO de 8/8h por no máximo 3 a 5 dias consecutivos, somado a Ciclobenzaprina 5mg a 10mg VO ao deitar-se (alivia espasmos musculares reativos severos). Encaminhar cedo dores crônicas (> 3 meses) à fisioterapia e cinesioterapia."
+      }
+    ]
+  },
+  {
+    id: "dispepsia",
+    name: "Dispepsia Funcional e Gastrite",
+    category: "Gastrointestinal",
+    diagnostic: "Plenitude pós-prandial incômoda, saciedade precoce, dor ou queimação epigástrica sem evidência de doença estrutural na ausência de sinais de alarme.",
+    alarm: "Perda ponderal inexplicável, vômitos incoercíveis, anemia, disfagia, massa abdominal palpável ou idade de início > 50 anos: encaminhar para Endoscopia Digestiva Alta (EDA) de urgência para afastar neoplasia gástrica ou úlcera perfurada.",
+    treatment: [
+      {
+        title: "1ª Linha - Bloqueador de Ácido (IBP) e Educação Dietética",
+        desc: "Prescrever Omeprazol 20mg VO ao dia pela manhã, rigorosamente em jejum (30 min antes do café), por 4 a 8 semanas seguidas. Orientar rotina: limitação estrita de alimentos ácidos, condimentados, frituras, refrigerantes, bebida alcoólica e restrição de uso inadequado de AINEs."
+      },
+      {
+        title: "2ª Linha - Coadjuvantes Cinéticos e Investigação de H. Pylori / Antidepressivo Tricíclico",
+        desc: "Se plenitude gástrica marcada com náuseas associadas: adicionar Bromoprida 10mg VO até de 8/8h antes das refeições por 10 dias. Casos funcionais refratários sem causa anatômica e pesquisa de H. Pylori negativa respondem muito bem ao uso de Amitriptilina 12.5mg a 25mg VO ao deitar."
+      }
+    ]
+  },
+  {
+    id: "micoses",
+    name: "Dermatofitoses e Micoses de Pele (Tíneas)",
+    category: "Pele & Dermatologia",
+    diagnostic: "Lesões descamativas na pele com bordas eritematosas, ativas e elevadas, pruriginosas (placas anulares). Podem acometer corpo (Tinea corporis), pés (Tinea pedis - pé de atleta) ou virilha (Tinea cruris).",
+    alarm: "Sinais de infecção bacteriana secundária (celulite associada, calor extremo local, presença de pus ou febre sistêmica): tratar com antibióticos sistêmicos orais.",
+    treatment: [
+      {
+        title: "1ª Linha - Antifúngicos Tópicos de Extensão Limitada",
+        desc: "Aplicar Nitrato de Miconazol creme vaginal/tópico a 2% ou Isoconazol creme 2 vezes ao dia por 2 a 4 semanas. Orientar manter a área extensamente limpa e seca após o banho, utilizando toalha exclusiva para a lesão de modo a obstar disseminação para outras dobras corporais."
+      },
+      {
+        title: "2ª Linha - Antifúngicos Antifúngicos Orais Sistêmicos",
+        desc: "Indicado se lesões disseminadas, multiplas ou onicomicose severa: prescrever Fluconazol 150mg VO, 1 comprimido por semana por 2 a 4 semanas (na micose de pele) ou Itraconazol 100mg VO ao dia por até 12 semanas (unha/onicomicose). Monitorar TGO/TGP se uso >4 semanas."
+      }
+    ]
+  },
+  {
+    id: "ansiedade",
+    name: "Ansiedade e Transtorno de Ansiedade Generalizada (TAG)",
+    category: "Outros",
+    diagnostic: "Ansiedade e preocupação excessivas, na maioria dos dias, por pelo menos 6 meses, difíceis de controlar. Associada a cansaço fácil, tensão muscular, irritabilidade e insônia. Aplicar escore GAD-7 na UBS.",
+    alarm: "Presença de graves episódios de pânico associados a sintomas simulando infarto agudo (sintomatologia adrenérgica expressiva) ou ideação de autolesão - acionar rastreamento seguro de apoio social/familiar e agendar retorno precoce ou psiquiatria.",
+    treatment: [
+      {
+        title: "1ª Linha - Inibidores Seletivos da Recaptação de Serotonina (ISRS) e Higiene Mental",
+        desc: "Prescrever Sertralina 25mg a 50mg VO ao dia (otimizar até 100mg a 200mg se necessário) ou Fluoxetina 20mg ao dia pela manhã. Explicar detidamente que a resposta benéfica ocorre de forma gradual somente após a 3ª ou 4ª semana e que pode haver piora paradoxal inicial leve."
+      },
+      {
+        title: "2ª Linha - Transição para Dual / Benzodiazepínicos em Uso Estritamente Terminado",
+        desc: "Se falha documentada após 8 semanas em dose máxima e correta adesão: substituir por Cloridrato de Venlafaxina XR 75mg VO ao dia. O uso de Clonazepam 0.5mg a 1mg VO ou Diazepam 5mg a 10mg ao deitar serve estritamente para o manejo de crises agudas paroxísticas no início, limitando a no máximo 2 a 4 semanas."
+      }
+    ]
+  },
+  {
+    id: "depressao",
+    name: "Depressão Unipolar Leve a Moderada",
+    category: "Outros",
+    diagnostic: "Presença de humor deprimido e/ou anedonia (perda de interesse/prazer) por pelo menos 2 semanas, associados a distúrbios de sono, fadiga, sentimentos de culpa e dificuldade de foco. Utilizar escore PHQ-9 na UBS.",
+    alarm: "Ideação suicida ativa com planejamento formulado: encaminhamento de emergência em saúde mental (CAPS III, UPA ou Pronto Socorro psiquiátrico) imediatamente sob supervisão familiar.",
+    treatment: [
+      {
+        title: "1ª Linha - Antidepressivos de Primeira Escolha (SUS) + Psicoterapia",
+        desc: "Introduzir Sertralina 50mg VO pela manhã (titular até 150mg se refratariedade) ou Fluoxetina 20mg VO. Manter o tratamento por pelo menos 6 a 9 meses após a remissão total dos sintomas clínicos para prevenir recidivas graves."
+      },
+      {
+        title: "2ª Linha - Tricíclicos Secundários ou ISRSN (Duais)",
+        desc: "Em caso de falha terapêutica ou intolerância aos ISRS: prescrever Amitriptilina 25mg VO à noite, titulado lentamente até 75mg a 150mg/dia (ideal se insônia marcada e ausência de cardiopatia pelo risco de alargamento de QT), ou encaminhar para início de Cloridrato de Duloxetina 30mg a 60mg VO ao dia."
+      }
+    ]
+  },
+  {
+    id: "has",
+    name: "Hipertensão Arterial Sistêmica (HAS)",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Pressão arterial de consultório ≥ 140x90 mmHg aferida em duas ou mais ocasiões, ou via monitoramento residencial (MRPA/MAPA) com valores médios ≥ 130x80 mmHg.",
+    alarm: "Crise Hipertensiva de Emergência (PA ≥ 180x120 mmHg com sintomas neurológicos agudos, dor torácica opressiva, dispneia súbita): suspeita de AVC, Infarto ou Edema Agudo de Pulmão. Encaminhar para emergência médica imediata com suporte de oxigênio.",
+    treatment: [
+      {
+        title: "1ª Linha - Associação Terapêutica Dupla Inicial (SUS - Diretriz Brasileira)",
+        desc: "Hipertensão estágio 1 moderada/estágio 2 requer início clássico de monoterapia apenas em idosos frágeis. Demais pacientes devem iniciar terapia dupla sinérgica: Losartana 50mg VO pela manhã associado a Hidroclorotiazida 25mg VO ao dia, ou Enalapril 10mg VO de 12/12h associado a Hidroclorotiazida 25mg pela manhã."
+      },
+      {
+        title: "2ª Linha - Otimização com Anlodipino e Quarto Escalão (Espironolactona)",
+        desc: "Se controle tensional refratário: elevar Losartana para 50mg VO de 12/12h e associar Bloqueador de Canais de Cálcio: Besilato de Anlodipino 5mg a 10mg VO ao dia. Se persistência (Hipertensão Resistente com 3 drogas), acrescentar Espironolactona 25mg VO ao dia como quarta linha e pesquisar causas secundárias de hipertensão."
+      }
+    ]
+  },
+  {
+    id: "dm2",
+    name: "Diabetes Mellitus Tipo 2 (DM2)",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Glicemia de jejum ≥ 126 mg/dL (confirmada), Glicemia pós-sobrecarga 75g dextrosol ≥ 200 mg/dL, ou Hemoglobina Glicada (HbA1c) ≥ 6.5%.",
+    alarm: "Sintomas exuberantes de cetoacidose diabética ou estado hiperosmolar (confusão mental, náuseas/vômitos intensos, fadiga extrema e dor abdominal com glicemia capilar > 250 mg/dL ou marcada por cetonúria): encaminhar imediatamente ao PS.",
+    treatment: [
+      {
+        title: "1ª Linha - Metformina Otimizada e iSGLT2 com Proteção Renal/Cardiovascular",
+        desc: "Iniciar Metformina 500mg a 850mg VO de 12/12h junto com as principais refeições. Se o paciente possui doença renal crônica estabelecida (TFG < 60) ou insuficiência cardíaca de base: prescrever Dapagliflozina 10mg VO ao dia associado de imediato (iSGLT2 de alta proteção orgânica disponível no SUS)."
+      },
+      {
+        title: "2ª Linha - Associação de Gliclazida MR ou Insulinização NPH Inicial ao Deitar",
+        desc: "Se HbA1c refratária persistente alta: associar Gliclazida MR 30mg a 60mg VO pela manhã. Se a glicemia de jejum se mantém refratária e há sinais de catabolismo (perda de peso rápida/poliúria): introduzir Insulina NPH subcutânea à noite ao deitar (dose inicial segura de 10 UI, titulando de 2 em 2 UI conforme glicemia de jejum)."
+      }
+    ]
+  },
+  {
+    id: "itu",
+    name: "Infecção do Trato Urinário Baixo (Cistite Aguda)",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Disúria (dor/ardor ao urinar), polaciúria (aumento da frequência), urgência urinária e dor suprapúbica. O diagnóstico é estritamente clínico em mulheres jovens sem comorbidades (dispensa EAS/Urocultura inicial).",
+    alarm: "Febre alta (>38ºC), calafrios, náuseas/vômitos e dor em flanco com sinal de Giordano positivo (punho-percussão lombar dolorosa): suspeita de Pielonefrite. Tratamento preferencialmente hospitalar ou ambulatorial assistido.",
+    treatment: [
+      {
+        title: "1ª Linha - Antissepsia Urinária de Escolha / Monodose Altamente Eficaz",
+        desc: "Prescrever Nitrofurantoína (Macrodantina) 100mg VO de 6/6h por 5 dias consecutivos, ou prescrever Fosfomicina Trometamol 3g sachê (Monuril), dose única dissolvida em água à noite antes de deitar-se. Estimular copiosa hidratação."
+      },
+      {
+        title: "2ª Linha - Crossover Antibiótico de Reserva Sistêmica",
+        desc: "Em gestantes, idosos ou se intolerância de primeira linha: prescrever Cefalexina 500mg VO de 6/6h por 7 dias inteiros. Se padrão de alta resistência regional às linhas básicas e urocultura confirmando sensibilidade: prescrever Ciprofloxacino 500mg VO de 12/12h por 3 dias completos (evitar uso indiscriminado)."
+      }
+    ]
+  },
+  {
+    id: "ivas",
+    name: "Resfriado Comum e Rinossinusite Aguda",
+    category: "Respiratório",
+    diagnostic: "Coriza líquida ou purulenta, obstrução nasal, espirros, odinofagia leve e tosse protetora. A sinusite bacteriana é sugerida se persistência >10 dias sem melhoras, piora abrupta após melhora inicial, ou dor facial maxilar unilateral pulsátil severa por >3 dias.",
+    alarm: "Edema ou eritema periorbital (celulite orbitária), diplopia, dor extrema de cabeça com rigidez nucal ou febre alta refratária: internação de emergência para exames de imagem e antibioticoterapia venosa.",
+    treatment: [
+      {
+        title: "1ª Linha - Lavagem Nasal Exaustiva e Sintomáticos S.O.S (Resfriado Viral)",
+        desc: "Terapia estritamente sintomática (antibióticos não funcionam em resfriado ou sinusite aguda viral): prescrever lavagem nasal exaustiva com Soro Fisiológico 0.9% morno (10-20ml em seringa em cada narina várias vezes ao dia). Prescrever Dipirona 1g de 6/6h ou Ibuprofeno 400mg VO para cefaleia e febre."
+      },
+      {
+        title: "2ª Linha - Antibioticoterapia Sistêmica Direcionada (Critério Bacteriano)",
+        desc: "Indicado apenas se febre alta prolongada por > 3 dias associada a dor facial unilateral intensa pulsátil e coriza densamente purulenta (sugerindo sinusite bacteriana): prescrever Amoxicilina 500mg VO de 8/8h por 7 a 10 dias inteiros. Se histórico de uso de beta-lactâmico recente, optar por Amoxicilina + Clavulanato 500/125mg de 8/8h."
+      }
+    ]
+  },
+  {
+    id: "icc",
+    name: "Insuficiência Cardíaca Crônica (ICC)",
+    category: "Outros",
+    diagnostic: "Dispneia de esforço progressiva, ortopneia (falta de ar ao deitar), dispneia paroxística noturna, estase de jugulares a 45º e edema simétrico de membros inferiores de caráter gravitativo. Diagnóstico por critérios clínicos de Framingham ratificado por Ecocardiograma com Fração de Ejeção.",
+    alarm: "Dispneia grave em repouso com taquipneia evidente, ansiedade extrema, estertores pulmonares crepitantes até terço médio e expectoração rosácea bolhosa: Edema Agudo de Pulmão (EAP/ICC Descompensada). Chamar unidade móvel e transferir imediatamente para PS com urgência.",
+    treatment: [
+      {
+        title: "1ª Linha - Triplo/Quádruplo Bloqueio Neuro-Hormonal de Sobrevivência (SBC)",
+        desc: "Instituir terapia modificadora de sobrevida: Enalapril 5mg a 10mg VO de 12/12h (ou Losartana 50mg se tosse secundária) associado a Carvedilol 6.25mg VO de 12/12h (titular progressivamente quinzenal até tolerância ou FC alvo ~60-65) somado a antagonista de aldosterona: Espironolactona 25mg VO ao dia. Dapagliflozina 10mg VO ao dia é de utilidade crucial."
+      },
+      {
+        title: "2ª Linha - Controle de Sintomas Volêmicos e Digoxina Coadjuvante",
+        desc: "Para alívio de sintomas de congestão crônica (edema de pernas, ascite): prescrever Furosemida 40mg VO pela manhã (titular dose de acordo com peso diário do doador). Se fração de ejeção muito deprimida (<35%) com ritmo sinusal e sintomas refratários: associar Digoxina 0.125mg a 0.25mg VO ao dia."
+      }
+    ]
+  },
+  {
+    id: "osteoartrite",
+    name: "Osteoartrite e Osteoartrose (Artrose articular)",
+    category: "Outros",
+    diagnostic: "Dor articular mecânica (piora com carga ou movimento, alivia com repouso absoluto), rigidez articular matinal de curta duração (< 30 minutos), limitação funcional e crepitações na mobilização. Comum em joelhos, quadris e mãos.",
+    alarm: "Articulação quente, edemaciada, com eritema evidente e febre sistêmica associada: suspeita de Artrite Séptica. Encaminhar imediatamente para punção articular diagnóstica de emergência.",
+    treatment: [
+      {
+        title: "1ª Linha - Educação Física Ergonométrica e Analgésicos Simples de Horário",
+        desc: "Prescrever fortalecimento quadricipital isométrico preventivo de impacto e controle ponderal para diminuição de desgaste por carga. Sintomático de horário: Dipirona 1g VO ou Paracetamol 750mg em horários de maior dor articular, limitando o uso de comprimidos. Evitar AINEs orais pelo altíssimo risco renal."
+      },
+      {
+        title: "2ª Linha - Anti-inflamatórios Tópicos / Condroprotetores Auxiliares / Diacereína",
+        desc: "Para articulações periféricas fáceis de palpar (joelhos e mãos), priorizar Diclofenaco Dietilamônio gel 1%, massagear o local 3 a 4x/dia. Se dor refratária de caráter crónico nociceptivo, associar Diacereína 50mg VO ao dia pós refeições ou pó de Condroitina 1200mg + Glucosamina 1500mg para efeitos tardios de amortecimento."
+      }
+    ]
+  },
+  {
+    id: "venosa",
+    name: "Insuficiência Venosa Crônica (Varizes de Membros Inferiores)",
+    category: "Outros",
+    diagnostic: "Sensação de peso, queimação, cansaço ou dor nas pernas ao final do dia. Presença de edema vespertino maleolar, telangiectasias, veias varicosas tortuosas ou hiperpigmentação ocre na pele distal.",
+    alarm: "Início súbito de edema assimétrico unilateral exuberante em uma das panturrilhas, acompanhado de dor forte local: forte suspeita de Trombose Venosa Profunda (TVP). Encaminhar ao PS para Doppler venoso urgente.",
+    treatment: [
+      {
+        title: "1ª Linha - Higiene de Retorno Venoso e Meias de Compressão Elástica",
+        desc: "Evitar de pé ou assentado por períodos >2h. Realizar repousos com as pernas suspensas acima da altura do esterno por 20 minutos, 3x ao dia. Prescrever e ensinar o uso diário de Meias de Compressão Elástica Graduada (média compressão, ex: 20-30 mmHg) vestidas imediatamente ao levantar-se."
+      },
+      {
+        title: "2ª Linha - Bioflavonoides Venotônicos Coadjuvantes",
+        desc: "Indicados para alívio sintomático de dores incapacitantes e do peso residual persistente mesmo com repouso postural: prescrever Diosmina 450mg + Hesperidina 50mg (ou formulações de 1000mg) VO pela manhã em dose única diária por cursos de até 3-6 meses."
+      }
+    ]
+  },
+  {
+    id: "cefaleiastens",
+    name: "Cefaleia Tensional e Enxaqueca (Migrânea)",
+    category: "Outros",
+    diagnostic: "Cefaleia Tensional: dor holocraniana em aperto ou pressão, bilateral, opressiva, leve a moderada. Enxaqueca: dor pulsátil, unilateral, moderada a severa, associada a irritabilidade com luz (fotofobia), som (fonofobia) e náuseas.",
+    alarm: "Início explosivo e súbito da dor ('pior cefaleia da vida' em segundos), associado a febre, rigidez de nuca, confusão mental, déficit focal motor ou início após os 50 anos: encaminhar imediatamente para tomografia computadorizada cerebral (excluir hemorragia subaracnóidea, meningite ou tumor).",
+    treatment: [
+      {
+        title: "1ª Linha - Aborte Agudo Simples e Profilaxia de Base com Tricíclicos",
+        desc: "Crise álgica: Dipirona 1g VO ou Ibuprofeno 600mg associado precoce. Se crises recorrentes (>3/mês): prescrever profilaxia diária regular com Amitriptilina 25mg VO ao deitar-se (titular até 50mg conforme tolerabilidade clínica) ou Propranolol 40mg VO de 12/12h."
+      },
+      {
+        title: "2ª Linha - Abortivos Triptanos e Profilaxia com Topiramato",
+        desc: "Crise severa resistente de enxaqueca: prescrever Succinato de Sumatriptana 50mg ou 100mg VO dose única no início da crise. Para profilaxia alternativa quando há contraindicação ao betabloqueador: prescrever profilaxia crônica com Topiramato 25mg à noite, titulado até 50mg a 100mg VO diários."
+      }
+    ]
+  },
+  {
+    id: "vaginoses",
+    name: "Candidíase Vulvovaginal e Vaginose Bacteriana",
+    category: "Pele & Dermatologia",
+    diagnostic: "Candidíase: prurido vulvovaginal intenso, ardor, corrimento esbranquiçado grumoso sem cheiro (leite qualhado) e hiperemia. Vaginose: corrimento cinza ou amarelado fluido com odor fétido (peixe podre), mais proeminente após coito.",
+    alarm: "Aparecimento de febre alta, dor à mobilização do colo uterino no exame especular ou dor em fossas ilíacas bilaterais persistente (DIP - Doença Inflamatória Pélvica): iniciar antibióticos sistêmicos de largo espectro (Ceftriaxona IM + Doxiciclina) e reavaliar de perto.",
+    treatment: [
+      {
+        title: "1ª Linha - Creme Vaginal Direcionado Local (SUS)",
+        desc: "CANDIDÍASE: Nitrato de Miconazol creme vaginal a 2%, aplicar 1 aplicador preenchido profundamente via vaginal à noite ao deitar-se, por 7 noites consecutivas. VAGINOSE: Metronidazol gel vaginal 1 aplicador preenchido via vaginal à noite deitado por 5 noites seguidas."
+      },
+      {
+        title: "2ª Linha - Tratamento Sistêmico Oral / Candidíase Recorrente",
+        desc: "Se recusa ou impossibilidade de uso de via tópica: CANDIDÍASE: Fluconazol 150mg VO dose única (se recidivas frequentes: Fluconazol 150mg semanal por 6 semanas). VAGINOSE: Metronidazol 250mg VO, prescrever 2 comprimidos VO de 12/12h por 7 dias (orientar abstinência absoluta de álcool durante o curso terapêutico)."
+      }
+    ]
+  },
+  {
+    id: "verminose",
+    name: "Parasitoses Intestinais / Verminoses",
+    category: "Gastrointestinal",
+    diagnostic: "Prurido anal noturno, epigastralgia ou náuseas inexplicáveis. Presença de prurido nasal/anal ou eliminação eventual de parasitas nas fezes (altamente sugestivo de Enterobíase/Oxiuríase).",
+    alarm: "Presença de eliminação em massa de vermes na boca/nariz ou sinais de suboclusão intestinal (vômitos feculoides, parada de eliminação de gases/fezes, distensão abdominal severa): sinal de obstrução por bolo de Ascaris. Tratamento cirúrgico ou Piperazina urgente.",
+    treatment: [
+      {
+        title: "Esquema Empírico Geral ou Direcionado",
+        desc: "Albendazol 400mg VO, dose única (em maiores de 2 anos). Para Giardíase ou Amebíase: prescrever Secnidazol 2g VO, dose única à noite para adultos."
+      },
+      {
+        title: "Tratamento de Oxiuríase (Enterobíase - Familiar)",
+        desc: "Mebendazol 100mg VO de 12/12h por 3 dias consecutivos. Tratar TODOS os membros coabitantes e repetir a dose após 14 dias para evitar reinfecções por ovos viáveis."
+      }
+    ]
+  },
+  {
+    id: "osteoartrite",
+    name: "Osteoartrite e Osteoartrose (Artrose articular)",
+    category: "Outros",
+    diagnostic: "Dor articular mecânica (piora com carga ou movimento, alivia com repouso absoluto), rigidez articular matinal de curta duração (< 30 minutos), limitação funcional e crepitações na mobilização. Comum em joelhos, quadris e mãos.",
+    alarm: "Articulação quente, edemaciada, com eritema evidente e febre sistêmica associada: suspeita de Artrite Séptica. Encaminhar imediatamente para punção articular diagnóstica de emergência.",
+    treatment: [
+      {
+        title: "Medidas Não Farmacológicas de Longo Prazo",
+        desc: "Fortalecimento muscular isométrico direcionado (gabarito de quadríceps para joelho), controle ponderal rigoroso para diminuir estresse articular, e atividade física sem impacto como hidroginástica."
+      },
+      {
+        title: "Terapia Analgésica e Diretriz de AINEs",
+        desc: "Paracetamol 500mg a 750mg ou Dipirona 1g em horários de dor, limitando a 3g/dia. Evitar uso prolongado ou contínuo de AINEs (Ibuprofeno, Nimesulida) pelo altíssimo risco de lesão renal e hemorragia digestiva em idosos."
+      }
+    ]
+  },
+  {
+    id: "venosa",
+    name: "Insuficiência Venosa Crônica (Varizes de Membros Inferiores)",
+    category: "Outros",
+    diagnostic: "Sensação de peso, queimação, cansaço ou dor nas pernas ao final do dia. Presença de edema vespertino maleolar, telangiectasias, veias varicosas tortuosas ou hiperpigmentação ocre na pele distal.",
+    alarm: "Início súbito de edema assimétrico unilateral exuberante em uma das panturrilhas, acompanhado de dor forte local: forte suspeita de Trombose Venosa Profunda (TVP). Encaminhar ao PS para Doppler venoso urgente.",
+    treatment: [
+      {
+        title: "Higiene Venosa Comportamental (Obrigatória)",
+        desc: "Evitar permanecer em pé ou sentado por mais de 1-2 horas seguidas. Elevar as pernas acima do nível do coração por 15-20 minutos, 3x ao dia. Uso diário de meias de compressão elástica de média compressão (20-30 mmHg) ao levantar."
+      },
+      {
+        title: "Auxílio Farmacológico para Alívio Sintomático",
+        desc: "Diosmina + Hesperidina (450/50mg) 1 a 2 comprimidos VO ao dia. Atenção: medicação sintomática auxiliar, não previne varizes nem substitui compressão elástica ou cirurgia venosa."
+      }
+    ]
+  },
+  {
+    id: "cefaleiastens",
+    name: "Cefaleia Tensional e Enxaqueca (Migrânea)",
+    category: "Outros",
+    diagnostic: "Cefaleia Tensional: dor holocraniana em aperto ou pressão, bilateral, opressiva, leve a moderada. Enxaqueca: dor pulsátil, unilateral, moderada a severa, associada a irritabilidade com luz (fotofobia), som (fonofobia) e náuseas.",
+    alarm: "Início explosivo e súbito da dor ('pior cefaleia da vida' em segundos), associado a febre, rigidez de nuca, confusão mental, déficit focal motor ou início após os 50 anos: encaminhar imediatamente para tomografia computadorizada cerebral (excluir hemorragia subaracnóidea, meningite ou tumor).",
+    treatment: [
+      {
+        title: "Tratamento Abortivo da Crise de Dor",
+        desc: "Dipirona 1g VO ou Ibuprofeno 400-600mg VO logo no início dos sintomas. Se enxaqueca refratária com náusea, associar Metoclopramida 10mg VO e Sumatriptana 50mg VO (contraindicado em coronariopatias)."
+      },
+      {
+        title: "Tratamento Profilático e Higiene de Gatilhos",
+        desc: "Indicado se >3 crises por mês. Amitriptilina 25mg à noite ou Propranolol 40mg VO de 12/12h. Orientar higiene do sono, limitação de cafeína/analgésicos de abuso, e diário da cefaleia."
+      }
+    ]
+  },
+  {
+    id: "vaginoses",
+    name: "Candidíase Vulvovaginal e Vaginose Bacteriana",
+    category: "Pele & Dermatologia",
+    diagnostic: "Candidíase: prurido vulvovaginal intenso, ardor, corrimento esbranquiçado grumoso sem cheiro (leite qualhado) e hiperemia. Vaginose: corrimento cinza ou amarelado fluido com odor fétido (peixe podre), mais proeminente após coito.",
+    alarm: "Aparecimento de febre alta, dor à mobilização do colo uterino no exame especular ou dor em fossas ilíacas bilaterais persistente (DIP - Doença Inflamatória Pélvica): iniciar antibióticos sistêmicos de largo espectro (Ceftriaxona IM + Doxiciclina) e reavaliar de perto.",
+    treatment: [
+      {
+        title: "Candidíase Vulvovaginal - Abordagem (SUS)",
+        desc: "Miconazol creme vaginal a 2%, aplicar 1 aplicador totalmente preenchido via vaginal à noite ao deitar, por 7 dias seguidos. Alternativa oral: Fluconazol 150mg VO dose única."
+      },
+      {
+        title: "Vaginose Bacteriana - Abordagem (SUS)",
+        desc: "Metronidazol gel vaginal a 0.75%, aplicar 1 aplicador cheio via vaginal por 5 noites. Alternativa oral: Metronidazol 250mg, 2 comprimidos VO de 12/12h por 7 dias (orientar abstinência alcoólica absoluto devido ao efeito dissulfiram)."
       }
     ]
   }
 ];
 
-function UbsModule() {
-  const [activeSubTab, setActiveSubTab] = useState<'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia'>('guia');
+const DISEASE_TO_SUMMARY_MAP: Record<string, string[]> = {
+  has: ["Insuficiência Cardíaca (IC)", "Fibrilação Atrial (FA)"],
+  dm2: ["Diabetes Mellitus: Diagnóstico", "Cetoacidose Diabética (CAD)"],
+  dislip: ["Insuficiência Cardíaca (IC)"],
+  drge: ["Hemorragia Digestiva Alta (HDA)"],
+  gastrite: ["Hemorragia Digestiva Alta (HDA)"],
+  hipo: ["Hipotireoidismo"],
+  asma: ["Asma Brônquica: Crise Aguda"],
+  dpoc: ["SDRA - Síndrome do Desconforto Respiratório Agudo"],
+  pac: ["Pneumonia Comunitária", "SDRA - Síndrome do Desconforto Respiratório Agudo"],
+  itu: ["Sepse (Sepsis-3)"],
+  pielonefrite: ["Sepse (Sepsis-3)"],
+  anemia: ["Anemias Microcíticas"],
+  depressao: ["Agitação Psicomotora"],
+  crise_panico: ["Agitação Psicomotora"],
+  gota: ["Gota (Artrite Gotosa)"],
+  "artrite-reuma": ["Artrite Reumatoide"],
+  varizes: ["Tromboembolismo Pulmonar (TEP)"],
+  "ulcera-venosa": ["Tromboembolismo Pulmonar (TEP)"],
+  vaginoses: ["Vaginites e Vaginose"],
+  sifilis: ["Vaginites e Vaginose"],
+  corrimento_uretral: ["Vaginites e Vaginose"],
+  crise_epiletica: ["Agitação Psicomotora", "Delirium no Idoso"]
+};
 
+function UbsModule({
+  activeSubTab,
+  setActiveSubTab,
+  selectedGuiaDiseaseId,
+  setSelectedGuiaDiseaseId
+}: {
+  activeSubTab: 'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia';
+  setActiveSubTab: (tab: 'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia') => void;
+  selectedGuiaDiseaseId: string;
+  setSelectedGuiaDiseaseId: (id: string) => void;
+}) {
   // --- Guia de Doenças States ---
   const [guiaSearch, setGuiaSearch] = useState('');
   const [guiaSelectedCategory, setGuiaSelectedCategory] = useState<string>('Todos');
-  const [selectedGuiaDiseaseId, setSelectedGuiaDiseaseId] = useState<string>('drge');
+  const [selectedLinkedSummary, setSelectedLinkedSummary] = useState<{ title: string; content: string; area: string } | null>(null);
+
+  // Keep selected disease in sync with filters
+  useEffect(() => {
+    const filtered = UBS_CATALOG_DISEASES.filter((d) => {
+      const matchCat = guiaSelectedCategory === 'Todos' || d.category === guiaSelectedCategory;
+      const matchSearch = d.name.toLowerCase().includes(guiaSearch.toLowerCase()) || 
+        d.category.toLowerCase().includes(guiaSearch.toLowerCase()) ||
+        d.diagnostic.toLowerCase().includes(guiaSearch.toLowerCase());
+      return matchCat && matchSearch;
+    });
+    if (filtered.length > 0) {
+      const exists = filtered.some(d => d.id === selectedGuiaDiseaseId);
+      if (!exists) {
+        setSelectedGuiaDiseaseId(filtered[0].id);
+      }
+    }
+  }, [guiaSearch, guiaSelectedCategory, selectedGuiaDiseaseId]);
 
   // Interactive Calculator: Fagerström
   const [fagerstromAnswers, setFagerstromAnswers] = useState<number[]>(Array(6).fill(-1));
@@ -5110,7 +5531,7 @@ function UbsModule() {
 
             {/* Category chips */}
             <div className="md:col-span-2 flex flex-wrap gap-1.5 overflow-x-auto pb-1">
-              {['Todos', 'Respiratório', 'Infecciosas/Endemias', 'Metabólicas/Endócrinas', 'Pele & Dermatologia', 'Outros'].map((cat) => {
+              {['Todos', 'Cardiovascular/Crônicas', 'Metabólicas/Endócrinas', 'Respiratório', 'Gastrointestinal', 'Infecciosas/Endemias', 'Pele & Dermatologia', 'Saúde Mental', 'Outros'].map((cat) => {
                 const count = cat === 'Todos' 
                   ? UBS_CATALOG_DISEASES.length 
                   : UBS_CATALOG_DISEASES.filter(d => d.category === cat).length;
@@ -5125,6 +5546,73 @@ function UbsModule() {
                     }`}
                   >
                     {cat} <span className="opacity-60 ml-0.5">({count})</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Main UBS Chief Complaints Selector */}
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-2">
+                <ClipboardList size={16} className="text-teal-600" />
+                Queixas Principais mais Comuns na UBS (Atenção Básica)
+              </h4>
+              {guiaSearch && (
+                <button 
+                  onClick={() => setGuiaSearch('')} 
+                  className="text-[10px] font-black text-teal-600 uppercase tracking-widest hover:underline"
+                >
+                  Limpar Filtro
+                </button>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {[
+                { label: 'Dor Lombar (Lombalgia)', icon: Stethoscope, term: 'Lombalgia' },
+                { label: 'Azia / Refluxo Ácido', icon: Pill, term: 'Refluxo' },
+                { label: 'Queimação no Estômago', icon: Pill, term: 'Gastrite' },
+                { label: 'Cansaço / Fraqueza', icon: Activity, term: 'Anemia' },
+                { label: 'Ansiedade / Insônia', icon: Brain, term: 'Ansiedade' },
+                { label: 'Tristeza / Desalento', icon: Activity, term: 'Depressão' },
+                { label: 'Coceira / Lesão na Pele', icon: Microscope, term: 'Micoses' },
+                { label: 'Tosse / Catarro', icon: Wind, term: 'Tuberculose' },
+                { label: 'Dor de Garganta', icon: Stethoscope, term: 'Faringoamigdalite' },
+                { label: 'Febre / Dor no Corpo', icon: AlertTriangle, term: 'Dengue' },
+                { label: 'Ondas de Calor (Fogachos)', icon: Droplets, term: 'Climatério' },
+                { label: 'Ardor ao Urinar / Disúria', icon: Activity, term: 'Cistite' },
+                { label: 'Tratamento de Pressão', icon: Heart, term: 'Hipertensão' },
+                { label: 'Controle de Diabetes', icon: Activity, term: 'Diabetes' },
+                { label: 'Nariz Entupido / Coriza', icon: Wind, term: 'Resfriado' },
+                { label: 'Prurido / Corrimento Vaginal', icon: Droplets, term: 'Candidíase' },
+                { label: 'Dor nas Articulações', icon: AlertTriangle, term: 'Artrose' },
+                { label: 'Varizes / Peso nas Pernas', icon: Activity, term: 'Insuficiência' },
+                { label: 'Dor de Cabeça / Enxaqueca', icon: Zap, term: 'Migrânea' },
+                { label: 'Cólica / Vermes Intestinais', icon: ClipboardList, term: 'Parasitoses' },
+              ].map((comp) => {
+                const Icon = comp.icon;
+                const isActive = guiaSearch.toLowerCase() === comp.term.toLowerCase();
+                return (
+                  <button
+                    key={comp.label}
+                    onClick={() => {
+                      setGuiaSearch(isActive ? '' : comp.term);
+                      if (!isActive) {
+                        setGuiaSelectedCategory('Todos');
+                      }
+                    }}
+                    className={`flex items-center gap-2.5 p-3 rounded-2xl border text-left transition-all ${
+                      isActive 
+                        ? 'bg-teal-500/10 border-teal-500 text-teal-700 dark:text-teal-450 font-black shadow-sm ring-1 ring-teal-500/30'
+                        : 'bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-150 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'
+                    }`}
+                  >
+                    <div className={`p-1.5 rounded-lg ${isActive ? 'bg-teal-500 text-white' : 'bg-slate-200/50 dark:bg-slate-800 text-slate-500'}`}>
+                      <Icon size={14} />
+                    </div>
+                    <span className="text-[11px] leading-tight font-sans tracking-tight">{comp.label}</span>
                   </button>
                 );
               })}
@@ -5242,6 +5730,52 @@ function UbsModule() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Linked academic summaries */}
+                    {(() => {
+                      const matchedSummaryNames = DISEASE_TO_SUMMARY_MAP[disease.id] || [];
+                      if (matchedSummaryNames.length === 0) return null;
+
+                      // Find matching summaries in SUMMARIES
+                      const matchedSummaryObjs: any[] = [];
+                      SUMMARIES.forEach(cat => {
+                        cat.subjects.forEach(sub => {
+                          if (matchedSummaryNames.includes(sub.title)) {
+                            matchedSummaryObjs.push({
+                              area: cat.area,
+                              title: sub.title,
+                              content: sub.content
+                            });
+                          }
+                        });
+                      });
+
+                      if (matchedSummaryObjs.length === 0) return null;
+
+                      return (
+                        <div className="space-y-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/80">
+                          <div className="flex items-center gap-2.5 text-purple-600 dark:text-purple-400">
+                            <BookOpen size={18} />
+                            <h4 className="font-sans font-black text-xs uppercase tracking-wider">Resumo Acadêmico Completo Vinculado</h4>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {matchedSummaryObjs.map((s, sIdx) => (
+                              <button
+                                key={sIdx}
+                                onClick={() => setSelectedLinkedSummary(s)}
+                                className="flex items-center justify-between p-3.5 bg-purple-500/5 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-800/60 rounded-xl hover:bg-purple-500/10 transition-colors text-left group"
+                              >
+                                <div className="space-y-0.5 max-w-[85%]">
+                                  <span className="text-[8px] font-black uppercase text-purple-600 dark:text-purple-400 block tracking-widest">{s.area}</span>
+                                  <span className="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-purple-750 dark:group-hover:text-purple-300 transition-colors line-clamp-1">{s.title}</span>
+                                </div>
+                                <ChevronRight className="text-purple-400 group-hover:translate-x-0.5 transition-transform" size={16} />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
 
                     {/* Interactive Calculator Block - If present */}
                     {disease.interactiveType && (
@@ -5721,6 +6255,63 @@ function UbsModule() {
         </div>
       )}
 
+      {/* Linked Academic Summary Modal */}
+      <AnimatePresence>
+        {selectedLinkedSummary && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedLinkedSummary(null)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" 
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white dark:bg-slate-800 w-full max-w-2xl h-full md:h-auto max-h-[95vh] md:max-h-[80vh] overflow-hidden rounded-t-[40px] md:rounded-[40px] shadow-2xl relative z-10 flex flex-col border border-slate-200 dark:border-slate-700"
+            >
+              <div className="p-6 md:p-8 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
+                <div>
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-purple-600 dark:text-purple-400 bg-purple-500/10 dark:bg-purple-500/20 px-2 py-0.5 rounded">{selectedLinkedSummary.area}</span>
+                    <h3 className="text-xl md:text-2xl font-serif font-bold text-slate-900 dark:text-white tracking-tight mt-1">{selectedLinkedSummary.title}</h3>
+                </div>
+                <button onClick={() => setSelectedLinkedSummary(null)} className="p-3 bg-slate-100 dark:bg-slate-700 rounded-2xl hover:rotate-90 transition-transform">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="p-6 md:p-8 overflow-y-auto space-y-6">
+                {selectedLinkedSummary.content.split('\n').map((line, lIdx) => {
+                  if (line.includes(': ')) {
+                    const [label, text] = line.split(': ');
+                    return (
+                      <div key={lIdx} className="space-y-1">
+                        <span className="inline-block px-2 py-0.5 bg-purple-500/10 text-purple-600 text-[9px] font-black uppercase tracking-wider rounded">
+                          {label.replace('• ', '')}
+                        </span>
+                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-xs font-semibold">{text}</p>
+                      </div>
+                    )
+                  }
+                  return <p key={lIdx} className="text-slate-600 dark:text-slate-300 leading-relaxed text-xs">{line}</p>
+                })}
+              </div>
+
+              <div className="p-6 bg-slate-50 dark:bg-slate-900 border-t border-slate-100 dark:border-slate-700 flex justify-center">
+                 <button 
+                   onClick={() => setSelectedLinkedSummary(null)}
+                   className="px-8 py-3 bg-purple-600 text-white rounded-2xl font-bold text-sm shadow-lg shadow-purple-600/20 hover:scale-105 active:scale-95 transition-all"
+                 >
+                   Fechar Guia
+                 </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
@@ -5973,30 +6564,67 @@ const SectionTitle = ({ title, subtitle, icon: Icon }: { title: string; subtitle
 
 // --- Modules ---
 
-function Dashboard({ setActiveSection, addToHistory, setSelectedDisease }: { setActiveSection: (s: AppSection) => void, addToHistory: (t: string, r: string) => void, setSelectedDisease: (d: typeof PRESCRIPTIONS[0]) => void }) {
+function Dashboard({ 
+  setActiveSection, 
+  addToHistory, 
+  setSelectedDisease,
+  setSelectedUbsDiseaseId,
+  setSelectedUbsSubTab
+}: { 
+  setActiveSection: (s: AppSection) => void; 
+  addToHistory: (t: string, r: string) => void; 
+  setSelectedDisease: (d: typeof PRESCRIPTIONS[0]) => void;
+  setSelectedUbsDiseaseId: (id: string) => void;
+  setSelectedUbsSubTab: (tab: 'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia') => void;
+}) {
   const [globalSearch, setGlobalSearch] = useState('');
 
+  // 1. Filter Prescriptions (Emergency Protocols)
   const filteredPrescriptions = PRESCRIPTIONS.filter(p => 
     p.title.toLowerCase().includes(globalSearch.toLowerCase()) || 
-    p.items.join(' ').toLowerCase().includes(globalSearch.toLowerCase())
+    p.items.join(' ').toLowerCase().includes(globalSearch.toLowerCase()) ||
+    p.category.toLowerCase().includes(globalSearch.toLowerCase())
   );
 
-  const filteredSummaries = SUMMARIES.filter(s => 
-    s.area.toLowerCase().includes(globalSearch.toLowerCase()) || 
-    s.subjects.some(sub => sub.title.toLowerCase().includes(globalSearch.toLowerCase()) || sub.content.toLowerCase().includes(globalSearch.toLowerCase()))
+  // 2. Filter UBS & UPA Catalog Diseases
+  const filteredUbsDiseases = UBS_CATALOG_DISEASES.filter(d =>
+    d.name.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    d.category.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    d.diagnostic.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    d.alarm.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    d.treatment.some(t => t.title.toLowerCase().includes(globalSearch.toLowerCase()) || t.desc.toLowerCase().includes(globalSearch.toLowerCase()))
   );
 
+  // 3. Filter Medications
   const filteredMedications = MEDICATIONS.filter(m => 
     m.name.toLowerCase().includes(globalSearch.toLowerCase()) || 
-    m.indication.toLowerCase().includes(globalSearch.toLowerCase())
+    m.indication.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    m.category.toLowerCase().includes(globalSearch.toLowerCase())
   );
 
-  const filteredEmergency = PRESCRIPTIONS.filter(p => 
-    p.category.toLowerCase().includes('emergência') || p.category.toLowerCase().includes('ficha') && (
-      p.title.toLowerCase().includes(globalSearch.toLowerCase()) || 
-      p.category.toLowerCase().includes(globalSearch.toLowerCase())
-    )
-  );
+  // 4. Filter Summaries
+  const filteredSummaries: any[] = [];
+  SUMMARIES.forEach(cat => {
+    cat.subjects.forEach(sub => {
+      if (
+        sub.title.toLowerCase().includes(globalSearch.toLowerCase()) ||
+        sub.content.toLowerCase().includes(globalSearch.toLowerCase()) ||
+        cat.area.toLowerCase().includes(globalSearch.toLowerCase())
+      ) {
+        filteredSummaries.push({
+          area: cat.area,
+          title: sub.title,
+          content: sub.content,
+          subject: sub
+        });
+      }
+    });
+  });
+
+  const hasResults = filteredPrescriptions.length > 0 || 
+                     filteredUbsDiseases.length > 0 || 
+                     filteredMedications.length > 0 || 
+                     filteredSummaries.length > 0;
 
   return (
     <div className="space-y-8">
@@ -6043,10 +6671,10 @@ function Dashboard({ setActiveSection, addToHistory, setSelectedDisease }: { set
            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-600 transition-colors" size={24} />
            <input 
              type="text" 
-             placeholder="Pesquisar protocolos, medicamentos ou calculadoras..." 
+             placeholder="Pesquisar protocolos, enfermidades, medicamentos ou resumos..." 
              value={globalSearch}
              onChange={(e) => setGlobalSearch(e.target.value)}
-             className="w-full h-18 bg-white dark:bg-slate-800 rounded-[30px] pl-16 pr-6 shadow-sm border-2 border-slate-200 dark:border-slate-700 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 outline-none dark:text-white transition-all font-medium"
+             className="w-full h-18 bg-white dark:bg-slate-800 rounded-[30px] pl-16 pr-6 shadow-sm border-2 border-slate-200 dark:border-slate-700 focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 outline-none dark:text-white transition-all font-medium font-sans"
            />
            {globalSearch && (
              <button 
@@ -6066,43 +6694,119 @@ function Dashboard({ setActiveSection, addToHistory, setSelectedDisease }: { set
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Emergency Protocols */}
-              {filteredEmergency.slice(0, 6).map(p => (
-                <button key={p.id} onClick={() => { setSelectedDisease(p); setGlobalSearch(''); }} className="p-5 text-left border border-slate-100 dark:border-slate-700 rounded-3xl hover:bg-rose-50 dark:hover:bg-rose-900/20 group transition-all">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">{p.category}</span>
+              {/* UBS & UPA Diseases */}
+              {filteredUbsDiseases.slice(0, 6).map(d => (
+                <button 
+                  key={d.id} 
+                  onClick={() => { 
+                    setSelectedUbsSubTab('guia');
+                    setSelectedUbsDiseaseId(d.id); 
+                    setActiveSection('ubs'); 
+                    setGlobalSearch(''); 
+                  }} 
+                  className="p-5 text-left border border-slate-200 dark:border-slate-700/60 rounded-3xl bg-white dark:bg-slate-850/50 hover:bg-teal-500/5 hover:border-teal-400 group transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-2.5">
+                      <span className="text-[8px] font-black text-teal-600 dark:text-teal-400 bg-teal-500/10 dark:bg-teal-500/20 px-2 py-0.5 rounded uppercase tracking-widest font-sans">
+                        Legenda: Doença UBS / UPA 🏥
+                      </span>
+                    </div>
+                    <div className="font-bold text-slate-800 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors uppercase italic font-serif leading-snug">{d.name}</div>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-550 mt-2 line-clamp-2 leading-relaxed">{d.diagnostic}</p>
                   </div>
-                  <div className="font-bold text-slate-800 dark:text-white group-hover:text-rose-600 transition-colors uppercase italic font-serif">{p.title}</div>
-                  <div className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest flex items-center gap-1">Ver Protocolo <ChevronRight size={10} /></div>
+                  <div className="text-[10px] text-slate-400 mt-4 font-bold uppercase tracking-widest flex items-center gap-1 font-sans">
+                    Ver Protocolo Amambulatorial <ChevronRight size={10} />
+                  </div>
+                </button>
+              ))}
+
+              {/* Emergency Protocols */}
+              {filteredPrescriptions.slice(0, 6).map(p => (
+                <button 
+                  key={p.id} 
+                  onClick={() => { 
+                    setSelectedDisease(p); 
+                    setActiveSection('prescriptions'); 
+                    setGlobalSearch(''); 
+                  }} 
+                  className="p-5 text-left border border-slate-200 dark:border-slate-700/60 rounded-3xl bg-white dark:bg-slate-850/50 hover:bg-rose-500/5 hover:border-rose-400 group transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-2.5">
+                      <span className="text-[8px] font-black text-rose-600 dark:text-rose-400 bg-rose-500/10 dark:bg-rose-500/20 px-2 py-0.5 rounded uppercase tracking-widest font-sans">
+                        Legenda: Protocolo PS / Emergência 🚨
+                      </span>
+                    </div>
+                    <div className="font-bold text-slate-800 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors uppercase italic font-serif leading-snug">{p.title}</div>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-550 mt-2 line-clamp-2 leading-relaxed">{p.guidelines || 'Ficha clínica de internação e terapia farmacológica rápida.'}</p>
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-4 font-bold uppercase tracking-widest flex items-center gap-1 font-sans">
+                    Ver Prontuário Rápido <ChevronRight size={10} />
+                  </div>
                 </button>
               ))}
 
               {/* Medications */}
-              {filteredMedications.slice(0, 3).map(m => (
-                <button key={m.id} onClick={() => { setActiveSection('drugs'); setGlobalSearch(''); }} className="p-5 text-left border border-slate-100 dark:border-slate-700 rounded-3xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group transition-all">
-                  <div className="font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors uppercase italic font-serif">{m.name}</div>
-                  <div className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">{m.indication}</div>
+              {filteredMedications.slice(0, 6).map(m => (
+                <button 
+                  key={m.id} 
+                  onClick={() => { 
+                    setActiveSection('drugs'); 
+                    setGlobalSearch(''); 
+                  }} 
+                  className="p-5 text-left border border-slate-200 dark:border-slate-700/60 rounded-3xl bg-white dark:bg-slate-850/50 hover:bg-emerald-500/5 hover:border-emerald-400 group transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-2.5">
+                      <span className="text-[8px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-widest font-sans">
+                        Legenda: Bulário / Dose 💊
+                      </span>
+                    </div>
+                    <div className="font-bold text-emerald-600 group-hover:text-emerald-700 transition-colors uppercase italic font-serif leading-snug">{m.name}</div>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-550 mt-2 line-clamp-2 leading-relaxed">{m.indication || 'Indicação e ajuste de função renal.'}</p>
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-4 font-bold uppercase tracking-widest flex items-center gap-1 font-sans">
+                    Ver Posologia <ChevronRight size={10} />
+                  </div>
                 </button>
               ))}
-              
+
               {/* Summaries */}
-              {filteredSummaries.slice(0, 3).map(s => (
-                <button key={s.area} onClick={() => { setActiveSection('summaries'); setGlobalSearch(''); }} className="p-5 text-left border border-slate-100 dark:border-slate-700 rounded-3xl hover:bg-purple-50 dark:hover:bg-purple-900/20 group transition-all">
-                  <div className="font-bold text-purple-600 group-hover:text-purple-700 transition-colors uppercase italic font-serif">{s.area}</div>
-                  <div className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Resumos da Área</div>
+              {filteredSummaries.slice(0, 6).map((s, sIdx) => (
+                <button 
+                  key={sIdx} 
+                  onClick={() => { 
+                    setActiveSection('summaries'); 
+                    setGlobalSearch(''); 
+                  }} 
+                  className="p-5 text-left border border-slate-200 dark:border-slate-700/60 rounded-3xl bg-white dark:bg-slate-850/50 hover:bg-purple-500/5 hover:border-purple-400 group transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-2.5">
+                      <span className="text-[8px] font-black text-purple-600 dark:text-purple-400 bg-purple-500/10 dark:bg-purple-500/20 px-2 py-0.5 rounded uppercase tracking-widest font-sans">
+                        Legenda: Resumo Acadêmico 📚
+                      </span>
+                    </div>
+                    <div className="font-bold text-purple-600 group-hover:text-purple-700 transition-colors uppercase italic font-serif leading-snug">{s.title}</div>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-550 mt-2 line-clamp-1 leading-relaxed font-sans font-medium">{s.area}</p>
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-4 font-bold uppercase tracking-widest flex items-center gap-1 font-sans">
+                    Ver Tópico de Estudo <ChevronRight size={10} />
+                  </div>
                 </button>
               ))}
             </div>
 
-            {filteredMedications.length === 0 && filteredSummaries.length === 0 && filteredEmergency.length === 0 && (
+            {!hasResults && (
               <div className="text-center py-16 text-slate-400">
                 <Search size={48} className="mx-auto mb-4 opacity-10" />
-                <p className="font-bold uppercase tracking-widest text-xs">Nenhum resultado encontrado.</p>
+                <p className="font-bold uppercase tracking-widest text-xs font-sans">Nenhum resultado encontrado.</p>
               </div>
             )}
             
             <div className="pt-6 border-t border-slate-100 dark:border-slate-700 flex justify-center">
-              <button onClick={() => setGlobalSearch('')} className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-rose-600 transition-colors">
+              <button onClick={() => setGlobalSearch('')} className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-rose-600 transition-colors font-sans">
                 Limpar Busca
               </button>
             </div>
@@ -7256,6 +7960,11 @@ function Sidebar({ activeSection, onSelect, isOpen, setIsOpen }: { activeSection
 export default function App() {
   const [activeSection, setActiveSection] = useState<AppSection>('dashboard');
   const [selectedDisease, setSelectedDisease] = useState<typeof PRESCRIPTIONS[0] | null>(null);
+  
+  // --- State for UBS Module Hoisting ---
+  const [selectedUbsDiseaseId, setSelectedUbsDiseaseId] = useState<string>('drge');
+  const [selectedUbsSubTab, setSelectedUbsSubTab] = useState<'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia'>('guia');
+
   // --- State for History and Search ---
   const [history, setHistory] = useState<{id: string, title: string, result: string, date: string}[]>(() => {
     const saved = localStorage.getItem('med_history');
@@ -7287,7 +7996,7 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 text-slate-900 dark:text-slate-300 transition-colors duration-300">
+    <div className="min-h-screen bg-[#CAD3DC] dark:bg-[#090D1A] text-slate-900 dark:text-slate-300 transition-colors duration-300">
       {/* Mobile Header */}
       <div className="lg:hidden h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 sticky top-0 z-50">
         <div className="flex items-center gap-2">
@@ -7338,9 +8047,9 @@ export default function App() {
         {/* Content Area */}
         <main className="p-4 md:p-10 max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
            <AnimatePresence mode="wait">
-              {activeSection === 'ubs' && <motion.div key="ub" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Atenção Básica / UBS" subtitle="Protocolos de vigilância, pré-natal, doenças crônicas e escores de saúde mental." icon={Stethoscope} /><UbsModule /></motion.div>}
+              {activeSection === 'ubs' && <motion.div key="ub" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Atenção Básica / UBS" subtitle="Protocolos de vigilância, pré-natal, doenças crônicas e escores de saúde mental." icon={Stethoscope} /><UbsModule activeSubTab={selectedUbsSubTab} setActiveSubTab={setSelectedUbsSubTab} selectedGuiaDiseaseId={selectedUbsDiseaseId} setSelectedGuiaDiseaseId={setSelectedUbsDiseaseId} /></motion.div>}
               {activeSection === 'emergency' && <motion.div key="em" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Pronto Socorro" subtitle="Protocolos de emergência, exames imediatos e condutas críticas." icon={ShieldAlert} /><EmergencyModule onSelect={setSelectedDisease} /></motion.div>}
-              {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} /></motion.div>}
+              {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} setSelectedUbsDiseaseId={setSelectedUbsDiseaseId} setSelectedUbsSubTab={setSelectedUbsSubTab} /></motion.div>}
               {activeSection === 'drugs' && <motion.div key="dr" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Guia de Dosagem" subtitle="Doses recomendadas para prática clínica hospitalar e ambulatorial." icon={Pill} /><DrugsModule /></motion.div>}
               {activeSection === 'calculators' && <motion.div key="ca" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Calculadoras Clínicas" subtitle="Scores de gravidade, função renal e ferramentas de screening." icon={Calculator} /><CalculatorModule addToHistory={addToHistory} /></motion.div>}
               {activeSection === 'summaries' && <motion.div key="su" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SummaryModule /></motion.div>}
