@@ -1112,5 +1112,583 @@ export const UBS_CATALOG_DISEASES: DiseaseInfo[] = [
         desc: "Prescrever Finasterida 5mg VO ao dia pela manhã de forma contínua para homens com próteses grandes volumosas (> 40g). Demora de 3-6 meses para encolhimento glandular. Reduz o PSA em metade fisiologicamente no monitoramento do paciente."
       }
     ]
+  },
+  {
+    id: "iam",
+    name: "Infarto Agudo do Miocárdio (IAM) / Síndrome Coronariana Aguda",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Dor torácica típica em aperto, peso ou queimação, retroesternal, irradiada para membro superior esquerdo, mandíbula ou dorso, durando > 20 min. Executar ECG de 12 derivações em até 10 minutos da chegada do paciente para classificar com ou sem supra de ST.",
+    alarm: "Presença de dispneia súbita intensa, estertores crepitantes bilaterais (edema agudo de pulmão), hipotensão, tontura, síncope ou arritmias ventriculares instáveis no ECG -> Acionar sala vermelha de emergência e SAMU de imediato.",
+    treatment: [
+      {
+        title: "Conduta de Emergência Inicial (Ataque Antiplaquetário)",
+        desc: "Mastigar AAS 200mg a 300mg VO imediato (inibição plaquetária rápida). Associar Clopidogrel 300mg VO (se < 75 anos e sem contraindicações) ou Ticagrelor 180mg VO. Monitorização cardíaca contínua e repouso absoluto."
+      },
+      {
+        title: "Alívio de Dor e Encaminhamento de Urgência",
+        desc: "Administrar Isordil (Mononitrato de Isossorbida) 5mg SL se dor ativa (contraindicado se PAS < 90, suspeita de infarto de VD ou uso de sildenafila). Alinhamento com a regulação de urgência (UPA/Hemodinâmica) na 'Hora de Ouro'."
+      }
+    ]
+  },
+  {
+    id: "cad",
+    name: "Cetoacidose Diabética (CAD)",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Glicemia capilar > 250 mg/dL associada a acidose metabólica (pH < 7.30, bicarbonato < 15 mEq/L), cetonúria ou cetonemia exuberante, e hálito cetônico característico. Comum em diabéticos tipo 1 em estresse ou infecção.",
+    alarm: "Rebaixamento sensorial grave do nível de consciência, respiração rápida e profunda de Kussmaul, vômitos incoercíveis ou sinais de desidratação severa/choque hipovolêmico -> Sala vermelha da UPA para infusão venosa de urgência.",
+    treatment: [
+      {
+        title: "Fase 1 - Hidratação Venosa Vigorosa Imediata",
+        desc: "Iniciar infusão rápida de Soro Fisiológico 0.9% (1000ml a 1500ml na primeira hora) para expansão volêmica e redução da osmolaridade. A hidratação reduz a glicose plasmática independente da insulina por hemodiluição."
+      },
+      {
+        title: "Fase 2 - Insulinoterapia e Correção de Potássio",
+        desc: "Iniciar Insulina regular em bomba (0.1 UI/kg/h) SOMENTE após certificar-se de que o Potássio sérico está > 3.3 mEq/L. Repor Potássio continuamente se níveis entre 3.3 e 5.2 mEq/L (adicionar 20-30mEq por litro de soro)."
+      }
+    ]
+  },
+  {
+    id: "anafilaxia",
+    name: "Anafilaxia e Choque Anafilático",
+    category: "Outros",
+    diagnostic: "Instalação hiperaguda (minutos a poucas horas) de manifestações cutâneo-mucosas (urticária difusa, prurido, angioedema) associadas a comprometimento respiratório (sibilos, estridor, dispneia) ou cardiovascular (hipotensão, síncope).",
+    alarm: "Presença de estridor laríngeo (edema de glote), sensação de garganta fechando, cianose, ou síncope por colapso pressórico profundo -> Sala vermelha emergencial imediata com intubação pronta.",
+    treatment: [
+      {
+        title: "Tratamento de 1ª Linha Universal - Adrenalina IM",
+        desc: "ADMINISTRAR ADRENALINA 1:1000 na dose de 0.3 a 0.5 mg IM na face anterolateral da coxa (vasto lateral) de imediato. Não postergar por medo ou uso de outras drogas. Repetir a cada 5-15 min se persistência do quadro."
+      },
+      {
+        title: "Suporte Ventilatório, Expansão e Adjuvantes",
+        desc: "Oferecer O2 de alto fluxo. Iniciar infusão rápida de fluidos (SF 0.9% 1000-2000ml se choque). Como terapias estritamente auxiliares e tardias: Metilprednisolona 125mg IV + Prometazina 50mg IM/IV (anti-histamínico)."
+      }
+    ]
+  },
+  {
+    id: "sepse",
+    name: "Sepse e Choque Séptico",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Disfunção orgânica ameaçadora à vida causada por resposta desregulada do hospedeiro à infecção. Identificada por aumento agudo de ≥ 2 pontos no escore SOFA, ou triada pelo qSOFA ≥ 2 (FR ≥ 22, PAS ≤ 100, alteração mental).",
+    alarm: "Hipotensão refratária com necessidade de vasopressor para manter PAM ≥ 65 mmHg E Lactato sérico de controle > 2 mmol/L após ressuscitação volêmica adequada (Choque Séptico) -> Internação imediata em UTI.",
+    treatment: [
+      {
+        title: "Bundle da 1ª Hora - Coletas e Antibioticoterapia",
+        desc: "Dosar lactato sérico (repetir se alterado). Coletar no mínimo 2 pares de hemoculturas de sítios anatômicos distintos. Administrar antibióticos de amplo espectro na dose correta (ex: Tazocin 4.5g IV ou Ceftriaxona 2g IV) em até 1h."
+      },
+      {
+        title: "Ressuscitação Volêmica de Emergência",
+        desc: "Infundir rapidamente cristaloides (30 mL/kg de SF 0.9% ou Ringer) nas primeiras 3h se houver hipotensão (PAM < 65) ou lactato ≥ 4 mmol/L. Iniciar Noradrenalina se hipotensão persistir para manter a PAM-alvo."
+      }
+    ]
+  },
+  {
+    id: "endocardite",
+    name: "Endocardite Infecciosa",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Infecção do endocárdio valvar, comum em portadores de prótese valvar, cardiopatia congênita ou usuários de drogas injetáveis. Suspeita clínica por febre persistente e sopro cardíaco novo, confirmada pelos Critérios de Duke.",
+    alarm: "Surgimento agudo de falta de ar incapacitante (insuficiência cardíaca valvar), dor torácica, ou déficits neurológicos súbitos por embolia séptica cerebral -> Internar urgentemente para estabilização clínica e cirúrgica.",
+    treatment: [
+      {
+        title: "Investigação Diagnóstica e Hemoculturas",
+        desc: "Coletar pelo menos 3 conjuntos de hemoculturas em intervalos de 30 minutos em sítios venosos diferentes antes de iniciar antibióticos. Solicitar Ecocardiograma Transtorácico e/ou Transesofágico para visualização de vegetações."
+      },
+      {
+        title: "Antibioticoterapia de Longo Curso e Indicação Cirúrgica",
+        desc: "Esquema antibiótico venoso prolongado (4-6 semanas) na UPA/Hospital: ex: Ampicilina 2g IV de 4/4h + Oxacilina 2g IV de 4/4h + Gentamicina. Avaliação imediata da cirurgia cardíaca se houver insuficiência cardíaca intratável."
+      }
+    ]
+  },
+  {
+    id: "sdra",
+    name: "Insuficiência Respiratória Aguda / SDRA",
+    category: "Respiratório",
+    diagnostic: "Início agudo (dentro de 1 semana do insulto) de sintomas respiratórios graves, com infiltrados bilaterais difusos em Rx/TC de tórax não explicados por falência cardíaca, e relação PaO2/FiO2 < 300 com PEEP ≥ 5 cmH2O.",
+    alarm: "Tórax silencioso na ausculta, fadiga extrema com uso severo de musculatura acessória, frequência respiratória > 35/min ou queda de saturação abaixo de 85% com O2 suplementar -> Intubação e ventilação imediata.",
+    treatment: [
+      {
+        title: "Estratégia de Ventilação Mecânica Protetora",
+        desc: "Ajustar ventilador com volume corrente protetor baixo (6 mL/kg de peso ideal) para evitar volutrauma. Manter pressão de platô respiratório < 30 cmH2O e a Driving Pressure (Platô - PEEP) < 15 cmH2O. Titular PEEP pela tabela ARDSNet."
+      },
+      {
+        title: "Medidas Adjuvantes para Hipoxemia Grave",
+        desc: "Se relação PaO2/FiO2 < 150: colocar o paciente em Posição Prona por pelo menos 16 a 20 horas consecutivas por dia para melhorar o shunt e recrutar alvéolos posteriores. Considerar infusão de bloqueador neuromuscular (Cisatracúrio)."
+      }
+    ]
+  },
+  {
+    id: "choque",
+    name: "Choque e Instabilidade Circulatória",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Estado agudo de falência circulatória generalizada caracterizado por má perfusão de órgãos: tempo de enchimento capilar > 3s, pele fria/pegajosa, oligúria (< 0.5 mL/kg/h), hipotensão (PAS < 90) e acidose com lactato > 2.0.",
+    alarm: "Sonolência profunda, confusão mental grave, ritmo cardíaco instável ou anúria persistente em paciente com má perfusão generalizada -> Monitorização multiparamétrica e acesso venoso calibroso imediato.",
+    treatment: [
+      {
+        title: "Fase de Resgate e Identificação da Etiologia",
+        desc: "Administrar carga rápida de cristaloide (20 a 30 mL/kg) se forte suspeita de choque hipovolêmico ou distributivo. Avaliar etiologia: distributivo (sepse/anafilaxia), hipovolêmico (sangramento), obstrutivo (TEP) ou cardiogênico."
+      },
+      {
+        title: "Uso de Vasopressores e Inotrópicos",
+        desc: "Se hipotensão refratária inicial, iniciar Noradrenalina venosa imediata tateada para alvo de PAM ≥ 65 mmHg. No choque cardiogênico com congestão, associar Dobutamina (2 a 15 mcg/kg/min) para ganho de contratilidade miocárdica."
+      }
+    ]
+  },
+  {
+    id: "agitacao",
+    name: "Agitação Psicomotora na Emergência",
+    category: "Saúde Mental",
+    diagnostic: "Atividade motora excessiva e desorganizada com agressividade verbal ou física iminente, perda de autocrítica e exacerbação cognitiva. Excluir etiologias orgânicas ocultas (hipoglicemia, intoxicação, meningite, hipóxia).",
+    alarm: "Paciente armado, comportamento violentamente homicida, ou sinais de hipertermia extrema com rigidez severa (Síndrome Neuroléptica Maligna) -> Convocação de equipe de segurança e contenção física assistida.",
+    treatment: [
+      {
+        title: "Abordagem de Descalonamento e Contenção Física",
+        desc: "Primeiro passo: descalonamento verbal em tom calmo e ambiente controlado. Se refratariedade e risco iminente de auto ou heteroagressão: aplicar contenção mecânica rápida no leito com 5 profissionais de forma coordenada."
+      },
+      {
+        title: "Abordagem Farmacológica Rápida de Sedação",
+        desc: "Administrar Haloperidol 5mg IM associado à Prometazina 50mg IM em seringas separadas para sinergismo sedativo e prevenção de efeitos extrapiramidais agudos. Evitar benzodiazepínicos se suspeita de depressão respiratória."
+      }
+    ]
+  },
+  {
+    id: "hda",
+    name: "Hemorragia Digestiva Alta (HDA)",
+    category: "Gastrointestinal",
+    diagnostic: "Vômitos com sangue vivo ou borra de café (hematêmese) e/ou fezes pretas, pastosas e fétidas (melena). Sinais de perda de volume: hipotensão ortostática ou taquicardia. Confirmada por Endoscopia Digestiva Alta (EDA).",
+    alarm: "Presença de síncope, choque hemodinâmico, hematêmese em jatos contínuos e volumosos ou dor abdominal difusa súbita com peritonite -> Acesso venoso central, expansão volumétrica imediata e acionar cirurgia de emergência.",
+    treatment: [
+      {
+        title: "Estabilização Hemodinâmica e Bloqueio Ácido",
+        desc: "Instalar dois acessos venosos periféricos calibrosos (Gelco 14 ou 16). Iniciar infusão rápida de cristaloides e reservar concentrado de hemácias. Prescrever Omeprazol 80mg IV em bolus, seguido de infusão de 8mg/h para estabilizar coágulo."
+      },
+      {
+        title: "Conduta Específica de HDA Varicosa (Cirrose)",
+        desc: "Se suspeita de varizes de esôfago: iniciar Terlipressina 2mg IV de 4/4h (vasoconstrição esplâncnica) associada à profilaxia antibiótica com Ceftriaxona 1g IV ao dia. Encaminhar para EDA terapêutica de urgência (ligadura elástica)."
+      }
+    ]
+  },
+  {
+    id: "cirrose",
+    name: "Cirrose Hepática e Complicações",
+    category: "Gastrointestinal",
+    diagnostic: "Estágio terminal de fibrose hepática crônica. Sinais clínicos de ginecomastia, aranhas vasculares, eritema palmar, ascite ou icterícia. Confirmado por alterações em coagulação (RNI), albumina baixa e ultrassonografia abdominal.",
+    alarm: "Inversão do ciclo vigília-sono, confusão mental ou tremores flaping (Encefalopatia Hepática), aumento doloroso do abdômen com febre (PBE) ou vômito com sangue -> Referenciar imediatamente ao pronto-socorro da UPA.",
+    treatment: [
+      {
+        title: "Manejo Clínico da Ascite Moderada (Regime de Diuréticos)",
+        desc: "Restringir sódio dietético a < 2g ao dia. Prescrever Espironolactona 100mg VO associada à Furosemida 40mg VO pela manhã (proporção de 100:40 para estabilidade de potássio). Monitorar peso diário e função renal periodicamente."
+      },
+      {
+        title: "Manejo da Encefalopatia e Profilaxia de Infecções",
+        desc: "Prescrever Lactulona Xarope 15-30ml VO até 3-4 vezes ao dia para induzir 2 a 3 evacuações pastosas diárias (reduz amônia). Se ascite com febre (PBE confirmada por punção/PMN > 250): iniciar Ceftriaxona 1g IV 12/12h por 5-7 dias."
+      }
+    ]
+  },
+  {
+    id: "avc",
+    name: "Acidentes Vasculares Cerebrais (AVCi e AVCh)",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Início súbito de déficit neurológico focal (hemiparesia, assimetria facial, perda visual unilateral, afasia ou disartria). Realizar Tomografia Computadorizada (TC) de Crânio imediata sem contraste para descartar sangramento.",
+    alarm: "Presença de crise convulsiva, rebaixamento rápido de consciência, cefaleia occipital explosiva ou sinais de hipertensão intracraniana -> Monitorar vias aéreas, manter cabeceira elevada a 30° e acionar vaga de CTI.",
+    treatment: [
+      {
+        title: "Manejo do AVC Isquêmico (Protocolo Trombólise)",
+        desc: "Se tempo de início < 4.5h e sem contraindicações: prescrever Alteplase (rtPA) 0.9 mg/kg IV (fazer 10% em bolus e 90% em infusão em 1h), mantendo a PA rigorosamente monitorada abaixo de 185/110 mmHg."
+      },
+      {
+        title: "Manejo do AVC Hemorrágico e Monitorização de PA",
+        desc: "Contraindicação total de antiplaquetários ou anticoagulantes. O foco principal é o controle de Pressão Arterial de forma rápida e agressiva, objetivando Pressão Arterial Sistólica < 140 mmHg com Nitroprussiato de Sódio IV."
+      }
+    ]
+  },
+  {
+    id: "delirium",
+    name: "Delirium Agudo no Idoso",
+    category: "Saúde Mental",
+    diagnostic: "Alteração aguda do nível de atenção e cognição, com flutuação de curso, pensamento desorganizado e alteração sensorial. Confirmado pelo Confusion Assessment Method (CAM). Comum após cirurgia, infecção ou drogas.",
+    alarm: "Agitação extrema refratária com risco mecânico de queda do leito, agressividade perigosa, ou letargia profunda flutuante com suspeita de aspiração pulmonar -> Monitorar sinais vitais e reavaliar de perto.",
+    treatment: [
+      {
+        title: "Tratamento Não Farmacológico (Pilar de Primeira Escolha)",
+        desc: "Tratar a causa de base (ex: ITU, dor, desidratação). Manter o ambiente calmo e bem iluminado de dia, reorientar o paciente continuamente com calendário e relógio, incentivar a presença de familiares e reintroduzir óculos/aparelhos."
+      },
+      {
+        title: "Tratamento Farmacológico Seletivo de Emergência",
+        desc: "Se agitação severa que impede cuidados médicos ou gera riscos físicos: prescrever Haloperidol 0.5mg a 1mg VO ou IM de 12/12h de forma curta e fracionada. Evitar benzodiazepínicos pelo altíssimo risco de efeito paradoxal."
+      }
+    ]
+  },
+  {
+    id: "exacerbacao_asma",
+    name: "Asma Brônquica: Crise Aguda / Exacerbação",
+    category: "Respiratório",
+    diagnostic: "Dispneia de início rápido acompanhada de aperto torácico, tosse seca incômoda, expiração muito prolongada e sibilos polifônicos difusos bilaterais. Gatilhos comuns: infecções de vias aéreas superiores ou alérgenos.",
+    alarm: "Tórax silencioso na ausculta, incapacidade de completar frases sem respirar, fadiga, cianose, ou saturação de O2 < 90% -> Sala vermelha de imediato com oxigênio sob máscara e corticoterapia IV de ataque.",
+    treatment: [
+      {
+        title: "Broncodilatação Inalatória de Ataque Otimizada",
+        desc: "Prescrever Salbutamol 100mcg (4 a 10 jatos com espaçador a cada 20 minutos na primeira 1 hora) associado a Brometo de Ipratrópio (3 a 4 jatos). Manter SatO2 entre 93-95% com oxigenioterapia de baixo fluxo se necessário."
+      },
+      {
+        title: "Corticoterapia Sistêmica e Sulfato de Magnésio",
+        desc: "Prescrever Prednisona 40mg VO ou Metilprednisolona 40-125mg IV na admissão. Se refratariedade inicial após a primeira hora, prescrever infusão lenta de Sulfato de Magnésio 2g IV em 20 min sob monitoração."
+      }
+    ]
+  },
+  {
+    id: "tep",
+    name: "Tromboembolismo Pulmonar (TEP)",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Início súbito de dispneia intensa e dor torácica pleurítica, acompanhadas de taquipneia e taquicardia. Forte associação com imobilização recente ou neoplasia. Rastrear com Escore de Wells, D-Dímero e Angio-TC.",
+    alarm: "Hipotensão arterial persistente (PAS < 90 mmHg), síncope recorrente ou sinais de sobrecarga aguda do ventrículo direito -> Sala vermelha imediata para protocolo de trombólise sistêmica de urgência.",
+    treatment: [
+      {
+        title: "Anticoagulação Plena Imediata (Paciente Estável)",
+        desc: "Se paciente hemodinamicamente estável: iniciar imediatamente Enoxaparina 1mg/kg SC de 12/12h ou Heparina Não Fracionada venosa. Transicionar conforme viabilidade para Rivaroxabana 15mg VO de 12/12h por 21 dias."
+      },
+      {
+        title: "Protocolo de Trombólise Sistêmica (Paciente Instável)",
+        desc: "Se choque obstrutivo ou hipotensão sustentada: prescrever Alteplase (rtPA) 100mg IV correndo de forma contínua em 2 horas. Suspender qualquer procedimento invasivo e monitorar estritamente sinais de sangramentos agudos."
+      }
+    ]
+  },
+  {
+    id: "hipercalemia",
+    name: "Distúrbios do Potássio (Hiperpotassemia)",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Potássio sérico > 5.5 mEq/L (hiperpotassemia) ou < 3.5 mEq/L (hipopotassema). Sintomas inespecíficos de fraqueza muscular e cãibras. Rastrear urgentemente com Eletrocardiograma (ECG) para afastar cardiotoxicidade.",
+    alarm: "ECG contendo ondas T simétricas pontiagudas, PR prolongado com onda P achatada, ou complexo QRS alargado (K > 6.5 mEq/L) -> Gluconato de Cálcio venoso imediato para evitar parada cardíaca em sístole.",
+    treatment: [
+      {
+        title: "Estabilização da Membrana Miocárdica Imediata",
+        desc: "Se alterações eletrocardiográficas: administrar Gluconato de Cálcio 10% (1 ampola / 10ml) IV lento em 3-5 minutos. Estabiliza eletricamente o cardiomiócito de forma imediata (não reduz os níveis séricos do potássio)."
+      },
+      {
+        title: "Terapia de Shunt Celular e Eliminação de Potássio",
+        desc: "Prescrever Glicoinsulina (10 UI de Insulina Rápida em 100ml de Glicose 50% IV em 20 min) e Nebulização com Fenoterol/Salbutamol. Para eliminação: Furosemida 40mg IV e Sorcal (Poliestirenossulfonato) 30g VO de 8/8h."
+      }
+    ]
+  },
+  {
+    id: "les",
+    name: "Lúpus Eritematoso Sistêmico (LES)",
+    category: "Outros",
+    diagnostic: "Doença autoimune sistêmica crônica, comum em mulheres jovens. Diagnóstico guiado pelos critérios ACR/EULAR (FAN ≥ 1:80 obrigatório, rash malar, fotossensibilidade, artrite, nefrite, linfopenia e anti-dsDNA ou anti-Sm).",
+    alarm: "Presença de proteinúria maciça (nefrite ativa), febre inexplicada com rigidez de nuca ou letargia (SNC), dispneia súbita por hemorragia alveolar ou plaquetopenia profunda com sangramento -> Encaminhar à UPA.",
+    treatment: [
+      {
+        title: "Terapia de Manutenção de Primeira Linha (Imunomodulação)",
+        desc: "Prescrever de forma contínua para todo paciente ativo: Sulfato de Hidroxicloroquina 5 mg/kg ao dia (peso ideal) para mitigar surtos inflamatórios e proteger função renal. Orientar monitoramento oftalmológico anual regular."
+      },
+      {
+        title: "Manejo das Crises Inflamatórias Ativas",
+        desc: "Em manifestações leves (artrite/cutâneas): prescrever Prednisona de dose baixa (5mg a 10mg ao dia). Em surtos graves (nefrite lúpica com proteinúria confirmada): encaminhar para pulsoterapia com Metilprednisolona venosa."
+      }
+    ]
+  },
+  {
+    id: "neutropenia_febril",
+    name: "Neutropenia Febril na Emergência",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Temperatura oral única ≥ 38.3°C (ou ≥ 38.0°C sustentada por 1h) em paciente oncológico com contagem de neutrófilos absolute (ANC) < 500/mm³ (ou expectativa de queda). Emergência de alta letalidade.",
+    alarm: "Sinais óbvios de má perfusão periférica, calafrios trementes intensos, hipotensão arterial ou confusão mental (Choque Séptico imediato) -> Sala vermelha para início hiperprecoce de antibióticos venosos.",
+    treatment: [
+      {
+        title: "Antibioticoterapia de Amplo Espectro na 'Hora de Ouro'",
+        desc: "Administrar o antimicrobiano empírico IV em até 60 minutos da triagem: escolher beta-lactâmico antipseudomonas (Cefepime 2g IV de 8/8h ou Piperacilina/Tazobactam 4.5g IV de 6/6h). Coletar hemoculturas na hora."
+      },
+      {
+        title: "Adição de Vancomicina e Fatores de Crescimento",
+        desc: "Associar Vancomicina se houver suspeita de infecção de cateter central, infecção de pele ativa ou hipotensão de admissão. Administrar Filgrastim (G-CSF) subcutâneo para acelerar a recuperação da medula óssea."
+      }
+    ]
+  },
+  {
+    id: "dip",
+    name: "Doença Inflamatória Pélvica (DIP)",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Dor espontânea pélvica, dor proeminente à mobilização física uterina no toque vaginal e dor anexial bilateral, com corrimento vaginal mucopurulento e febre de início recente. Tríade clínica clássica altamente fidedigna.",
+    alarm: "Surgimento de massa pélvica palpável dolorosa (suspeita de Abscesso Tubo-ovariano), náuseas ou vômitos persistentes impedindo medicação oral, febre refratária ou sinais de peritonite difusa -> Internar para antibioticoterapia venosa.",
+    treatment: [
+      {
+        title: "Tratamento Ambulatorial Clássico (DIP Grau 1 - Leve/Moderada)",
+        desc: "Prescrever Ceftriaxona 500mg IM in dose única (SUS) associada simultaneamente à Doxiciclina 100mg VO de 12/12h PLUS Metronidazol 500mg VO de 12/12h, ambos por um período obrigatório de 14 dias consecutivos."
+      },
+      {
+        title: "Tratamento e Rastreamento dos Parceiros Sexuais",
+        desc: "Rastrear e tratar obrigatoriamente todos os parceiros sexuais dos últimos 60 dias com esquema de dose única. Orientar abstinência sexual até o término das doses e cura clínica do casal. Oferecer exames rápidos."
+      }
+    ]
+  },
+  {
+    id: "farmacodermia",
+    name: "Farmacodermias Graves (SJS / NET / DRESS)",
+    category: "Pele & Dermatologia",
+    diagnostic: "Erupções cutâneas extensas com descolamento epidérmico e lesão mucosal dolorosa (Stevens-Johnson e Necrólise Epidérmica Tóxica), ou erupção difusa com febre, linfonodomegalia e eosinofilia (síndrome DRESS).",
+    alarm: "Presença de Sinal de Nikolsky positivo (fricção lateral descola epiderme saudável), bolhas hemorrágicas difusas ou acometimento de > 10% da área corporal por necrose -> Encaminhamento imediato a UTI ou Queimados.",
+    treatment: [
+      {
+        title: "Suspensão Imediata de Fármacos Suspeitos",
+        desc: "Interromper imediatamente toda e qualquer medicação de uso recente não essencial (especialmente anticonvulsivantes, alopurinol, AINEs ou sulfas). A agilidade da suspensão previne a progressão da apoptose epidérmica."
+      },
+      {
+        title: "Suporte Clínico e Cuidados de Barreira",
+        desc: "Transferir para unidade intensiva. Manter hidratação aquecida calculada meticulosa, controle de temperatura, suporte nutricional por sonda enteral, e cuidados assépticos de pele (curativos não aderentes com vaselina)."
+      }
+    ]
+  },
+  {
+    id: "desnutricao_choque",
+    name: "Desnutrição Infantil Grave e Choque",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Desnutrição grave (marasmo ou kwashiorkor) associada a sinais de má perfusão tecidual (TEC > 3s, letargia, pele fria, anúria). Apresenta altíssimo risco de insuficiência cardíaca por atrofia do miocárdio.",
+    alarm: "Aparecimento súbito de estertores pulmonares bilaterais, turgência jugular ou ritmo de galope auscultado no precórdio durante a infusão de fluidos (indica sobrecarga volêmica aguda) -> Suspender infusão de imediato.",
+    treatment: [
+      {
+        title: "Hidratação Venosa Extremamente Cautelosa",
+        desc: "NÃO fazer expansão volumétrica rápida usual. Administrar hidratação lenta com SG 5% ou SF 0.45% de forma fracionada. Preferir a via oral/enteral contínua (com SRO ou F-75) sempre que o paciente tolerar."
+      },
+      {
+        title: "Monitorização Multiparamétrica e Alvos",
+        desc: "Monitorar rigorosamente a diurese horária (alvo > 1.0 mL/kg/h) e ausculta pulmonar contínua. Oferecer suporte térmico rigoroso (risco severo de hipotermia letal) e iniciar antibioticoterapia empírica ampla."
+      }
+    ]
+  },
+  {
+    id: "osteoporose",
+    name: "Osteoporose Senil e Pós-Menopausa",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Geralmente assintomática até a ocorrência de fratura. Diagnóstico por Densitometria Óssea (DEXA) com T-score ≤ -2,5 no colo do fêmur, fêmur total ou coluna lombar, ou na presença de fratura por fragilidade (vértebra, quadril).",
+    alarm: "Dor lombar aguda súbita incapacitante ou perda de altura > 4cm, sugerindo fratura de corpo vertebral aguda -> Encaminhar para radiografia de coluna e avaliação ortopédica.",
+    treatment: [
+      {
+        title: "Suplementação de Cálcio e Vitamina D",
+        desc: "Prescrever Cálcio Elementar 1000-1200mg/dia (via dieta ou carbonato/citrato de cálcio) associado a Colecalciferol (Vitamina D3) 800-2000 UI/dia VO para otimizar absorção intestinal e mineralização óssea."
+      },
+      {
+        title: "Terapia Antirreabsortiva (Alendronato de Sódio)",
+        desc: "Prescrever Alendronato de Sódio 70mg VO uma vez por semana. Orientar a tomar em jejum completo com copo cheio de água e manter-se em posição ereta (sentado ou em pé) por pelo menos 30 minutos para evitar esofagite grave."
+      }
+    ]
+  },
+  {
+    id: "obesidade",
+    name: "Obesidade Clínica e Síndrome Metabólica",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Definida por Índice de Massa Corporal (IMC) ≥ 30 kg/m² em adultos. Avaliar perímetro abdominal (alvo < 94cm em homens e < 80cm em mulheres) e presença de critérios para Síndrome Metabólica (PA elevada, TG alto, HDL baixo, glicemia alterada).",
+    alarm: "Presença de dispneia de início recente, roncos intensos com apneias presenciadas pelo parceiro (SAHOS grave), cefaleia matinal ou fadiga incapacitante -> Encaminhar para polissonografia.",
+    treatment: [
+      {
+        title: "Modificações Estilo de Vida (MEV) Estruturadas",
+        desc: "Orientar déficit calórico de 500-1000 kcal/dia ajustado à taxa metabólica basal. Prescrever atividade física aeróbica e resistida de no mínimo 150 a 300 minutos semanais associada a acompanhamento nutricional e comportamental."
+      },
+      {
+        title: "Terapia Farmacológica Adjuvante",
+        desc: "Se IMC ≥ 30 (ou ≥ 27 com comorbidades) refratário a MEV: avaliar prescrição de Liraglutida SC (início com 0.6mg/dia escalonado até 3.0mg) ou Sibutramina 10mg-15mg VO ao dia (contraindicada se doença cardiovascular ou HAS descontrolada)."
+      }
+    ]
+  },
+  {
+    id: "climaterio",
+    name: "Climatério e Síndrome Geniturinária da Menopausa",
+    category: "Outros",
+    diagnostic: "Fase de transição endócrina caracterizada por irregularidade menstrual evoluindo para amenorreia definitiva (menopausa após 12 meses). Sintomas vasomotores (fogachos, sudorese), distúrbios do sono, secura vaginal e labilidade emocional.",
+    alarm: "Sangramento uterino anormal na pós-menopausa -> Sinal de alerta absoluto! Excluir hiperplasia endometrial ou neoplasia de endométrio por ultrassonografia transvaginal imediata e biópsia endometrial se espessura > 4mm.",
+    treatment: [
+      {
+        title: "Terapia de Reposição Hormonal (TRH) Sistêmica",
+        desc: "Se sintomas vasomotores moderados/graves em mulheres na 'janela de oportunidade' (< 60 anos ou < 10 anos de menopausa) e sem contraindicações (CA de mama, TEP, hepatopatia): prescrever Estrogênio isolado (se histerectomizada) ou associado a Progesterona."
+      },
+      {
+        title: "Manejo da Síndrome Geniturinária (Secura Vaginal)",
+        desc: "Prescrever Estrogênio Conjugado creme vaginal 0.5mg/g ou Estriol creme aplicando diariamente à noite por 2 semanas, reduzindo para manutenção 2 vezes por semana. Melhora o trofismo mucosal, reduz prurido, dispareunia e ITUs recorrentes."
+      }
+    ]
+  },
+  {
+    id: "ivc",
+    name: "Insuficiência Venosa Crônica (IVC)",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Alterações cutâneas e subcutâneas secundárias à hipertensão venosa persistente nos membros inferiores. Caracterizada por varizes de calibres variados, edema vespertino maleolar, dermatite de estase e hiperpigmentação (dermatite ocre).",
+    alarm: "Presença de dor lancinante panturrilha com edema assimétrico súbito (suspeita de TVP), ou úlcera venosa infectada com celulite perilesional ascendente e febre -> Encaminhamento para UPA/Doppler de urgência.",
+    treatment: [
+      {
+        title: "Terapia Compressiva e Medidas Posturais",
+        desc: "Pilar fundamental do tratamento. Prescrever meias de compressão elástica graduada (20-30 mmHg para casos leves; 30-40 mmHg se edema grave ou úlcera). Orientar elevação dos membros inferiores acima da linha do coração 3-4x ao dia."
+      },
+      {
+        title: "Medicamentos Flebotônicos e Cuidados Locais",
+        desc: "Prescrever Diosmina + Hesperidina (450mg + 50mg) VO de 12/12h ou Castanha da Índia (Aesculus hippocastanum) 100mg VO de 8/8h para alívio sintomático de dor e peso. Hidratar vigorosamente a pele seca com cremes à base de ureia."
+      }
+    ]
+  },
+  {
+    id: "dermatite_contato",
+    name: "Dermatite de Contato (Irritativa e Alérgica)",
+    category: "Pele & Dermatologia",
+    diagnostic: "Reação inflamatória na pele decorrente da exposição a agentes químicos, físicos ou biológicos. Irritativa: localizada, queimação, início imediato. Alérgica: reação de hipersensibilidade tardia (tipo IV), prurido intenso, vesículas, estende-se além do sítio.",
+    alarm: "Disseminação rápida das lesões para > 50% da superfície corporal, infecção secundária bacteriana difusa com secreção purulenta e crostas melicéricas exuberantes, ou febre sistêmica -> Encaminhar para corticoterapia sistêmica de resgate.",
+    treatment: [
+      {
+        title: "Identificação e Afastamento do Agente Causal",
+        desc: "Investigar e cessar imediatamente o contato com potenciais desencadeantes: sabonetes perfumados, cosméticos, níquel (bijuterias), látex, solventes industriais ou produtos de limpeza. Lavar a área afetada com água abundante."
+      },
+      {
+        title: "Corticoterapia Tópica e Anti-histamínicos",
+        desc: "Prescrever Creme de Valerato de Betametasona 0.1% ou Dipropionato de Betametasona 0.05% aplicando fina camada 1 a 2 vezes ao dia por no máximo 14 dias. Associar Dexclorfeniramina 2mg VO de 8/8h se prurido intenso que compromete o sono."
+      }
+    ]
+  },
+  {
+    id: "migranea",
+    name: "Migrânea (Enxaqueca) e Crise de Cefaleia",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Cefaleia unilateral, pulsátil, de intensidade moderada a grave, durando de 4 a 72 horas, associada a náuseas/vômitos, fotofobia e fonofobia. Pode apresentar aura neurológica focal reversível (escotomas cintilantes, parestesias).",
+    alarm: "Cefaleia de início súbito explosivo ('thunderclap', pico de dor em < 1 min), cefaleia nova em > 50 anos, sinais neurológicos focais persistentes, ou cefaleia acompanhada de febre e rigidez de nuca -> Investigar hemorragia subaracnoide ou meningite.",
+    treatment: [
+      {
+        title: "Tratamento Abortivo da Crise (Leve a Moderada)",
+        desc: "Prescrever Dipirona Sódica 1g VO/IV associada a Metoclopramida 10mg VO/IV (antiemético com efeito pró-cinético). Se refratariedade ou crise moderada/grave: prescrever Sumatriptano 50mg-100mg VO em dose única inicial."
+      },
+      {
+        title: "Tratamento Profilático Continuado",
+        desc: "Indicado se ≥ 3 crises debilitantes por mês. Prescrever Propranolol 40mg VO ao dia (ajustar até 80-160mg) ou Amitriptilina 10-25mg VO à noite (titular até 50-75mg) ou Topiramato 25mg-100mg ao dia de forma gradativa."
+      }
+    ]
+  },
+  {
+    id: "pneumotorax",
+    name: "Pneumotórax Espontâneo",
+    category: "Respiratório",
+    diagnostic: "Presença de ar no espaço pleural. Caracterizado por dor torácica ipsilateral súbita do tipo pleurítica e dispneia proporcional ao tamanho do colapso. Ausculta pulmonar revela MV abolido unilateralmente e hipersonoridade timpânica.",
+    alarm: "Pneumotórax Hipertensivo: hipotensão grave, tontura, desvio da traqueia contralateral, turgência jugular e desconforto respiratório catastrófico -> Emergência médica extrema com necessidade de punção imediata.",
+    treatment: [
+      {
+        title: "Descompressão Torácica Imediata (Se Hipertensivo)",
+        desc: "Realizar punção de alívio imediata com Jelco calibre 14 ou 16 no 2º espaço intercostal na linha hemiclavicular ipsilateral (ou 4º/5º espaço na linha axilar anterior) para transformar pneumotórax hipertensivo em aberto."
+      },
+      {
+        title: "Manejo Definitivo e Drenagem Pleural em Selo d'Água",
+        desc: "Pneumotórax primário pequeno (< 2cm entre pleura visceral e parede) estável: repouso e oxigenioterapia em alto fluxo. Se > 2cm ou sintomático: realizar drenagem torácica tubular no 5º espaço intercostal com sistema de selo d'água."
+      }
+    ]
+  },
+  {
+    id: "pancreatite",
+    name: "Pancreatite Aguda",
+    category: "Gastrointestinal",
+    diagnostic: "Inflamação aguda do pâncreas. Caracterizada por dor abdominal de início súbito em barra (andar superior do abdômen), com irradiação clássica para o dorso, acompanhada de náuseas e vômitos. Confirmada por Amilase ou Lipase > 3x o normal.",
+    alarm: "Presença de taquipneia, hipotensão refratária, alteração mental ou oligúria persistente, refletindo resposta inflamatória sistêmica grave (SIRS) -> Transferência imediata para UTI com monitoramento de Ranson/APACHE II.",
+    treatment: [
+      {
+        title: "Ressuscitação Volêmica Agressiva Precoce",
+        desc: "Infundir Soro Ringer Lactato ou Soro Fisiológico (250-500 mL/hora nas primeiras 12-24 horas), tateando conforme parâmetros hemodinâmicos e diurese (manter > 0.5 mL/kg/h). A hidratação agressiva previne a necrose pancreática."
+      },
+      {
+        title: "Controle Analgésico Potente e Jejum Terapêutico",
+        desc: "Manter paciente em jejum inicial para repouso pancreático. Prescrever analgesia potente: Tramadol 50-100mg IV ou Meperidina. Monitorar eletrólitos (hipocalcemia grave) e reintroduzir dieta enteral precoce assim que tolerado."
+      }
+    ]
+  },
+  {
+    id: "dengue_grave",
+    name: "Dengue com Sinais de Alarme e Dengue Grave",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Dengue suspeita associada à presença de sinais de alarme na fase de defervescência da febre (entre o 3º e 5º dia). Caracterizada por extravasamento plasmático, choque ou disfunção orgânica grave.",
+    alarm: "Dor abdominal intensa e contínua, vômitos persistentes, acúmulo de líquidos (ascite, derrame pleural), hipotensão ortostática, hepatomegalia > 2cm, hemorragias importantes de mucosa ou letargia -> Hidratação venosa imediata!",
+    treatment: [
+      {
+        title: "Fase de Alarme - Hidratação Venosa Imediata",
+        desc: "Prescrever Soro Fisiológico ou Ringer Lactato venoso: 10 mL/kg na primeira hora. Se melhora clínica, reduzir para 5-7 mL/kg/h por 2-4 horas. Reavaliar continuamente hematócrito e plaquetas para guiar a reposição fluida."
+      },
+      {
+        title: "Manejo do Choque por Dengue Grave",
+        desc: "Se sinais de choque (TEC > 3s, hipotensão): infundir bolus rápido de cristaloide (20 mL/kg em 20 minutos). Repetir até 3 vezes se necessário. Se refratário com hematócrito em queda: suspeitar de hemorragia oculta e transfundir plaquetas/hemácias."
+      }
+    ]
+  },
+  {
+    id: "pielonefrite_complicada",
+    name: "Pielonefrite Complicada e Sepse Urinária",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Infecção bacteriana aguda do parênquima renal acompanhada de febre alta, calafrios, dor lombar intensa unilateral (Sinal de Giordano positivo) associada a fatores complicadores (diabetes, gestação, obstrução urinária, imunossupressão).",
+    alarm: "Presença de hipotensão persistente, confusão mental, oligúria ou taquipneia (indicando urossepse), ou dor lombar intolerável com massa palpável (suspeita de abscesso renal/perirrenal) -> Exames de imagem urgentes e UTI.",
+    treatment: [
+      {
+        title: "Coletas de Culturas e Antibioticoterapia Empírica IV",
+        desc: "Coletar imediatamente Urina Tipo I, Urocultura com antibiograma e Hemoculturas. Iniciar imediatamente antibioticoterapia venosa empírica: Ceftriaxona 2g IV de 24/24h ou Ciprofloxacino 400mg IV de 12/12h na UPA/Hospital."
+      },
+      {
+        title: "Desobstrução de Vias Aéreas/Urinárias se Necessário",
+        desc: "Avaliar por tomografia ou ultrassonografia a presença de uropatia obstrutiva (cálculo impactado). Se obstrução presente, acionar a urologia imediatamente para passagem de cateter Duplo J ou nefrostomia percutânea."
+      }
+    ]
+  },
+  {
+    id: "abscesso_periamigdaliano",
+    name: "Abscesso Periamigdaliano",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Complicação supurativa comum da amigdalite aguda. Caracterizada por dor de garganta unilateral severa, disfagia e odinofagia intensas, trismo (dificuldade de abrir a boca), voz abafada ('voz de batata quente') e desvio da úvula para o lado contralateral.",
+    alarm: "Sinais de obstrução de via aérea alta, estridor inspiratório, sialorreia intensa por incapacidade de engolir a própria saliva, ou dispneia em repouso -> Sala vermelha imediata para proteção de via aérea e drenagem cirúrgica.",
+    treatment: [
+      {
+        title: "Drenagem por Punção por Agulha ou Incisão",
+        desc: "Procedimento padrão de urgência. Realizar anestesia local e aspirar o abscesso com agulha calibrosa no ponto de maior abaulamento do pilar amigdaliano anterior, ou realizar incisão e drenagem aberta com pinça para liberação do pus."
+      },
+      {
+        title: "Antibioticoterapia e Corticoterapia Sistêmica",
+        desc: "Prescrever Amoxicilina + Clavulanato 875mg + 125mg VO de 12/12h por 10 dias (após estabilização), ou Ampicilina + Sulbactam 1.5g-3g IV de 6/6h em ambiente hospitalar. Associar Dexametasona 4-10mg IV em dose única para redução do edema."
+      }
+    ]
+  },
+  {
+    id: "artrite_septica",
+    name: "Artrite Séptica (Infecciosa)",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Infecção bacteriana articular aguda, considerada emergência ortopédica. Caracterizada por dor articular intensa de início súbito, calor, rubor, edema proeminente (derramamento articular) e limitação dolorosa extrema à movimentação ativa e passiva.",
+    alarm: "Presença de calafrios trementes intensos, instabilidade hemodinâmica, ou rápida destruição articular visível radiologicamente -> Encaminhar imediatamente para artrotomia de urgência e lavagem cirúrgica.",
+    treatment: [
+      {
+        title: "Artrocentese Diagnóstica e Alívio da Dor",
+        desc: "Realizar punção articular (artrocentese) asséptica imediata antes do início dos antibióticos. Enviar líquido sinovial para análise: contagem de leucócitos (geralmente > 50.000/mm³ com > 90% polimorfonucleares), bacterioscopia e cultura."
+      },
+      {
+        title: "Antibioticoterapia Empírica e Lavagem Articular",
+        desc: "Iniciar Oxacilina 2g IV de 4/4h associada a Ceftriaxona 2g IV de 24/24h (para cobrir gram-positivos e gram-negativos). Encaminhar para lavagem articular por artroscopia ou cirurgia aberta para prevenir necrose da cartilagem."
+      }
+    ]
+  },
+  {
+    id: "intoxicacao_aguda",
+    name: "Intoxicação Exógena Aguda",
+    category: "Outros",
+    diagnostic: "Quadro decorrente da exposição a substâncias tóxicas (medicamentos, praguicidas, álcool, drogas ilícitas). Identificar o agente, tempo decorrido, via de exposição e quantidade. Avaliar toxíndromes (anticolinérgica, colinérgica, opioide).",
+    alarm: "Presença de rebaixamento do nível de consciência (Escala de Glasgow < 8), convulsões, arritmias cardíacas graves, bradipneia importante ou acidose metabólica profunda -> Proteção de via aérea e antídotos imediatos.",
+    treatment: [
+      {
+        title: "Medidas de Descontaminação Gastrointestinal",
+        desc: "Se ingestão há menos de 1 hora de substância adsorvível (e sem contraindication como cáusticos/hidrocarbonetos): administrar Carvão Ativado 1g/kg (diluído em água ou sorbitol) via oral ou sonda nasogástrica."
+      },
+      {
+        title: "Administração de Antídotos Específicos se Disponíveis",
+        desc: "Se intoxicação por opioides: administrar Naloxona 0.4mg IV (repetir conforme necessário). Se por benzodiazepínicos: Flumazenil 0.2mg IV. Se por organofosforados/carbamatos: Atropina 1-5mg IV em bolus repetidos até atropinização."
+      }
+    ]
+  },
+  {
+    id: "tce_urgente",
+    name: "Traumatismo Cranioencefálico (TCE) Moderado a Grave",
+    category: "Outros",
+    diagnostic: "História de impacto mecânico craniano associado a alteração mental. Classificado pela Escala de Coma de Glasgow (TCE Leve: 13-15; TCE Moderado: 9-12; TCE Grave: ≤ 8). Necessita de Tomografia Computadorizada (TC) de Crânio imediata.",
+    alarm: "Surgimento de vômitos em jato recorrentes, cefaleia progressiva severa, assimetria pupilar (anisocoria), convulsão pós-trauma, ou rebaixamento persistente de consciência -> Sinal de herniação cerebral iminente. Acionar neurocirurgia.",
+    treatment: [
+      {
+        title: "Medidas Gerais de Neuroproteção na UPA",
+        desc: "Manter cabeceira elevada a 30 graus (se coluna cervical liberada). Garantir oxigenação adequada (manter SatO2 > 94%) e estabilidade hemodinâmica (manter PAS > 110 mmHg). Tratar hipertermia e dor vigorosamente."
+      },
+      {
+        title: "Manejo da Hipertensão Intracraniana (HIC)",
+        desc: "Se sinais de HIC ou herniação (anisocoria): prescrever Manitol 20% (0.5 a 1.0 g/kg IV em infusão rápida em 20 min) ou Solução Salina Hipertônica 3% (250ml IV). Providenciar transferência imediata para centro neurocirúrgico."
+      }
+    ]
   }
 ];

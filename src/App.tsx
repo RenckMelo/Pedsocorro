@@ -4311,9 +4311,9 @@ const REMOVED_PREV_CATALOG = [
 ];
 
 const DISEASE_TO_SUMMARY_MAP: Record<string, string[]> = {
-  has: ["Insuficiência Cardíaca (IC)", "Fibrilação Atrial (FA)"],
+  has: ["Insuficiência Cardíaca (IC)", "Fibrilação Atrial (FA)", "Abordagem da Dor Torácica"],
   dm2: ["Diabetes Mellitus: Diagnóstico", "Cetoacidose Diabética (CAD)"],
-  dislip: ["Insuficiência Cardíaca (IC)"],
+  dislip: ["Insuficiência Cardíaca (IC)", "Abordagem da Dor Torácica"],
   drge: ["Hemorragia Digestiva Alta (HDA)"],
   gastrite: ["Hemorragia Digestiva Alta (HDA)"],
   hipo: ["Hipotireoidismo"],
@@ -4326,13 +4326,89 @@ const DISEASE_TO_SUMMARY_MAP: Record<string, string[]> = {
   depressao: ["Agitação Psicomotora"],
   crise_panico: ["Agitação Psicomotora"],
   gota: ["Gota (Artrite Gotosa)"],
-  "artrite-reuma": ["Artrite Reumatoide"],
+  "artrite-reuma": ["Artrite Reumatoide", "Lúpus Eritematoso Sistêmico (LES)"],
   varizes: ["Tromboembolismo Pulmonar (TEP)"],
   "ulcera-venosa": ["Tromboembolismo Pulmonar (TEP)"],
   vaginoses: ["Vaginites e Vaginose"],
   sifilis: ["Vaginites e Vaginose"],
   corrimento_uretral: ["Vaginites e Vaginose"],
-  crise_epiletica: ["Agitação Psicomotora", "Delirium no Idoso"]
+  crise_epiletica: ["Agitação Psicomotora", "Delirium no Idoso"],
+  oma: ["Pneumonia Comunitária"],
+  sinusite: ["Pneumonia Comunitária"],
+  amigdalite: ["Pneumonia Comunitária"],
+  verminose: ["Anemias Microcíticas"],
+  ansiedade: ["Agitação Psicomotora"],
+  insonia: ["Delirium no Idoso", "Agitação Psicomotora"],
+  lombalgia: ["Gota (Artrite Gotosa)", "Artrite Reumatoide"],
+  osteoartrite: ["Artrite Reumatoide", "Gota (Artrite Gotosa)"],
+  eczema: ["Escabiose"],
+  escabiose: ["Escabiose"],
+  micose: ["Vaginites e Vaginose"],
+  constipacao: ["Cirrose: Complicações"],
+  diarreia: ["Planos de Hidratação (Plano A, B e C)", "Desnutrição e Choque"],
+  cefaleiastens: ["AVC Isquêmico vs Hemorrágico"],
+  tabac: ["Tromboembolismo Pulmonar (TEP)", "SDRA - Síndrome do Desconforto Respiratório Agudo", "Abordagem da Dor Torácica"],
+  dengue: ["Sepse (Sepsis-3)"],
+  tuberculose: ["Pneumonia Comunitária"],
+  hanseniase: ["Lúpus Eritematoso Sistêmico (LES)", "Artrite Reumatoide"],
+  insufcard: ["Insuficiência Cardíaca (IC)", "Fibrilação Atrial (FA)", "Abordagem da Dor Torácica"],
+  "fib-atrial": ["Fibrilação Atrial (FA)", "Insuficiência Cardíaca (IC)", "AVC Isquêmico vs Hemorrágico"],
+  doencarenal: ["Doença Renal Crônica (DRC)", "Distúrbios do Potássio"],
+  "hep-cronicas": ["Cirrose: Complicações", "Hemorragia Digestiva Alta (HDA)"],
+  "hiper-tireo": ["Fibrilação Atrial (FA)", "Hipotireoidismo"],
+  labirintite: ["AVC Isquêmico vs Hemorrágico"],
+  "litiase-renal": ["Distúrbios do Potássio", "Doença Renal Crônica (DRC)"],
+  celulite: ["Sepse (Sepsis-3)"],
+  hzoster: ["Farmacodermias Graves"],
+  impetigo: ["Pneumonia Comunitária"],
+  colelitiase: ["Hemorragia Digestiva Alta (HDA)"],
+  apendicite: ["Sepse (Sepsis-3)"],
+  epilepsia: ["Agitação Psicomotora", "Delirium no Idoso"],
+  "cistite-rec": ["Sepse (Sepsis-3)", "Vaginites e Vaginose"],
+  "gastro-desidrat": ["Planos de Hidratação (Plano A, B e C)", "Desnutrição e Choque"],
+  escarlatina: ["Pneumonia Comunitária"],
+  leptospirose: ["Sepse (Sepsis-3)"],
+  parkinson: ["Delirium no Idoso", "Agitação Psicomotora"],
+  "dermatite-seb": ["Escabiose"],
+  "faringite-strep": ["Pneumonia Comunitária"],
+  urolitiase: ["Doença Renal Crônica (DRC)"],
+  erisipela: ["Sepse (Sepsis-3)"],
+  peconhentos: ["Sepse (Sepsis-3)", "Planos de Hidratação (Plano A, B e C)"],
+  hpb: ["Doença Renal Crônica (DRC)"],
+  iam: ["Abordagem da Dor Torácica", "Insuficiência Cardíaca (IC)"],
+  cad: ["Cetoacidose Diabética (CAD)", "Diabetes Mellitus: Diagnóstico"],
+  anafilaxia: ["Anafilaxia", "Choque: Classificação e Manejo"],
+  sepse: ["Sepse (Sepsis-3)", "Choque: Classificação e Manejo"],
+  endocardite: ["Endocardite Infecciosa", "Insuficiência Cardíaca (IC)"],
+  sdra: ["SDRA - Síndrome do Desconforto Respiratório Agudo", "Asma Brônquica: Crise Aguda"],
+  choque: ["Choque: Classificação e Manejo", "Planos de Hidratação (Plano A, B e C)"],
+  agitacao: ["Agitação Psicomotora", "Delirium no Idoso"],
+  hda: ["Hemorragia Digestiva Alta (HDA)", "Cirrose: Complicações"],
+  cirrose: ["Cirrose: Complicações", "Hemorragia Digestiva Alta (HDA)"],
+  avc: ["AVC Isquêmico vs Hemorrágico", "Delirium no Idoso"],
+  delirium: ["Delirium no Idoso", "Agitação Psicomotora"],
+  exacerbacao_asma: ["Asma Brônquica: Crise Aguda", "SDRA - Síndrome do Desconforto Respiratório Agudo"],
+  tep: ["Tromboembolismo Pulmonar (TEP)", "Abordagem da Dor Torácica"],
+  hipercalemia: ["Distúrbios do Potássio", "Doença Renal Crônica (DRC)"],
+  les: ["Lúpus Eritematoso Sistêmico (LES)", "Artrite Reumatoide"],
+  neutropenia_febril: ["Neutropenia Febril", "Sepse (Sepsis-3)"],
+  dip: ["Doença Inflamatória Pélvica (DIP)", "Vaginites e Vaginose"],
+  farmacodermia: ["Farmacodermias Graves"],
+  desnutricao_choque: ["Desnutrição e Choque", "Planos de Hidratação (Plano A, B e C)"],
+  osteoporose: ["Artrite Reumatoide", "Doença Renal Crônica (DRC)"],
+  obesidade: ["Diabetes Mellitus: Diagnóstico", "Cetoacidose Diabética (CAD)"],
+  climaterio: ["Vaginites e Vaginose"],
+  ivc: ["Tromboembolismo Pulmonar (TEP)"],
+  dermatite_contato: ["Escabiose"],
+  migranea: ["AVC Isquêmico vs Hemorrágico"],
+  pneumotorax: ["SDRA - Síndrome do Desconforto Respiratório Agudo", "Asma Brônquica: Crise Aguda"],
+  pancreatite: ["Hemorragia Digestiva Alta (HDA)", "Cirrose: Complicações"],
+  dengue_grave: ["Sepse (Sepsis-3)", "Choque: Classificação e Manejo", "Planos de Hidratação (Plano A, B e C)"],
+  pielonefrite_complicada: ["Sepse (Sepsis-3)", "Choque: Classificação e Manejo"],
+  abscesso_periamigdaliano: ["Pneumonia Comunitária"],
+  artrite_septica: ["Artrite Reumatoide", "Sepse (Sepsis-3)"],
+  intoxicacao_aguda: ["Agitação Psicomotora", "Delirium no Idoso"],
+  tce_urgente: ["AVC Isquêmico vs Hemorrágico"]
 };
 
 function UbsModule({
@@ -6665,7 +6741,6 @@ function Dashboard({
           </div>
         </div>
       </div>
-
       {/* Search */}
         <div className="relative group">
            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-600 transition-colors" size={24} />
@@ -8047,6 +8122,7 @@ export default function App() {
         {/* Content Area */}
         <main className="p-4 md:p-10 max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
            <AnimatePresence mode="wait">
+
               {activeSection === 'ubs' && <motion.div key="ub" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Atenção Básica / UBS" subtitle="Protocolos de vigilância, pré-natal, doenças crônicas e escores de saúde mental." icon={Stethoscope} /><UbsModule activeSubTab={selectedUbsSubTab} setActiveSubTab={setSelectedUbsSubTab} selectedGuiaDiseaseId={selectedUbsDiseaseId} setSelectedGuiaDiseaseId={setSelectedUbsDiseaseId} /></motion.div>}
               {activeSection === 'emergency' && <motion.div key="em" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Pronto Socorro" subtitle="Protocolos de emergência, exames imediatos e condutas críticas." icon={ShieldAlert} /><EmergencyModule onSelect={setSelectedDisease} /></motion.div>}
               {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} setSelectedUbsDiseaseId={setSelectedUbsDiseaseId} setSelectedUbsSubTab={setSelectedUbsSubTab} /></motion.div>}
