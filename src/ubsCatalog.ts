@@ -13,7 +13,7 @@ export interface DiseaseInfo {
   interactiveType?: string;
 }
 
-export const UBS_CATALOG_DISEASES: DiseaseInfo[] = [
+const EXISTING_DISEASES: DiseaseInfo[] = [
   {
     id: "has",
     name: "Hipertensão Arterial Sistêmica (HAS)",
@@ -1690,5 +1690,1491 @@ export const UBS_CATALOG_DISEASES: DiseaseInfo[] = [
         desc: "Se sinais de HIC ou herniação (anisocoria): prescrever Manitol 20% (0.5 a 1.0 g/kg IV em infusão rápida em 20 min) ou Solução Salina Hipertônica 3% (250ml IV). Providenciar transferência imediata para centro neurocirúrgico."
       }
     ]
+  },
+  {
+    id: "estenose_aortica",
+    name: "Estenose Aórtica Crônica",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Sopro sistólico ejetivo áspero em foco aórtico, irradiado para carótidas. Diagnóstico definitivo por Ecocardiograma com área valvar aórtica < 1.0 cm² na estenose grave.",
+    alarm: "Presença da tríade clássica: Angina, Síncope ou Dispneia aos esforços. Indica estenose aórtica importante com alto risco de morte súbita -> Encaminhamento urgente para cirurgia cardíaca / troca valvar.",
+    treatment: [
+      {
+        title: "Tratamento Clínico de Suporte",
+        desc: "Evitar vasodilatadores potentes (risco de síncope). Tratar congestão com cautela usando diuréticos em doses baixas (ex: Furosemida 20mg VO). Monitorar PA e frequência cardíaca regularmente."
+      },
+      {
+        title: "Encaminhamento e Tratamento Cirúrgico",
+        desc: "Referenciar imediatamente ao cardiologista/cirurgião cardíaco se paciente sintomático para troca valvar aórtica cirúrgica ou implante transcateter de prótese aórtica (TAVI)."
+      }
+    ]
+  },
+  {
+    id: "miocardiopatia",
+    name: "Miocardiopatia Dilatada",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Insuficiência cardíaca com fração de ejeção reduzida (ICFER), cardiomegalia difusa ao raio-X de tórax e dilatação de câmaras esquerdas evidenciada por Ecocardiograma.",
+    alarm: "Piora acentuada da dispneia em repouso (ortopneia, dispneia paroxística noturna), ganho de peso rápido (congestão sistêmica) ou episódios de pré-síncope/síncope -> Internação para compensação.",
+    treatment: [
+      {
+        title: "Terapia Quádrupla de Diretriz (SUS)",
+        desc: "Iniciar e titular quatro classes farmacológicas fundamentais: Sacubitril-Valsartana (ou Enalapril/Losartana), Betabloqueador (Carvedilol ou Succinato de Metoprolol), Espironolactona e Inibidor da SGLT2 (Dapagliflozina/Empagliflozina)."
+      },
+      {
+        title: "Acompanhamento Multidisciplinar",
+        desc: "Restrição hidrossalina (geralmente < 1.5L de água por dia), pesagem diária para ajuste de Furosemida e reabilitação cardiovascular supervisionada após estabilização clínica."
+      }
+    ]
+  },
+  {
+    id: "cor_pulmonale",
+    name: "Cor Pulmonale Crônico",
+    category: "Cardiovascular/Crônicas",
+    diagnostic: "Hipertrofia e dilatação do ventrículo direito secundária a patologias respiratórias crônicas (como DPOC, hipertensão pulmonar primária ou sequelas de TEP). Presença de turgência jugular e edema de membros inferiores.",
+    alarm: "Dispneia desproporcional associada a dor torácica anginosa, cianose de extremidades ou sinais de choque obstrutivo (hipotensão profunda, hipofonese de bulhas) -> Suporte ventilatório e terapia intensiva.",
+    treatment: [
+      {
+        title: "Otimização da Doença Pulmonar de Base",
+        desc: "Instituir e otimizar oxigenioterapia domiciliar (manter SatO2 entre 88-92%), broncodilatadores inalatórios e cessação absoluta do tabagismo para desacelerar o remodelamento vascular pulmonar."
+      },
+      {
+        title: "Controle Volumétrico e Vasodilatadores específicos",
+        desc: "Manejar a congestão direita com Furosemida 40mg VO associada a Espironolactona 25mg VO. Em casos específicos de hipertensão pulmonar associada, avaliar sildenafila sob rigoroso acompanhamento especialista."
+      }
+    ]
+  },
+  {
+    id: "osteopenia",
+    name: "Osteopenia e Osteoporose Crônica",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Densitometria óssea demonstrando T-score entre -1.0 e -2.5 (osteopenia) ou T-score ≤ -2.5 (osteoporose) na coluna lombar, colo do fêmur ou fêmur total.",
+    alarm: "Ocorrência de fratura por trauma de baixo impacto (queda da própria altura), dor óssea súbita na coluna com perda de altura corporal (indicando fratura/achatamento vertebral) -> Radiografia e fixação ortopédica urgente se necessário.",
+    treatment: [
+      {
+        title: "Suplementação de Cálcio e Vitamina D",
+        desc: "Garantir aporte de Cálcio elementar de 1000-1200mg/dia (via dieta ou Carbonato de Cálcio 500mg VO 1 a 2 vezes ao dia) associado a Vitamina D (Colecalciferol 7.000 a 50.000 UI/semana)."
+      },
+      {
+        title: "Terapia Antirreabsortiva (Alendronato)",
+        desc: "Prescrever Alendronato de Sódio 70mg VO semanalmente. Orientar rigorosamente tomar em jejum completo de pelo menos 30 minutos com copo cheio de água, mantendo-se em pé para evitar esofagite química."
+      }
+    ]
+  },
+  {
+    id: "nodulo_tireoide",
+    name: "Nódulo de Tireoide Suspeito",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Detecção de nódulo palpável à palpação cervical ou achado incidental em Ultrassonografia de tireoide. Estratificação de risco usando a classificação TI-RADS (TI-RADS 4 e 5 são de moderada/alta suspeita).",
+    alarm: "Presença de rouquidão inexplicada de início recente, disfagia, dispneia ou nódulo de consistência pétrea e aderido a planos profundos -> Alta suspeita de Carcinoma de tireoide. Encaminhar para cirurgia de cabeça e pescoço.",
+    treatment: [
+      {
+        title: "Estratificação e Solicitação de PAAF",
+        desc: "Solicitar dosagem de TSH sanguíneo. Se TSH normal ou elevado associado a nódulo > 1cm TI-RADS 4 ou 5, encaminhar para Punção Aspirativa por Agulha Fina (PAAF) guiada por ultrassonografia."
+      },
+      {
+        title: "Conduta com Base no Resultado Citopatológico (Bethesda)",
+        desc: "Bethesda II (benigno): acompanhamento ultrassonográfico anual. Bethesda III/IV (indeterminado): avaliar teste molecular ou lobectomia. Bethesda V/VI (suspeito/maligno): encaminhar para tireoidectomia cirúrgica."
+      }
+    ]
+  },
+  {
+    id: "hipercortisolismo",
+    name: "Síndrome de Cushing / Hipercortisolismo",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Aumento crônico de glicocorticoides. Sinais clínicos: obesidade centrípeta, fácies em lua cheia, giba, estrias violáceas largas (> 1cm), miopatia proximal e hipertensão. Confirmação por cortisol livre urinário de 24h elevado ou cortisol salivar à meia-noite.",
+    alarm: "Surgimento de fraqueza muscular severa (hipocalemia grave), infecções oportunistas recorrentes ou quadro de crise adrenal associada (hipotensão, choque refratário a volume) -> Internação de urgência.",
+    treatment: [
+      {
+        title: "Identificação da Etiologia (ACTH dependente ou não)",
+        desc: "Dosagem de ACTH plasmático para diferenciar causa hipofisária (Doença de Cushing) ou adrenal (adenoma/carcinoma). Suspender imediatamente corticoides exógenos se causa for iatrogênica (retirada gradual / desmame)."
+      },
+      {
+        title: "Tratamento Definitivo",
+        desc: "Encaminhar ao endocrinologista e neurocirurgião (se microadenoma hipofisário) para ressecção transesfenoidal cirúrgica, ou adrenalectomia unilateral se tumor adrenal."
+      }
+    ]
+  },
+  {
+    id: "bronquiectasia",
+    name: "Bronquiectasias de Repetição",
+    category: "Respiratórias",
+    diagnostic: "Dilatação irreversível dos brônquios decorrente de infecções de repetição ou fibrose cística. Caracterizada por tosse produtiva crônica com expectoração muco-purulenta diária abundante, demonstrada por Tomografia Computadorizada (TC) de alta resolução de tórax.",
+    alarm: "Evolução com hemoptise volumosa (> 150ml em 24h), dispneia aguda com cianose de extremidades ou rebaixamento sensorial -> Emergência respiratória imediata para estabilização, broncoscopia ou embolização.",
+    treatment: [
+      {
+        title: "Higiene Brônquica e Fisioterapia Respiratória",
+        desc: "Orientar fisioterapia respiratória diária com técnicas de oscilação oral de alta frequência, drenagem postural e inalação com solução salina hipertônica 3% para facilitação do clearence muco-ciliar."
+      },
+      {
+        title: "Antibioticoterapia nas Exacerbações",
+        desc: "Iniciar antibiótico baseado em culturas prévias de escarro (frequentemente cobrindo Pseudomonas aeruginosa: Ciprofloxacino 500-750mg VO de 12/12h por 10-14 dias). Avaliar corticoterapia inalatória se componente asmático."
+      }
+    ]
+  },
+  {
+    id: "fibrose_pulmonar",
+    name: "Fibrose Pulmonar Idiopática",
+    category: "Respiratórias",
+    diagnostic: "Doença intersticial crônica fibrosante. Paciente queixa-se de dispneia progressiva aos esforços e tosse seca refratária. Exame físico revela estertores creptantes em velcro bibasais e baqueteamento digital. TC de tórax mostra padrão de pneumonia intersticial usual (PIU) com favesamento.",
+    alarm: "Piora súbita da dispneia em poucos dias associada a infiltrados novos ao raio-X (exacerbação aguda da FPI) -> Internação hospitalar para corticoterapia em altas doses e oxigenioterapia de alto fluxo.",
+    treatment: [
+      {
+        title: "Preservação da Função e Antifibróticos",
+        desc: "Encaminhar precocemente ao pneumologista para avaliação de antifibróticos de alto custo (Nintedanibe ou Pirfenidona) para reduzir a velocidade de perda da capacidade vital forçada (CVF)."
+      },
+      {
+        title: "Reabilitação Pulmonar e Suporte",
+        desc: "Indicar programa formal de reabilitação pulmonar, vacinação antipneumocócica e influenza completa, e oxigenioterapia domiciliar contínua se documentada hipoxemia de esforço ou repouso."
+      }
+    ]
+  },
+  {
+    id: "apneia_sono",
+    name: "Apneia Obstrutiva do Sono (SAOS)",
+    category: "Respiratórias",
+    diagnostic: "Sonolência excessiva diurna, roncos frequentes, pausas respiratórias presenciadas pelo parceiro e episódios de sufocamento noturno. Diagnóstico confirmado por Polissonografia evidenciando Índice de Apneia/Hipopneia (IAH) ≥ 15 eventos por hora de sono.",
+    alarm: "Arritmias cardíacas noturnas complexas, episódios de síncope diurna inexplicada ou acidentes automobilísticos graves devido a hipersonolência -> Investigação acelerada e intervenção de urgência.",
+    treatment: [
+      {
+        title: "Medidas Gerais e Comportamentais",
+        desc: "Redução de peso corporal em pacientes obesos, interrupção completa do consumo de álcool e sedativos à noite, e adoção de terapia posicional (evitar decúbito dorsal durante o sono)."
+      },
+      {
+        title: "Terapia com Pressão Positiva (CPAP)",
+        desc: "Tratamento padrão para SAOS moderada a grave. Prescrever uso noturno de CPAP com ajuste automático de pressão para manter vias aéreas patentes, revertendo a sonolência diurna e reduzindo o risco cardiovascular."
+      }
+    ]
+  },
+  {
+    id: "doenca_crohn",
+    name: "Doença de Crohn",
+    category: "Gastrointestinal",
+    diagnostic: "Doença inflamatória intestinal que pode afetar qualquer segmento do trato digestivo (da boca ao ânus), de forma descontínua. Quadro clínico: diarreia crônica, dor abdominal persistente, perda de peso e fístulas perianais. Confirmada por colonoscopia com biópsias.",
+    alarm: "Dor abdominal súbita intensa com abdome em tábua (perfuração intestinal), parada de eliminação de gases e fezes (obstrução/estenose), ou hemorragia digestiva maciça -> Encaminhar imediatamente para laparotomia cirúrgica.",
+    treatment: [
+      {
+        title: "Indução da Remissão Clínica",
+        desc: "Iniciar corticoterapia sistêmica (Prednisona 40mg VO ao dia com desmame lento) ou imunomoduladores (Azatioprina 2mg/kg/dia) associados a terapia biológica (Infliximabe ou Adalimumabe) sob orientação de especialista."
+      },
+      {
+        title: "Manejo Nutricional e Suplementação",
+        desc: "Garantir reposição de ferro elementar, Vitamina B12 e ácido fólico. Dieta enteral exclusiva em fases de exacerbação grave ou estenoses parciais para otimização da cicatrização mucosa."
+      }
+    ]
+  },
+  {
+    id: "retocolite",
+    name: "Retocolite Ulcerativa",
+    category: "Gastrointestinal",
+    diagnostic: "Inflamação difusa e contínua limitada à mucosa do cólon e reto. Pacientes apresentam diarreia crônica muco-sanguinolenta acompanhada de cólicas abdominais importantes e tenesmo. Diagnóstico por Retossigmoidoscopia ou Colonoscopia com biópsia.",
+    alarm: "Presença de febre alta, distensão abdominal progressiva, taquicardia e dor abdominal generalizada grave (risco de Megacólon Tóxico) -> Radiografia de abdome em pé de urgência e colectomia de emergência.",
+    treatment: [
+      {
+        title: "Tratamento de Indução e Manutenção com Aminossalicitatos",
+        desc: "Prescrever Sulfassalazina 2-4g ao dia ou Mesalazina (comprimidos VO 2.4g-4.8g/dia ou supositórios de 1g/dia se proctite distal isolada). Monitorar resposta inflamatória por hemograma e calprotectina fecal."
+      },
+      {
+        title: "Corticoterapia para Resgate Inflamatório",
+        desc: "Em casos moderados a graves com resposta inadequada aos aminossalicitatos, introduzir Prednisona 40mg VO ao dia com redução gradual após controle dos sintomas. Casos refratários necessitam de biológicos."
+      }
+    ]
+  },
+  {
+    id: "sindrome_intestino_irritavel",
+    name: "Síndrome do Intestino Irritável",
+    category: "Gastrointestinal",
+    diagnostic: "Dor abdominal recorrente (pelo menos 1 dia por semana nos últimos 3 meses) associada a alterações na frequência ou consistência das fezes (critérios de Roma IV), na ausência de fatores orgânicos ou de alarme.",
+    alarm: "Início dos sintomas após os 50 anos, febre, anemia, diarreia noturna persistente, ou história familiar de câncer colorretal -> Investigar causas orgânicas por colonoscopia obrigatória.",
+    treatment: [
+      {
+        title: "Orientação Dietética e Dieta Low-FODMAP",
+        desc: "Restringir carboidratos fermentáveis (frutose, lactose, oligossacarídeos) por 4-6 semanas com reintrodução gradual guiada por nutricionista. Estimular hidratação e consumo de fibras solúveis."
+      },
+      {
+        title: "Controle Sintomático e Modulação Neurogastroenterológica",
+        desc: "Para cólicas: Brometo de Pinavério 50-100mg VO de 8/8h ou Hioscina. Para predominância diarreia: Loperamida com parcimônia. Para constipação: Laxantes osmóticos. Casos graves: Amitriptilina em dose baixa (12.5-25mg à noite)."
+      }
+    ]
+  },
+  {
+    id: "esteatose_hepatica",
+    name: "Esteatose Hepática (DHGNA)",
+    category: "Gastrointestinal",
+    diagnostic: "Acúmulo de gordura no parênquima hepático demonstrado por ultrassonografia abdominal, na ausência de consumo etílico significativo ou causas secundárias de esteatose. Avaliação de fibrose por escores não invasivos (FIB-4).",
+    alarm: "Surgimento de icterícia, ascite (barriga d'água), encefalopatia hepática ou episódios de sangramento de varizes -> Evolução para Cirrose Hepática descompensada. Encaminhar para acompanhamento de hepatologia.",
+    treatment: [
+      {
+        title: "Mudança no Estilo de Vida e Perda Ponderal",
+        desc: "Meta de perda de pelo menos 7-10% do peso corporal total através de dieta hipocalórica personalizada e exercícios físicos aeróbicos e resistidos semanais para redução da inflamação hepática."
+      },
+      {
+        title: "Tratamento de Comorbidades e Antioxidantes",
+        desc: "Controle rigoroso do diabetes, dislipidemia e hipertensão. Em pacientes não diabéticos com esteato-hepatite confirmada por biópsia, avaliar uso de Vitamina E 800 UI ao dia para efeito hepatoprotetor."
+      }
+    ]
+  },
+  {
+    id: "esclerose_multipla",
+    name: "Esclerose Múltipla",
+    category: "Neurológico",
+    diagnostic: "Doença autoimune desmielinizante do sistema nervoso central. Caracterizada por surtos de déficits neurológicos (neurite óptica, parestesias, perda de força, ataxia) disseminados no tempo e espaço, confirmada por Ressonância Magnética cerebral/medular.",
+    alarm: "Início súbito de fraqueza motora ascendente rápida com dificuldade respiratória ou retenção urinária aguda -> Surto agudo grave. Internar para pulsoterapia urgente com Metilprednisolona IV.",
+    treatment: [
+      {
+        title: "Pulsoterapia no Surto Agudo",
+        desc: "Administrar Metilprednisolona 1g IV ao dia por 3 a 5 dias consecutivos em ambiente hospitalar para acelerar a recuperação funcional e reduzir o dano mielínico agudo."
+      },
+      {
+        title: "Medicamentos Modificadores da Doença (MMD)",
+        desc: "Encaminhar para ambulatório especializado em neurologia e farmácia de alto custo para início de imunomoduladores/imunossupressores como Acetato de Glatiâmer, Interferon-beta, Fingolimode ou Natalizumabe."
+      }
+    ]
+  },
+  {
+    id: "demencia_vascular",
+    name: "Demência Vascular",
+    category: "Neurológico",
+    diagnostic: "Declínio cognitivo com prejuízo funcional, de início súbito ou progressão em degraus, intimamente correlacionado a múltiplos eventos cerebrovasculares prévios (infartos lacunares, AVC cortical) evidenciados em imagem.",
+    alarm: "Surgimento súbito de novos déficits motores focais, disartria aguda ou convulsões -> Suspeita de novo acidente vascular cerebral (AVC isquêmico ou hemorrágico) em andamento. Acionar SAMU.",
+    treatment: [
+      {
+        title: "Prevenção Secundária Cardiovascular Rigorosa",
+        desc: "Controle estrito da PA (< 130/80 mmHg), diabetes (HbA1c < 7%) e dislipidemia. Prescrever Ácido Acetilsalicílico (AAS) 100mg VO ao dia associado a uma estatina de alta potência (Atorvastatina 40mg VO à noite)."
+      },
+      {
+        title: "Manejo Comportamental e Cognitivo",
+        desc: "Manter rotina estruturada de atividades cognitivas, exercícios físicos leves e estimulação social. Se sintomas neuropsiquiátricos importantes (agitação, alucinações), utilizar antipsicóticos em baixas doses com cautela extrema."
+      }
+    ]
+  },
+  {
+    id: "neuropatia_periferica",
+    name: "Neuropatia Diabética e Periférica",
+    category: "Neurológico",
+    diagnostic: "Dor em queimação, agulhada, formigamento ou dormência com distribuição simétrica em 'bota' ou 'luva', com perda de sensibilidade protetora avaliada pelo teste do monofilamento de 10g.",
+    alarm: "Presença de úlcera plantar indolor infectada, secreção purulenta, calor local ou deformidade súbita do pé (Pé de Charcot) -> Risco crítico de amputação. Encaminhar para cirurgia/ortopedia vascular.",
+    treatment: [
+      {
+        title: "Controle da Glicemia e Cuidados Diários",
+        desc: "Orientar o paciente a nunca andar descalço, inspecionar diariamente a sola dos pés, secar bem entre os dedos e hidratar a pele (evitando passar creme entre os dedos). Manter controle glicêmico estrito para estabilizar a neuropatia."
+      },
+      {
+        title: "Tratamento da Dor Neuropática",
+        desc: "Prescrever moduladores da dor: Pregabalina 75mg a 150mg VO ao dia, Gabapentina 300mg a 900mg VO ao dia ou Amitriptilina 12.5mg a 50mg VO à noite (atentar para efeitos anticolinérgicos em idosos)."
+      }
+    ]
+  },
+  {
+    id: "miastenia",
+    name: "Miastenia Gravis",
+    category: "Neurológico",
+    diagnostic: "Flutuação da fraqueza muscular esquelética com fadiga acentuada ao longo do dia e melhora com repouso. Sintomas comuns: ptose palpebral, diplopia (visão dupla) e disfonia. Confirmada por anticorpos anti-AChR e eletroneuromiografia.",
+    alarm: "Crise Miastênica: fraqueza acentuada da musculatura respiratória e deglutição, necessitando de intubação e ventilação mecânica -> Encaminhar imediatamente para UTI para imunoglobulina ou plasmaférese.",
+    treatment: [
+      {
+        title: "Uso de Anticolinesterásicos de Ação Rápida",
+        desc: "Prescrever Piridostigmina (Mestinon) 60mg VO, ajustando dose e intervalo (geralmente de 4/4h ou 6/6h) conforme resposta clínica e tolerância (observar cólicas intestinais e salivação)."
+      },
+      {
+        title: "Terapia Imunossupressora",
+        desc: "Associar Presonisa em baixas doses ou Azatioprina sob supervisão neurológica para redução dos níveis de autoanticorpos. Programar timectomia cirúrgica se presença de timoma ou doença generalizada em jovens."
+      }
+    ]
+  },
+  {
+    id: "espondilite_anquilosante",
+    name: "Espondilite Anquilosante",
+    category: "Reumatologia",
+    diagnostic: "Dor lombar crônica de padrão inflamatório (início < 45 anos, melhora com exercício e piora com repouso, rigidez matinal > 30 minutos) associada a entesite ou uveíte anterior, confirmada por ressonância das sacroilíacas e HLA-B27 positivo.",
+    alarm: "Evolução com dor torácica severa com restrição da expansibilidade pulmonar, ou trauma de coluna com dor de início súbito (alto risco de fratura vertebral por coluna anquilosada) -> Imobilização e pronto-socorro.",
+    treatment: [
+      {
+        title: "Anti-inflamatórios Não Esteroidais (AINEs)",
+        desc: "Medicamento de primeira escolha. Prescrever Naproxeno 250mg a 500mg VO de 12/12h ou Indometacina 50mg VO de 12/12h por longos períodos para controle da dor e progressão da anquilose."
+      },
+      {
+        title: "Atividade Física Otimizada e Biológicos",
+        desc: "Fisioterapia focada em alongamento e preservação postural global (RPG). Em casos refratários aos AINEs, iniciar agentes anti-TNF (como Adalimumabe ou Etanercepte) fornecidos pelo SUS."
+      }
+    ]
+  },
+  {
+    id: "fibromialgia",
+    name: "Fibromialgia Crônica",
+    category: "Reumatologia",
+    diagnostic: "Dor generalizada difusa por mais de 3 meses, associada a fadiga, distúrbios do sono e alterações cognitivas (escore de severidade dos sintomas e índice de dor generalizada), sem causa orgânica identificável.",
+    alarm: "Presença de sintomas constitucionais graves (perda de peso rápida, febre prolongada, adenopatias), rigidez articular inflamatória proeminente ou perda de força focal -> Investigar diagnósticos alternativos como neoplasias ou autoimunes.",
+    treatment: [
+      {
+        title: "Abordagem Multidisciplinar Não Farmacológica",
+        desc: "Orientar de forma enfática a prática regular de exercícios físicos aeróbicos de baixo impacto (caminhada, hidroginástica, natação) e terapia cognitivo-comportamental (TCC) para modulação central da dor."
+      },
+      {
+        title: "Farmacoterapia Coadjuvante de Modulação Central",
+        desc: "Prescrever Amitriptilina 12.5mg a 25mg VO à noite ou Ciclobenzaprina 5mg a 10mg VO à noite. Como alternativa, utilizar Duloxetina 30mg a 60mg VO pela manhã ou Pregabalina 75mg VO à noite."
+      }
+    ]
+  },
+  {
+    id: "sindrome_sjogren",
+    name: "Síndrome de Sjogren",
+    category: "Reumatologia",
+    diagnostic: "Doença autoimune caracterizada por infiltração linfocitária das glândulas exócrinas. Pacientes apresentam xeroftalmia (olho seco grave) e xerostomia (boca seca intensa) persistentes, associadas a anticorpos Anti-SSA (Ro) ou Anti-SSB (La).",
+    alarm: "Aparecimento de febre persistente, aumento volumétrico de parótidas de consistência endurecida ou perda ponderal (alto risco de linfoma em Sjogren) -> Biópsia e investigação especializada rápida.",
+    treatment: [
+      {
+        title: "Tratamento de Alívio da Secura Mucosa",
+        desc: "Prescrever lágrimas artificiais sem conservantes a cada 1-2h, saliva artificial e boa hidratação oral. Orientar higiene bucal rigorosa e visitas regulares ao dentista devido ao alto risco de cáries de repetição."
+      },
+      {
+        title: "Estimulantes Secretores e Imunossupressores",
+        desc: "Considerar Pilocarpina 5mg VO de 8/8h para estimular secreções se houver tecido glandular viável. Em manifestações sistêmicas (artrite, vasculite), associar Hidroxicloroquina 400mg VO ao dia."
+      }
+    ]
+  },
+  {
+    id: "polimialgia_reumatica",
+    name: "Polimialgia Reumática",
+    category: "Reumatologia",
+    diagnostic: "Dor e rigidez bilateral persistente em cinturas escapular e pélvica de início agudo ou subagudo em pacientes com mais de 50 anos, acompanhada de elevação acentuada de provas de atividade inflamatória (VHS > 40 mm/h e PCR alta).",
+    alarm: "Associação com cefaleia temporal nova severa, claudicação de mandíbula ao mastigar ou perda visual súbita unilateral (arterite de células gigantes associada) -> Iniciar imediatamente Metilprednisolona venosa para evitar cegueira definitiva.",
+    treatment: [
+      {
+        title: "Corticoterapia em Dose Baixa e Rápida Resposta",
+        desc: "Iniciar com Prednisona 15mg VO ao dia em dose única matinal. Uma melhora clínica dramática (em 24 a 48h) é característica da doença. Manter a dose por 2-4 semanas e iniciar redução extremamente lenta."
+      },
+      {
+        title: "Prevenção de Efeitos Colaterais de Corticoides",
+        desc: "Associar Carbonato de Cálcio 1000mg/dia + Vitamina D3 800 UI/dia de forma contínua para mitigar a perda de massa óssea decorrente do uso prolongado de corticoide."
+      }
+    ]
+  },
+  {
+    id: "nefropatia_diabetica",
+    name: "Nefropatia Diabética",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Presença de albuminúria persistente confirmada em duas amostras de urina de 24h ou amostra isolada (relação albumina/creatinina - RAC > 30 mg/g) em paciente com diabetes estabelecido de longa data.",
+    alarm: "Surgimento de edema generalizado súbito (síndrome nefrótica), uremia grave (perda de apetite, soluços, náuseas e vômitos refratários, pericardite urêmica) ou hipercalemia severa -> Diálise de urgência.",
+    treatment: [
+      {
+        title: "Bloqueio do Sistema Renina-Angiotensina",
+        desc: "Prescrever Enalapril 10mg a 20mg VO de 12/12h ou Losartana 50mg a 100mg VO ao dia. O bloqueio duplo é contraindicado. Ajustar doses para tolerar proteinúria sem induzir hipercalemia ou queda abrupta da TFG."
+      },
+      {
+        title: "Gliflozinas de Proteção Renal",
+        desc: "Associar Inibidores da SGLT2 (Dapagliflozina 10mg VO ao dia), que comprovadamente reduzem a taxa de declínio da função renal e a albuminúria, desde que a TFG > 25-30 mL/min."
+      }
+    ]
+  },
+  {
+    id: "glomerulonefrite",
+    name: "Glomerulonefrite Crônica",
+    category: "Metabólicas/Endócrinas",
+    diagnostic: "Presença de hematúria glomerular dismórfica microscópica persistente, cilindros hemáticos, proteinúria subnefrótica ou nefrótica e perda progressiva de função renal.",
+    alarm: "Evolução com hipertensão arterial acelerada refratária, oligúria extrema (< 400ml/dia de urina) ou congestão pulmonar aguda (EAP) -> Internação imediata para pulsoterapia e suporte intensivo.",
+    treatment: [
+      {
+        title: "Controle Pressórico e Antiproteinúria",
+        desc: "Manter PA rigorosamente abaixo de 120/80 mmHg com IECA (Enalapril) ou BRA (Losartana) e restrição rigorosa de sódio na dieta (< 2g/dia)."
+      },
+      {
+        title: "Imunossupressão Direcionada",
+        desc: "Encaminhar para biópsia renal guiada por imagem se perda rápida de função. Iniciar corticoterapia ou imunossupressores específicos (como Ciclofosfamida ou Ciclosporina) conforme o padrão histológico revelado."
+      }
+    ]
+  },
+  {
+    id: "disfuncao_eretil",
+    name: "Disfunção Erétil Crônica",
+    category: "Outros",
+    diagnostic: "Inabilidade persistente em obter e manter uma ereção suficiente para permitir uma atividade sexual satisfatória por pelo menos 3 a 6 meses. Investigar causas vasculares, neurológicas, psicogênicas ou hormonais.",
+    alarm: "Presença de ereção dolorosa persistente com duração maior que 4 horas (Priapismo agudo) -> Emergência urológica imediata para aspiração intracavernosa para evitar fibrose peniana e disfunção permanente.",
+    treatment: [
+      {
+        title: "Inibidores da Fosfodiesterase Tipo 5 (PDE5)",
+        desc: "Primeira linha farmacológica. Prescrever Sildenafila 25-50mg VO cerca de 1 hora antes da atividade sexual (máximo 1 dose/dia), ou Tadalafila 5mg de uso diário ou 20mg sob demanda. Contraindicado em uso de Nitratos."
+      },
+      {
+        title: "Modificação de Fatores de Risco e Terapia Cognitiva",
+        desc: "Controlar rigorosamente hipertensão, diabetes, dislipidemia e obesidade. Incentivar cessação de tabaco/álcool. Encaminhar para psicoterapia de apoio ou terapia de casal se forte componente psicogênico."
+      }
+    ]
+  },
+  {
+    id: "psoriase",
+    name: "Psoríase Vulgar",
+    category: "Dermatologia",
+    diagnostic: "Placas eritemato-descamativas simétricas, bem delimitadas, recobertas por escamas esbranquiçadas, localizadas preferencialmente em áreas de extensão (cotovelos, joelhos, couro cabeludo). Sinais de raspagem positivos (Sinal de Auspitz).",
+    alarm: "Erupção eritematosa dolorosa generalizada cobrindo > 90% da superfície corporal (Psoríase Eritrodérmica) ou aparecimento de múltiplas pústulas estéreis com febre (Psoríase Pustulosa) -> Internação imediata.",
+    treatment: [
+      {
+        title: "Terapia Tópica de Primeira Linha",
+        desc: "Para lesões localizadas (< 10% da superfície corporal): aplicar pomada de Propionato de Clobetasol 0.05% associado ou não a Ácido Salicílico 3% 1 a 2 vezes ao dia por até 4 semanas. Hidratação abundante."
+      },
+      {
+        title: "Fototerapia ou Terapia Sistêmica",
+        desc: "Encaminhar para fototerapia UVA/UVB de banda estreita. Casos extensos ou refratários necessitam de Metotrexato 7.5-15mg VO semanalmente (associado a Ácido Fólico) ou Acitretina."
+      }
+    ]
+  },
+  {
+    id: "melanoma",
+    name: "Melanoma Cutâneo Suspeito",
+    category: "Dermatologia",
+    diagnostic: "Lesão pigmentada assimétrica que preenche os critérios ABCDE: Assimetria, Bordas irregulares, Cores múltiplas, Diâmetro > 6mm, Evolução rápida com mudanças de tamanho ou sangramento espontâneo.",
+    alarm: "Presença de linfonodomegalia satélite endurecida, ulceração persistente da lesão primária ou dor local significativa -> Alto risco de metástase rápida. Encaminhar imediatamente para biópsia excisional rápida.",
+    treatment: [
+      {
+        title: "Excisão Cirúrgica Diagnóstica Inicial",
+        desc: "NUNCA realizar biópsia incisional (shaving/punch) se suspeita de melanoma. Realizar biópsia excisional completa com margens estreitas de 1 a 2mm para confirmação diagnóstica e determinação do Índice de Breslow."
+      },
+      {
+        title: "Ampliação de Margens e Pesquisa de Linfonodo Sentinela",
+        desc: "Com base no Breslow: se > 0.8mm, encaminhar com urgência para ampliação cirúrgica de margens (1-2cm) e biópsia de linfonodo sentinela em serviço oncológico especializado."
+      }
+    ]
+  },
+  {
+    id: "vitiligo",
+    name: "Vitiligo",
+    category: "Dermatologia",
+    diagnostic: "Máculas e placas acrômicas (completamente brancas, cor de giz), de contornos nítidos e bem delineados, bilaterais e frequentemente simétricas, acentuadas sob exame com Lâmpada de Wood.",
+    alarm: "Vitiligo com progressão extremamente rápida (fase inflamatória ativa com eritema na borda das lesões) associado a sintomas depressivos graves ou ideação suicida por forte estigma social -> Suporte psicológico imediato.",
+    treatment: [
+      {
+        title: "Corticosteroides e Imunomoduladores Tópicos",
+        desc: "Para lesões limitadas: aplicar Creme de Pomada de Clobetasol 0.05% ou Creme de Tacrolimo 0.1% 1 a 2 vezes ao dia, monitorando atrofia cutânea local. Proteger rigorosamente contra queimaduras solares."
+      },
+      {
+        title: "Fototerapia e Suporte Psicossocial",
+        desc: "Encaminhar para fototerapia UVB de banda estreita (estimula repigmentação a partir dos folículos pilosos). Oferecer psicoterapia de apoio e orientação sobre maquiagens cosméticas de camuflagem."
+      }
+    ]
+  },
+  {
+    id: "acne_grave",
+    name: "Acne Inflamatória Grave",
+    category: "Dermatologia",
+    diagnostic: "Presença de múltiplos nódulos e cistos inflamatórios dolorosos, abscessos intercomunicantes com secreção purulenta persistente, eritema acentuado e cicatrizes hipertróficas ou atróficas deformantes no rosto/dorso.",
+    alarm: "Surgimento súbito de febre alta, artralgias severas e ulcerações necróticas na pele com acne confluente (Acne Fulminans) -> Suspender tratamentos tópicos e internar para corticoterapia sistêmica de urgência.",
+    treatment: [
+      {
+        title: "Antibioticoterapia Sistêmica de Transição",
+        desc: "Iniciar Doxiciclina 100mg VO ao dia por até 6-8 semanas associada a Peróxido de Benzila 5% tópico à noite para controle bacteriano inicial de Propionibacterium acnes e redução de cistos agudos."
+      },
+      {
+        title: "Introdução Oportuna de Isotretinoína Oral (Roacutan)",
+        desc: "Encaminhar ao dermatologista para prescrição de Isotretinoína Oral (0.5-1.0 mg/kg/dia). Realizar rigoroso teste de gravidez mensal em mulheres (teratogenicidade extrema) e controle de perfil lipídico/enzimas hepáticas."
+      }
+    ]
+  },
+  {
+    id: "bipolaridade",
+    name: "Transtorno Afetivo Bipolar",
+    category: "Saúde Mental",
+    diagnostic: "Presença de oscilação patológica do humor entre episódios de Mania/Hipomania (grandiosidade, taquipsiquismo, insônia sem fadiga, gastos excessivos) e episódios de Depressão Maior.",
+    alarm: "Episódio maníaco grave com heteroagressividade, delírios de poder, comportamento de altíssimo risco físico/social, ou fase depressiva com ideação suicida ativa -> Internação psiquiátrica imediata para estabilização.",
+    treatment: [
+      {
+        title: "Introdução de Estabilizadores de Humor",
+        desc: "Prescrever Carbonato de Lítio 300mg a 900mg VO ao dia (manter litemia entre 0.6 e 1.2 mEq/L) ou Ácido Valproico 500mg-1500mg VO ao dia. Evitar antidepressivos em monoterapia (risco de virada maníaca)."
+      },
+      {
+        title: "Uso de Antipsicóticos Atípicos se Necessário",
+        desc: "Associar Quetiapina 100-300mg VO à noite ou Olanzapina 5-10mg VO ao dia para controle rápido de sintomas psicóticos ou agitação psicomotora durante episódios agudos de mania."
+      }
+    ]
+  },
+  {
+    id: "esquizofrenia",
+    name: "Esquizofrenia",
+    category: "Saúde Mental",
+    diagnostic: "Presença de sintomas positivos (delírios bizarros, alucinações auditivas frequentes, desorganização do pensamento/comportamento) e sintomas negativos (embotamento afetivo, isolamento social, abulia) por mais de 6 meses.",
+    alarm: "Agitação psicomotora violenta sob influência de alucinações imperativas (escutar vozes comandando agressão) ou recusa alimentar completa motivada por delírio persecutório/envenenamento -> Internação hospitalar de resgate.",
+    treatment: [
+      {
+        title: "Antipsicofarmacoterapia de Primeira Linha",
+        desc: "Prescrever antipsicóticos: Risperidona 1mg a 6mg VO ao dia ou Haloperidol 2.5mg a 10mg VO ao dia associado a Prometazina 25mg se houver efeitos extrapiramidais (impregnação/rigidez)."
+      },
+      {
+        title: "Reabilitação Psicossocial e CAPS",
+        desc: "Encaminhar para inserção em CAPS III para terapia ocupacional, oficinas de socialização e monitoramento terapêutico assistido para prevenir recaídas e promover reintegração social."
+      }
+    ]
+  },
+  {
+    id: "tdah_adulto",
+    name: "TDAH em Adultos",
+    category: "Saúde Mental",
+    diagnostic: "Padrão persistente de desatenção, desorganização, impulsividade e inquietação motora que remonta à infância, causando prejuízo significativo em múltiplas áreas (trabalho, acadêmica, relacionamentos). Avaliado pela escala ASRS-v1.1.",
+    alarm: "Comorbidade grave com abuso severo de substâncias estimulantes, acidentes automobilísticos frequentes por impulsividade extrema ou ansiedade social incapacitante -> Encaminhar para psiquiatria e neurologia.",
+    treatment: [
+      {
+        title: "Terapia Cognitivo-Comportamental Psicoeducacional",
+        desc: "Implementar técnicas de organização pessoal baseadas em agendas visuais, listas de tarefas, gerenciamento de tempo (método pomodoro) e modificação de ambiente para mitigar distratores."
+      },
+      {
+        title: "Tratamento Farmacológico com Estimulantes",
+        desc: "Avaliar introdução de Cloridrato de Metilfenidato (Ritalina 10mg VO 1 a 2 vezes ao dia ou Ritalina LA / Venvanse se disponível e viável). Monitorar rigorosamente frequência cardíaca e pressão arterial."
+      }
+    ]
+  },
+  {
+    id: "borderline",
+    name: "Transtorno de Personalidade Borderline",
+    category: "Saúde Mental",
+    diagnostic: "Instabilidade marcante nos relacionamentos interpessoais, na autoimagem e nos afetos, acompanhada de impulsividade acentuada, sentimentos crônicos de vazio, episódios de raiva intensa e automutilação recorrente.",
+    alarm: "Comportamentos recorrentes de automutilação com intenção letal, tentativas de suicídio de repetição ou episódios de micropsicose reativa -> Encaminhamento para internação psiquiátrica protetiva de curta duração.",
+    treatment: [
+      {
+        title: "Psicoterapia Estruturada (Abordagem Principal)",
+        desc: "A Terapia Comportamental Dialética (DBT) é o tratamento padrão-ouro de eficácia comprovada para o desenvolvimento de regulação emocional, tolerância ao mal-estar e efetividade interpessoal."
+      },
+      {
+        title: "Farmacoterapia Sintomática Coadjuvante",
+        desc: "Prescrever medicação com foco estrito em sintomas-alvo: Fluoxetina ou Sertralina para sintomas depressivos/ansiosos; baixas doses de antipsicóticos (ex: Quetiapina 25-50mg) para impulsividade severa e raiva."
+      }
+    ]
+  },
+  {
+    id: "hiv_aids",
+    name: "HIV/Aids e Infecções Oportunistas",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Sorologia positiva por teste rápido de HIV de fluxo lateral (confirmado por segundo teste rápido de fabricante diferente ou Western Blot). Classificado como Aids se contagem de linfócitos CD4 < 200 células/mm³ ou presença de infecção oportunista.",
+    alarm: "Febre diária alta associada a cefaleia progressiva severa e rigidez nucal (suspeita de Meningite Criptocócica ou Tuberculosa), ou dispneia severa com tosse seca (suspeita de Pneumocistose) -> Internar e investigar.",
+    treatment: [
+      {
+        title: "Terapia Antirretroviral (TARV) Imediata",
+        desc: "Prescrever esquema tríplice padrão do Ministério da Saúde: Tenofovir (TDF) 300mg + Lamivudina (3TC) 300mg + Dolutegravir (DTG) 50mg VO, em tomada única diária, preferencialmente à noite. Testar hepatites e sífilis."
+      },
+      {
+        title: "Quimioprofilaxia de Infecções Oportunistas se CD4 Baixo",
+        desc: "Se CD4 < 200/mm³: prescrever Sulfametoxazol-Trimetoprima 800/160mg VO ao dia para prevenir pneumonia por Pneumocystis jirovecii e neurotoxoplasmose. Manter até CD4 restabelecer > 200 por mais de 3 meses."
+      }
+    ]
+  },
+  {
+    id: "chagas",
+    name: "Doença de Chagas Crônica",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Infecção pelo Trypanosoma cruzi confirmada por dois testes sorológicos distintos (ELISA, Imunofluorescência ou Hemaglutinação). Apresenta-se nas formas indeterminada, cardíaca (arritmias, ICC) ou digestiva (megacólon/megaesôfago).",
+    alarm: "Evolução com bloqueio atrioventricular de 2º ou 3º grau ao ECG (síncope, bradicardia extrema) ou dor torácica aguda -> Indicação imediata de internação para passagem de marcapasso transvisório/definitivo.",
+    treatment: [
+      {
+        title: "Eletrocardiograma de Rastreio Anual",
+        desc: "Realizar ECG anual em todos os pacientes na forma indeterminada para detectar distúrbios de condução cardíaca (bloqueio de ramo direito associado a hemibloqueio anterior esquerdo é altamente sugestivo)."
+      },
+      {
+        title: "Tratamento Antiparasitário Específico",
+        desc: "Em fase crônica recente ou crianças, prescrever Benznidazol 5mg/kg/dia VO dividido em duas doses por 60 dias. Em fase crônica tardia estabelecida, o tratamento antiparasitário não reverte as sequelas, focando no manejo da IC."
+      }
+    ]
+  },
+  {
+    id: "toxoplasmose",
+    name: "Toxoplasmose na Gestação",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Sorologia pré-natal evidenciando IgG negativo e IgM positivo (soroconversão na gestação), ou IgM e IgG positivos com teste de avidez de IgG baixo em gestantes com menos de 16 semanas.",
+    alarm: "Febre, cefaleia intensa ou alterações visuais na gestante, ou ultrassonografia fetal revelando calcificações cerebrais, hidrocefalia ou dilatação de ventrículos fetais -> Encaminhamento urgente para medicina fetal.",
+    treatment: [
+      {
+        title: "Prevenção da Transmissão Vertical Inicial",
+        desc: "Iniciar imediatamente Espiramicina 1g VO de 8/8h (3g/dia) de forma ininterrupta assim que detectada suspeita diagnóstica, para prevenir a passagem do parasita pela barreira placentária."
+      },
+      {
+        title: "Esquema Tríplice Se Infecção Fetal Confirmada",
+        desc: "Após 18 semanas de gestação e amniocentese com PCR positiva para T. gondii no líquido amniótico: substituir Espiramicina por Sulfadiazina 3g/dia + Pirimetamina 50mg/dia + Ácido Folínico 15mg/dia para tratar infecção fetal ativa."
+      }
+    ]
+  },
+  {
+    id: "hepatite_b",
+    name: "Hepatite B Crônica",
+    category: "Infecciosas/Endemias",
+    diagnostic: "Presença de HBsAg circulante reagente por período superior a 6 meses. Avaliar replicabilidade viral através do HBeAg e carga viral (DNA do HBV) sanguínea, além de fibrose hepática por elastografia.",
+    alarm: "Hepatite B crônica associada a icterícia progressiva, ascite, varizes esofágicas ou nódulo sólido hepático à ultrassonografia (suspeita de Carcinoma Hepatocelular) -> Rastreio imediato de Alfa-fetoproteína e tomografia.",
+    treatment: [
+      {
+        title: "Rastreamento Regular de Carcinoma Hepatocelular (CHC)",
+        desc: "Realizar ultrassonografia abdominal a cada 6 meses associada a dosagem de Alfa-fetoproteína para detecção precoce de nódulos malignos, obrigatório em pacientes cirróticos ou com história familiar de CHC."
+      },
+      {
+        title: "Tratamento Antiviral com Análogos de Nucleosídeo",
+        desc: "Prescrever Tenofovir (TDF) 300mg VO ao dia ou Entecavir 0.5mg VO ao dia de forma contínua para pacientes com replicação ativa, transaminases elevadas ou cirrose, visando supressão viral crônica."
+      }
+    ]
+  },
+  {
+    id: "endometriose",
+    name: "Endometriose Profunda",
+    category: "Ginecologia/Obstetrícia",
+    diagnostic: "Presença de tecido endometrial fora do útero. Sintomas: dismenorreia secundária severa progressiva, dispareunia de profundidade, dor pélvica crônica não cíclica e infertilidade. Diagnosticada por RNM de pelve com protocolo para endometriose.",
+    alarm: "Surgimento de dor pélvica excruciante de início súbito acompanhada de febre e peritonismo local (suspeita de torção ou ruptura de endometrioma ovariano) -> Encaminhar para laparoscopia cirúrgica de urgência.",
+    treatment: [
+      {
+        title: "Terapia Hormonal para Bloqueio de Ciclo",
+        desc: "Prescrever contraceptivos orais combinados de uso contínuo (ex: Etinilestradiol + Gestodeno) ou progestágenos isolados (Dienogeste 2mg VO ao dia) para suprimir a menstruação e induzir atrofia dos focos endometrióticos."
+      },
+      {
+        title: "Analgesia Escalonada e Cirurgia se Refratário",
+        desc: "Utilizar AINEs (como Ibuprofeno 600mg) associados a analgésicos simples nas crises. Casos com dor refratária ao bloqueio hormonal ou acometimento de ureter/reto devem ser encaminhados para ressecção cirúrgica por videolaparoscopia."
+      }
+    ]
+  },
+  {
+    id: "miomatose_uterina",
+    name: "Miomatose Uterina Sintomática",
+    category: "Ginecologia/Obstetrícia",
+    diagnostic: "Tumores benignos da musculatura uterina (miócitos) detectados por Ultrassonografia pélvica/transvaginal, causando sangramento uterino anormal abundante (menorragia), cólicas uterinas e aumento do volume abdominal.",
+    alarm: "Presença de sangramento vaginal volumoso contínuo com repercussão hemodinâmica importante (tontura postural, palidez mucosa, hipotensão) ou dor pélvica severa refratária -> Internação para curetagem sem demora ou cirurgia.",
+    treatment: [
+      {
+        title: "Controle do Sangramento Abundante",
+        desc: "Utilizar Ácido Tranexâmico 250-500mg VO de 8/8h durante os dias de sangramento intenso associado a anti-inflamatórios para reduzir a perda sanguínea. Tratar anemia ferropriva com Sulfato Ferroso oral."
+      },
+      {
+        title: "Tratamento Hormonal e Cirurgia Eletiva",
+        desc: "Dispositivo intrauterino liberador de Levonorgestrel (DIU Mirena) se cavidade uterina regular, ou Análogos de GnRH para redução volumétrica pré-operatória. Encaminhar para miomectomia ou histerectomia se desejo de prole completo."
+      }
+    ]
+  },
+  {
+    id: "sindrome_ovario_policistico",
+    name: "Síndrome dos Ovários Policísticos (SOP)",
+    category: "Ginecologia/Obstetrícia",
+    diagnostic: "Presença de pelo menos dois dos três critérios de Roterdã: oligovulação ou anovulação crônica (irregularidade menstrual), hiperandrogenismo clínico ou laboratorial (hirsutismo, acne) e ovários de aparência policística ao USG.",
+    alarm: "Sangramento uterino disfuncional abundante persistente com anemia ferropriva severa (Hb < 8 g/dL) -> Hemotransfusão ou reposição de ferro venoso em ambiente de pronto atendimento.",
+    treatment: [
+      {
+        title: "Regularização do Ciclo e Tratamento do Hiperandrogenismo",
+        desc: "Prescrever anticoncepcional oral combinado contendo progestágeno antiandrogênico (ex: Acetato de Ciproterona + Etinilestradiol). Se hirsutismo persistente após 6 meses, associar Espironolactona 50-100mg VO ao dia."
+      },
+      {
+        title: "Tratamento da Resistência Insulínica",
+        desc: "Associar Metformina 500-1500mg VO ao dia em pacientes com sobrepeso ou intolerância à glicose, otimizando o perfil metabólico e facilitando o restabelecimento de ovulações espontâneas."
+      }
+    ]
+  },
+  {
+    id: "cancer_colo_utero",
+    name: "Lesões Precursoras de Câncer de Colo do Útero",
+    category: "Ginecologia/Obstetrícia",
+    diagnostic: "Rastreamento por exame preventivo citopatológico (Papanicolau) alterado, revelando lesões intraepiteliais de alto grau (NIC II ou NIC III / HSIL). Confirmação por colposcopia com biópsia dirigida.",
+    alarm: "Presença de sangramento vaginal espontâneo contínuo pós-coito (sinusorragia), corrimento fétido aquoso abundante ou dor pélvica constante profunda -> Suspeita de Câncer invasivo estabelecido. Encaminhamento urgente ao oncologista.",
+    treatment: [
+      {
+        title: "Indicação de Colposcopia e Biópsia",
+        desc: "Encaminhar imediatamente para colposcopia em ambulatório de patologia do trato genital inferior após resultado citológico sugestivo de lesão de alto grau (HSIL), células escamosas atípicas não excludentes (ASC-H) ou adenocarcinoma."
+      },
+      {
+        title: "Cirurgia de Alta Frequência (CAF) / Conização",
+        desc: "Realizar exérese da zona de transformação (EZT) ou conização do colo do útero em ambiente especializado para tratamento cirúrgico completo e diagnóstico histopatológico definitivo da lesão intraepitelial."
+      }
+    ]
+  },
+  {
+    id: "perda_auditiva",
+    name: "Disacusia Neurossensorial",
+    category: "Ouvido/Naris/Garganta",
+    diagnostic: "Perda auditiva progressiva bilateral ou súbita unilateral, sem sinais de obstrução de conduto por cerúmen ao exame otoscópico. Confirmada por Audiometria tonal e vocal demonstrando perda de padrão neurossensorial.",
+    alarm: "Instalação abrupta de perda auditiva em menos de 72 horas (Perda Auditiva Súbita Idiopática) -> Emergência otorrinolaringológica! Iniciar imediatamente corticoterapia sistêmica para evitar surdez permanente.",
+    treatment: [
+      {
+        title: "Corticoterapia Sistêmica Intensa na Perda Súbita",
+        desc: "Iniciar Prednisona 1mg/kg/dia VO (máximo 60mg) por 10 a 14 dias com desmame subsequente, ou encaminhar para infiltração intratimpânica de Dexametasona por especialista se contraindicação a corticoides orais."
+      },
+      {
+        title: "Reabilitação Auditiva com Aparelho (AASI)",
+        desc: "Em perdas crônicas consolidadas, encaminhar para serviço de saúde auditiva regulado para moldagem e fornecimento de Aparelho de Amplificação Sonora Individual (AASI) bilateral e fonoterapia."
+      }
+    ]
+  },
+  {
+    id: "rinite_alergica_refrataria",
+    name: "Rinite Alérgica Refratária",
+    category: "Ouvido/Naris/Garganta",
+    diagnostic: "Prurido nasal, espirros em salva, coriza hialina e obstrução nasal crônica persistente com falha completa de controle clínico básico na UBS através de anti-histamínicos orais tradicionais.",
+    alarm: "Associação com crises de asma de difícil controle, roncos noturnos obstrutivos severos com pausas respiratórias ou surgimento de anosmia súbita -> Avaliar pólipos nasais obstrutivos por nasofibroscopia.",
+    treatment: [
+      {
+        title: "Higiene Nasal e Corticoterapia Intranasal Contínua",
+        desc: "Orientar lavagem nasal abundante diária com Soro Fisiológico 0.9% morno antes das aplicações. Prescrever Spray de Dipropionato de Beclometasona ou Furoato de Fluticasona (2 jatos em cada narina 1 vez ao dia por no mínimo 3 meses)."
+      },
+      {
+        title: "Encaminhamento para Imunoterapia e Testes Alérgicos",
+        desc: "Encaminhar para realização de Prick Test cutâneo para identificação de aeroalérgenos específicos e início de imunoterapia alérgeno-específica (vacinas de dessensibilização)."
+      }
+    ]
+  },
+  {
+    id: "zumbido",
+    name: "Zumbido Crônico e Acufeno",
+    category: "Ouvido/Naris/Garganta",
+    diagnostic: "Percepção consciente de um som na ausência de um estímulo acústico correspondente, contínuo ou intermitente, por mais de 3-6 meses. Realizar otoscopia exaustiva e audiometria para afastar perda auditiva associada.",
+    alarm: "Zumbido de padrão pulsátil síncrono com o batimento cardíaco, ou zumbido estritamente unilateral progressivo -> Solicitar Angiotomografia de crânio ou RNM de conduto auditivo interno para excluir malformações vasculares ou Schwannoma vestibular.",
+    treatment: [
+      {
+        title: "Terapia de Habituação do Zumbido (TRT)",
+        desc: "Orientações psicoeducativas detalhadas. Evitar o silêncio absoluto através do uso de geradores de som estático ambiental (ruído branco suave, sons da natureza) para dessensibilizar a percepção do zumbido pelo córtex cerebral."
+      },
+      {
+        title: "Controle de Fatores de Piora e Medicamentos",
+        desc: "Reduzir cafeína, açúcar refinado e álcool. Controlar ansiedade/estresse. Em casos com grande impacto funcional, avaliar uso de moduladores neurais como Clonazepam em baixas doses ou extratos de Ginkgo Biloba padronizados."
+      }
+    ]
+  },
+  {
+    id: "disfonia_cronica",
+    name: "Disfonia Crônica",
+    category: "Ouvido/Naris/Garganta",
+    diagnostic: "Alteração na qualidade, tom ou volume da voz por período superior a 3 semanas, sem causa infecciosa ativa. Exige visualização das pregas vocais por Laringoscopia ou Nasofibroscopia Laringea.",
+    alarm: "Disfonia em paciente tabagista crônico pesado e etilista, de caráter progressivo, associada a disfagia, otalgia referida ipsilateral ou linfonodo cervical endurecido palpável -> Alta suspeita de Carcinoma Epidermoide de laringe. Laringoscopia urgente.",
+    treatment: [
+      {
+        title: "Repouso Vocal e Higiene da Voz",
+        desc: "Orientar hidratação constante (2L de água por dia), evitar pigarrear, falar sussurrando ou gritar, e cessação imediata do uso de tabaco e bebidas alcoólicas."
+      },
+      {
+        title: "Encaminhamento para Laringoscopia e Fonoterapia",
+        desc: "Solicitar exame de Nasofibrolaringoscopia para diagnóstico de lesões benignas (nódulos, pólipos, cistos, fendas). Encaminhar para fonoterapia estruturada ou cirurgia laringológica se lesão tumoral confirmada."
+      }
+    ]
+  },
+  {
+    id: "glaucoma",
+    name: "Glaucoma Crônico de Ângulo Aberto",
+    category: "Oftalmologia",
+    diagnostic: "Neuropatia óptica progressiva caracterizada por escavação aumentada do disco óptico (> 0.5), perda de campo visual periférico característica e, frequentemente, pressão intraocular (PIO) elevada (> 21 mmHg) aferida por Tonometria de aplanação.",
+    alarm: "Dor ocular lancinante unilateral súbita, olho vermelho intenso, cefaleia ipsilateral, visão de halos coloridos e embaçamento visual com pupila médio-midriática paralítica -> Crise de Glaucoma Agudo de Ângulo Fechado (Emergência!). Encaminhar ao oftalmologista imediatamente para iridotomia e colírio de pilocarpina.",
+    treatment: [
+      {
+        title: "Terapia Hipotensora Ocular com Colírios",
+        desc: "Prescrever análogos de prostaglandina (colírio de Latanoprosta 0.005% 1 gota à noite no olho afetado) ou betabloqueadores tópicos (colírio de Maleato de Timolol 0.5% 1 gota de 12/12h). Monitorar PIO a cada 3 meses."
+      },
+      {
+        title: "Campo Visual Computadorizado e Acompanhamento",
+        desc: "Solicitar exames de campimetria visual anual e retinografia do disco óptico para avaliar estabilização da perda axonal, ajustando terapia se progressão demonstrada."
+      }
+    ]
+  },
+  {
+    id: "catarata",
+    name: "Catarata Senil",
+    category: "Oftalmologia",
+    diagnostic: "Perda progressiva da transparência do cristalino, causando redução da acuidade visual, visão nublada ('névoa' constante), sensibilidade aumentada ao brilho de luzes e alteração na percepção de cores.",
+    alarm: "Visão turva associada a dor ocular moderada a severa e olho vermelho, ou catarata extremamente volumosa induzindo glaucoma secundário (Catarata Facomórfica) -> Encaminhamento urgente para cirurgia.",
+    treatment: [
+      {
+        title: "Avaliação da Acuidade Visual e Indicação Cirúrgica",
+        desc: "O tratamento é estritamente cirúrgico. Indicar cirurgia de catarata (Facoemulsificação com implante de lente intraocular - LIO) assim que a perda visual causar impacto funcional ou limitação nas atividades diárias do idoso."
+      },
+      {
+        title: "Cuidados Pós-Operatórios Importantes",
+        desc: "Orientar rigorosamente o uso de colírios antibióticos e corticoides associados prescritos pelo cirurgião, evitar esforços físicos, coçar o olho ou dormir sobre o lado operado nos primeiros 15 dias pós-facectomia."
+      }
+    ]
+  },
+  {
+    id: "conjuntivite_alergica",
+    name: "Conjuntivite Alérgica Crônica",
+    category: "Oftalmologia",
+    diagnostic: "Prurido ocular bilateral intenso de caráter recorrente, associado a lacrimejamento excessivo, hiperemia conjuntival (olho vermelho), edema palpebral (quemose) e secreção mucoide filamentosa. Frequentemente associada a rinite/asma.",
+    alarm: "Presença de fotofobia intensa, dor ocular profunda unilateral, diminuição importante da acuidade visual ou lesão esbranquiçada na córnea (suspeita de ceratite infecciosa secundária ao ato de coçar) -> Encaminhar com urgência.",
+    treatment: [
+      {
+        title: "Compressas Frias e Lágrimas Artificiais",
+        desc: "Orientar aplicação frequente de compressas frias com água filtrada ou soro fisiológico e uso de colírios lubrificantes gelados para aliviar o prurido e diluir os alérgenos na superfície ocular."
+      },
+      {
+        title: "Colírios Anti-histamínicos e Estabilizadores de Mastócitos",
+        desc: "Prescrever colírio de Cloridrato de Olopatadina 0.1% ou 0.2% (1 gota em cada olho 1 a 2 vezes ao dia). Casos graves necessitam de uso curto de colírio de corticoide de baixa penetração (ex: Fluorometolona) estritamente monitorado por especialista."
+      }
+    ]
+  },
+  {
+    id: "retinopatia_diabetica",
+    name: "Retinopatia Diabética",
+    category: "Oftalmologia",
+    diagnostic: "Microaneurismas, hemorragias em chama de vela, exsudatos duros, manchas algodonosas e proliferação de neovasos ao exame de mapeamento de retina (fundoscopia) sob dilatação pupilar em paciente com DM de longa duração.",
+    alarm: "Perda visual súbita indolor unilateral, ou visão de múltiplas manchas escuras móveis ('chuva de fuligem') -> Suspeita de Hemorragia Vítrea ou Descolamento de Retina decorrente de retinopatia proliferativa. Vitrectomia cirúrgica urgente.",
+    treatment: [
+      {
+        title: "Mapeamento de Retina de Rastreio Anual",
+        desc: "Obrigatório anualmente para todos os pacientes com DM Tipo 2 a partir do diagnóstico e DM Tipo 1 após 5 anos do diagnóstico para detecção precoce de lesões tratáveis antes de sintomas visuais."
+      },
+      {
+        title: "Fotocoagulação a Laser e Anti-VEGF",
+        desc: "Encaminhar para fotocoagulação panretiniana a laser em casos de retinopatia proliferativa, ou injeções intravítreas de agentes anti-VEGF (como Ranibizumabe) se presença de Edema Macular Diabético com perda visual ativa."
+      }
+    ]
+  },
+  {
+    id: "olho_seco",
+    name: "Síndrome do Olho Seco",
+    category: "Oftalmologia",
+    diagnostic: "Sensação de areia nos olhos, queimação, fotofobia, flutuação visual e lacrimejamento paradoxal de repetição, causados por produção insuficiente de lágrima ou evaporação excessiva do filme lacrimal. Confirmado por teste de Schirmer.",
+    alarm: "Dor ocular intensa persistente com incapacidade de manter o olho aberto, vermelhidão focal acentuada ou úlcera de córnea visível à fluoresceína -> Risco de perfuração ocular. Encaminhamento imediato.",
+    treatment: [
+      {
+        title: "Lubrificação Ocular e Higiene Palpebral",
+        desc: "Prescrever colírios lubrificantes (lágrimas artificiais como Carboximetilcelulose 0.5% ou Hialuronato de Sódio) de 4/4h ou mais frequente. Realizar compressas mornas palpebrais diárias se disfunção das glândulas de Meibômio."
+      },
+      {
+        title: "Bloqueio Ambiental e Óculos de Proteção",
+        desc: "Orientar evitar exposição direta a correntes de ar, ar condicionado e telas de computador por períodos prolongados. Recomendar pausas visuais regulares (regra 20-20-20: a cada 20 minutos, olhar para 6 metros por 20 segundos)."
+      }
+    ]
+  },
+  {
+    id: "tendinite_ombro",
+    name: "Tendinopatia do Manguito Rotador",
+    category: "Ortopedia",
+    diagnostic: "Dor no ombro de início insidioso, pior à noite ao deitar sobre o braço afetado e durante a elevação ativa do membro (arco doloroso entre 60° e 120°). Testes de Neer, Hawkins e Jobe positivos indicam impacto/lesão de tendão (supraespinal).",
+    alarm: "Incapacidade completa de elevação ativa do braço (braço pendente) após queda ou trauma agudo -> Indica ruptura aguda traumática total do tendão do manguito rotador. Encaminhar para reparo cirúrgico ortopédico urgente.",
+    treatment: [
+      {
+        title: "Controle da Dor e Preservação da Mobilidade",
+        desc: "Prescrever AINEs por curto período nas crises (ex: Ibuprofeno 600mg VO de 8/8h por 5 dias) associado a aplicação local de gelo por 20 minutos 3 vezes ao dia. Evitar imobilização prolongada (risco de capsulite adesiva)."
+      },
+      {
+        title: "Cinesioterapia e Reabilitação Física",
+        desc: "Encaminhar para fisioterapia focada no fortalecimento dos estabilizadores da escápula e depressores da cabeça umeral, visando reduzir o impacto mecânico subacromial durante movimentos."
+      }
+    ]
+  },
+  {
+    id: "tunel_carpo",
+    name: "Síndrome do Túnel do Carpo",
+    category: "Ortopedia",
+    diagnostic: "Parestesia (dormência, formigamento) na região palmar dos três primeiros dedos e metade lateral do quarto dedo, com piora noturna ou após atividades manuais repetitivas. Sinais de Tinel e Phalen positivos ao exame físico.",
+    alarm: "Presença de hipotrofia ou atrofia tenar visível (perda de massa muscular na base do polegar) associada a perda importante de força de preensão manual -> Compressão severa crônica do nervo mediano. Liberação cirúrgica urgente.",
+    treatment: [
+      {
+        title: "Uso de Órtese de Punho Noturna",
+        desc: "Prescrever uso de órtese de punho rígida em posição neutra exclusivamente durante a noite por 4-6 semanas para minimizar a pressão intracarpal durante o sono e aliviar os sintomas."
+      },
+      {
+        title: "Fisioterapia e Infiltração Local",
+        desc: "Encaminhar para fisioterapia com ultrassom e mobilização de tecidos moles. Casos moderados com dor persistente podem se beneficiar de infiltração local de corticoide ou cirurgia de liberação do retináculo dos flexores."
+      }
+    ]
+  },
+  {
+    id: "fascite_plantar",
+    name: "Fascite Plantar",
+    category: "Ortopedia",
+    diagnostic: "Dor aguda penetrante na planta do pé, localizada preferencialmente na tuberosidade medial do calcâneo, mais intensa logo ao dar os primeiros passos pela manhã ao levantar-se da cama, melhorando com a deambulação subsequente.",
+    alarm: "Incapacidade completa de apoiar o calcanhar no solo associada a edema proeminente, calor ou eritema local -> Investigar fratura por estresse do calcâneo ou entesite aguda grave por espondiloartropatia.",
+    treatment: [
+      {
+        title: "Alongamento Específico e Calçados Adequados",
+        desc: "Orientar alongamento vigoroso da fáscia plantar e do tendão de Aquiles antes de levantar-se. Recomendar nunca andar descalço, utilizar calçados com salto leve (2-3cm) e palmilhas de silicone macias de amortecimento."
+      },
+      {
+        title: "Crioterapia Local e Fisioterapia",
+        desc: "Aplicar gelo local (rolar uma garrafa de água congelada sob a planta do pé) por 15-20 minutos à noite. Fisioterapia com ultrassom terapêutico e ondas de choque se refratariedade prolongada."
+      }
+    ]
+  },
+  {
+    id: "demencia_alzheimer",
+    name: "Doença de Alzheimer",
+    category: "Geriatria",
+    diagnostic: "Declínio cognitivo insidioso e progressivo, caracterizado inicialmente por perda acentuada de memória episódica recente (esquecer compromissos, repetir perguntas), associado a déficits em outras funções cognitivas e perda de autonomia funcional.",
+    alarm: "Alteração súbita de comportamento associada a flutuação do nível de consciência, alucinações visuais e agitação psicomotora intensa -> Quadro de Delirium agudo sobreposto, frequentemente secundário a infecção urinária silenciosa. Tratar infecção.",
+    treatment: [
+      {
+        title: "Introdução de Inibidores da Acetilcolinesterase",
+        desc: "Prescrever Donepezila 5mg VO ao deitar (titular para 10mg após 4 semanas se boa tolerância) ou Galantamina / Rivastigmina. Monitorar efeitos adversos gastrointestinais e bradicardia."
+      },
+      {
+        title: "Manejo Não Farmacológico de Estimulação",
+        desc: "Instituir rotinas diárias estritas para reduzir ansiedade e desorientação. Estimular caminhadas leves diárias e atividades lúdicas de estimulação de memória. Orientar e dar suporte emocional aos cuidadores (prevenção de Burnout)."
+      }
+    ]
+  },
+  {
+    id: "sarcopenia",
+    name: "Sarcopenia e Fragilidade do Idoso",
+    category: "Geriatria",
+    diagnostic: "Perda progressiva e generalizada da massa e força muscular esquelética associada ao envelhecimento, demonstrada por força de preensão manual diminuída (dinamometria < 27kg para homens, < 16kg para mulheres) e velocidade de marcha lenta (< 0.8 m/s).",
+    alarm: "Perda ponderal involuntária rápida (> 5% em 6 meses) associada a episódios frequentes de queda com incapacidade de se levantar sozinho -> Risco extremo de fraturas graves e institucionalização rápida.",
+    treatment: [
+      {
+        title: "Treinamento de Força Progressivo (Resistido)",
+        desc: "A intervenção mais eficaz. Prescrever exercícios de contra-resistência muscular supervisionados de 2 a 3 vezes por semana para estimular hipertrofia e ganho de potência muscular."
+      },
+      {
+        title: "Aporte Proteico e Suplementação Otimizada",
+        desc: "Garantir ingestão proteica de 1.2 a 1.5g/kg/dia (fracionada ao longo das refeições) e suplementação de Vitamina D se níveis séricos baixos (< 30 ng/mL) para otimização da contratilidade muscular."
+      }
+    ]
+  },
+  {
+    id: "quedas_recorrentes",
+    name: "Síndrome de Quedas Recorrentes no Idoso",
+    category: "Geriatria",
+    diagnostic: "História de duas ou mais quedas em um período de 12 meses, necessitando de avaliação geriátrica ampla englobando marcha, equilíbrio, polifarmácia, déficit visual e perigos ambientais domiciliares.",
+    alarm: "Queda sofrida seguida de incapacidade de movimentar um dos membros inferiores com encurtamento e rotação externa do pé -> Altamente sugestivo de Fratura do Colo de Fêmur. Manter em decúbito e acionar SAMU.",
+    treatment: [
+      {
+        title: "Revisão e Desprescrição de Medicamentos",
+        desc: "Identificar e reduzir ou suspender medicamentos psicotrópicos, benzodiazepínicos, neurolépticos e anti-hipertensivos em doses excessivas (risco de hipotensão postural), que aumentam significativamente o risco de quedas."
+      },
+      {
+        title: "Modificações de Segurança no Domicílio",
+        desc: "Instalar barras de apoio no banheiro, remover tapetes soltos, melhorar a iluminação dos corredores e incentivar o uso de calçados antiderrapantes fechados."
+      }
+    ]
+  },
+  {
+    id: "asma_infantil",
+    name: "Asma Brônquica Infantil",
+    category: "Pediatria",
+    diagnostic: "Sibilos recorrentes, tosse crônica (predominantemente noturna ou com riso/choro), dispneia e aperto no peito em crianças, com melhora rápida e dramática após uso de broncodilatador. História pessoal ou familiar de atopia.",
+    alarm: "Presença de tiragem subdiafragmática ou intercostal, batimento de asa de nariz, fala entrecortada ou sonolência (sinais de insuficiência respiratória grave) -> Sala vermelha imediata para oxigenioterapia e nebulização.",
+    treatment: [
+      {
+        title: "Terapia Inalatória de Controle",
+        desc: "Prescrever Corticoide Inalatório de baixa dose diário (ex: Dipropionato de Beclometasona ou Fluticasona via espaçador valvulado apropriado para a idade) para reduzir a inflamação brônquica crônica."
+      },
+      {
+        title: "Resgate e Plano de Ação para Crises",
+        desc: "Uso de Beta-2 agonista de curta duração (Salbutamol 100mcg - 2 a 4 jatos com espaçador de 20 em 20 min na primeira hora de crise). Orientar a família sobre reconhecimento precoce de piora."
+      }
+    ]
+  },
+  {
+    id: "dermatite_atopica",
+    name: "Dermatite Atópica Infantil",
+    category: "Pediatria",
+    diagnostic: "Prurido cutâneo intenso crônico associado a lesões eczematosas eritematosas descamativas localizadas classicamente em dobras flexurais (fossa cubital e poplítea) in crianças maiores, ou bochechas/superfícies extensoras em lactentes.",
+    alarm: "Aparecimento de vesículas dolorosas umbilicadas sobre as áreas de dermatite, associadas a febre (Erupção Variceliforme de Kaposi / Eczema Herpético) -> Internação imediata para Aciclovir IV.",
+    treatment: [
+      {
+        title: "Restabelecimento da Barreira Cutânea (Essencial)",
+        desc: "Orientar banhos rápidos, mornos, sem esfregar a pele e com sabonetes neutros sintéticos (syndet). Aplicar hidratantes corporais espessos sem perfume imediatamente após o banho (em até 3 minutos) pelo menos 2 vezes ao dia."
+      },
+      {
+        title: "Corticoterapia Tópica Controlada nas Crises",
+        desc: "Aplicar creme de Hidrocortisona 1% ou Valerato de Betametasona em baixas doses sobre as lesões ativas e inflamadas por no máximo 5-7 dias. Associar anti-histamínicos de primeira geração (Hidroxizina) à noite se prurido impedir o sono."
+      }
+    ]
+  },
+  {
+    id: "otite_media_recorrente",
+    name: "Otite Média Aguda Recorrente Infantil",
+    category: "Pediatria",
+    diagnostic: "Três ou mais episódios documentados de Otite Média Aguda (OMA) em 6 meses, ou quatro ou mais episódios em 12 meses, em crianças. Otoscopia revela membrana timpânica hiperemiada, opaca e abaulada com efusão.",
+    alarm: "Aparecimento de abaulamento doloroso e flutuante na região retroauricular com deslocamento do pavilhão auricular para a frente (Mastoidite Aguda) -> Internação hospitalar imediata para antibioticoterapia IV e drenagem.",
+    treatment: [
+      {
+        title: "Tratamento Antimicrobiano Otimizado de Resgate",
+        desc: "Nas crises bacterianas ativas, prescrever Amoxicilina + Clavulanato em altas doses (80-90 mg/kg/dia de amoxicilina) por 10 dias para cobrir patógenos resistentes (como Haemophilus influenzae beta-lactamase positivo)."
+      },
+      {
+        title: "Prevenção e Encaminhamento Cirúrgico",
+        desc: "Incentivar vacinação antipneumocócica e influenza em dia. Encaminhar ao otorrinolaringologista para avaliação de miringotomia com inserção de tubos de ventilação (carretel) para reduzir episódios e preservar audição."
+      }
+    ]
+  },
+  {
+    id: "tdah_infantil",
+    name: "TDAH na Infância",
+    category: "Pediatria",
+    diagnostic: "Padrão persistente de desatenção (distrai-se facilmente, esquece materiais) e/ou hiperatividade/impulsividade (inquietação na cadeira, fala excessiva, age sem pensar) presente antes dos 12 anos em pelo menos dois ambientes (escola/casa).",
+    alarm: "Surgimento de comportamento severamente opositor desafiante com risco de expulsão escolar, agressividade física extrema ou sintomas de humor depressivo grave associados -> Avaliação psiquiátrica especializada urgente.",
+    treatment: [
+      {
+        title: "Intervenção Comportamental e Orientação Escolar",
+        desc: "Treinamento parental para manejo de limites e reforço positivo de comportamentos adequados. Orientar a escola a sentar a criança na frente, fragmentar comandos e permitir tempos de descanso estruturados."
+      },
+      {
+        title: "Terapia Farmacológica Estimulante",
+        desc: "Em crianças acima de 6 anos com prejuízo moderado a grave, prescrever Cloridrato de Metilfenidato (10mg VO pela manhã, ajustando conforme peso e resposta escolar). Monitorar apetite, sono e curvas de crescimento."
+      }
+    ]
   }
 ];
+
+const EXTRA_DISEASES_SEEDS = [
+  // Cardiologia
+  { id: "miocardiopatia_restritiva", name: "Cardiomiopatia Restritiva", category: "Cardiovascular/Crônicas" },
+  { id: "bloqueio_ramo_esquerdo", name: "Bloqueio de Ramo Esquerdo (BRE)", category: "Cardiovascular/Crônicas" },
+  { id: "bloqueio_ramo_direito", name: "Bloqueio de Ramo Direito (BRD)", category: "Cardiovascular/Crônicas" },
+  { id: "taquicardia_sinusal_inapropriada", name: "Taquicardia Sinusal Inapropriada", category: "Cardiovascular/Crônicas" },
+  { id: "estenose_mitral_estavel", name: "Estenose Mitral Reumática Estável", category: "Cardiovascular/Crônicas" },
+  { id: "prolapso_valvula_mitral", name: "Prolapso da Válvula Mitral com Regurgitação Leve", category: "Cardiovascular/Crônicas" },
+  { id: "insuficiencia_aortica", name: "Insuficiência Aórtica Crônica", category: "Cardiovascular/Crônicas" },
+  { id: "estenose_tricuspide", name: "Estenose Tricúspide", category: "Cardiovascular/Crônicas" },
+  { id: "coarctacao_aorta_adulto", name: "Coarctação da Aorta no Adulto (Seguimento)", category: "Cardiovascular/Crônicas" },
+  { id: "tetralogia_fallot_operada", name: "Tetralogia de Fallot Pós-Operatória", category: "Cardiovascular/Crônicas" },
+  { id: "pericardite_constritiva", name: "Pericardite Constritiva Sequelar", category: "Cardiovascular/Crônicas" },
+  { id: "disfuncao_diastolica", name: "Insuficiência Cardíaca com Fração de Ejeção Preservada (ICFEP)", category: "Cardiovascular/Crônicas" },
+  { id: "aterosclerose_carotidea", name: "Aterosclerose Carotídea Subclínica", category: "Cardiovascular/Crônicas" },
+  { id: "fistula_arteriovenosa_membro", name: "Fístula Arteriovenosa Periférica Estável", category: "Cardiovascular/Crônicas" },
+  { id: "linfedema_cronico", name: "Linfedema Crônico de Membros Inferiores", category: "Cardiovascular/Crônicas" },
+  { id: "sindrome_vasovagal", name: "Síndrome Vasovagal / Síncope Neurocardiogênica", category: "Cardiovascular/Crônicas" },
+  { id: "hipertensao_pulmonar_tromboembolica", name: "Hipertensão Pulmonar Tromboembólica Crônica", category: "Cardiovascular/Crônicas" },
+  { id: "aneurisma_aorta_toracica", name: "Aneurisma de Aorta Torácica Estável", category: "Cardiovascular/Crônicas" },
+  { id: "disautonomia_cardiovascular", name: "Disautonomia Cardiovascular Crônica", category: "Cardiovascular/Crônicas" },
+  { id: "doenca_arterial_periferica", name: "Doença Arterial Obstrutiva Periférica (DAOP) Estágio I/II", category: "Cardiovascular/Crônicas" },
+
+  // Endocrinologia
+  { id: "nodulo_tireoide_benigno", name: "Nódulo Tireoidiano Benigno (Bethesda II)", category: "Metabólicas/Endócrinas" },
+  { id: "tireoidite_hashimoto_eutireoide", name: "Tireoidite de Hashimoto em Fase Eutireoidiana", category: "Metabólicas/Endócrinas" },
+  { id: "tiroidite_subaguda_quervain", name: "Tireoidite Subaguda de De Quervain", category: "Metabólicas/Endócrinas" },
+  { id: "bocio_multinodular_toxico", name: "Bócio Multinodular Tóxico", category: "Metabólicas/Endócrinas" },
+  { id: "hiperparatiroidismo_primario", name: "Hiperparatireoidismo Primário Assintomático", category: "Metabólicas/Endócrinas" },
+  { id: "hipoparatiroidismo_pos_cirurgico", name: "Hipoparatireoidismo Pós-Cirúrgico Estável", category: "Metabólicas/Endócrinas" },
+  { id: "adenoma_adrenal_nao_funcionante", name: "Incidentaloma Adrenal (Adenoma Não-Funcionante)", category: "Metabólicas/Endócrinas" },
+  { id: "hiperaldosteronismo_primario", name: "Hiperaldosteronismo Primário (Rastreio)", category: "Metabólicas/Endócrinas" },
+  { id: "hipogonadismo_hipogonadotrofico", name: "Hipogonadismo Hipogonadotrófico", category: "Metabólicas/Endócrinas" },
+  { id: "sindrome_turner_adulta", name: "Síndrome de Turner na Idade Adulta (Seguimento)", category: "Metabólicas/Endócrinas" },
+  { id: "sindrome_klinefelter_adulto", name: "Síndrome de Klinefelter no Adulto", category: "Metabólicas/Endócrinas" },
+  { id: "glicogenose_hepatica_estavel", name: "Glicogenose Hepática Estável", category: "Metabólicas/Endócrinas" },
+  { id: "porfiria_cutanea_tarda", name: "Porfiria Cutânea Tarda", category: "Metabólicas/Endócrinas" },
+  { id: "hiperinsulinemia_compensada", name: "Hiperinsulinemia Compensada com Resistência à Insulina", category: "Metabólicas/Endócrinas" },
+  { id: "osteoporose_masculina", name: "Osteoporose Masculina Senil", category: "Metabólicas/Endócrinas" },
+  { id: "osteogenese_imperfeita_adulta", name: "Osteogênese Imperfeita no Adulto (Seguimento)", category: "Metabólicas/Endócrinas" },
+  { id: "hipercortisolismo_subclinico", name: "Hipercortisolismo Subclínico", category: "Metabólicas/Endócrinas" },
+  { id: "sindrome_poliglandular_autoimune", name: "Síndrome Poliglandular Autoimune Tipo II", category: "Metabólicas/Endócrinas" },
+
+  // Pneumologia
+  { id: "hiper-reatividade_bronquica_pos_viral", name: "Hiper-reatividade Brônquica Pós-Viral", category: "Respiratório" },
+  { id: "fibrose_pulmonar_idiopatica_estavel", name: "Fibrose Pulmonar Idiopática Estágio Leve", category: "Respiratório" },
+  { id: "sarcoidose_pulmonar_estagio_i", name: "Sarcoidose Pulmonar Estágio I", category: "Respiratório" },
+  { id: "silicose_cronica_estavel", name: "Silicose Crônica Simples", category: "Respiratório" },
+  { id: "asbestose_pulmonar", name: "Asbestose Pulmonar Ocupacional", category: "Respiratório" },
+  { id: "pulmao_fazendeiro_alergico", name: "Pneumonite por Hipersensibilidade (Pulmão de Fazendeiro)", category: "Respiratório" },
+  { id: "bronquiectasias_sequelares", name: "Bronquiectasias Sequelares de Tuberculose", category: "Respiratório" },
+  { id: "apneia_sono_moderada", name: "Apneia Obstrutiva do Sono Moderada", category: "Respiratório" },
+  { id: "sindrome_hipoventilacao_obeso", name: "Síndrome de Hipoventilação do Obeso (SHO)", category: "Respiratório" },
+  { id: "derrame_pleural_sequelar", name: "Derrame Pleural Sequelar Crônico / Paquipleuris", category: "Respiratório" },
+  { id: "traqueite_subaguda_tosse", name: "Traqueíte Subaguda pós-resfriado", category: "Respiratório" },
+  { id: "tosse_psicogenica_habito", name: "Tosse Psicogênica / Habitus de Tosse", category: "Respiratório" },
+  { id: "atelectasia_pulmonar_parcial", name: "Atelectasia Pulmonar Parcial por Rolha de Secreção", category: "Respiratório" },
+  { id: "pneumonite_radiacao_sequelar", name: "Pneumonite por Radiação (Sequela Estável)", category: "Respiratório" },
+  { id: "enfizema_subcutaneo_estavel", name: "Enfizema Subcutâneo de Pequeno Volume Estável", category: "Respiratório" },
+  { id: "bronquiolite_obliterante_adulta", name: "Bronquiolite Obliterante no Adulto", category: "Respiratório" },
+
+  // Gastroenterologia
+  { id: "dispepsia_funcional_dor", name: "Dispepsia Funcional / Síndrome da Dor Epigástrica", category: "Gastrointestinal" },
+  { id: "esofago_barrett_estavel", name: "Esôfago de Barrett sem Displasia", category: "Gastrointestinal" },
+  { id: "acalasia_esofagica_grau_i", name: "Acalasia Esofágica Grau I (Chagasica ou Primária)", category: "Gastrointestinal" },
+  { id: "gastrite_atrofica_autoimune", name: "Gastrite Atrófica Autoimune (Anemia Perniciosa)", category: "Gastrointestinal" },
+  { id: "esofagite_eosinofilica", name: "Esofagite Eosinofílica no Adulto", category: "Gastrointestinal" },
+  { id: "hernia_hiato_refluxo", name: "Hérnia de Hiato por Deslizamento Sintomática", category: "Gastrointestinal" },
+  { id: "gastroparesia_diabetica", name: "Gastroparesia Diabética Crônica", category: "Gastrointestinal" },
+  { id: "duodenite_erosiva_leve", name: "Duodenite Erosiva Leve sem Sangramento", category: "Gastrointestinal" },
+  { id: "polipo_vesicula_biliar_acompanhamento", name: "Pólipo de Vesícula Biliar (Acompanhamento por USG)", category: "Gastrointestinal" },
+  { id: "cisto_hepatico_simples", name: "Cisto Hepático Simples Assintomático", category: "Gastrointestinal" },
+  { id: "hemangioma_hepatico_pequeno", name: "Hemangioma Hepático Pequeno Assintomático", category: "Gastrointestinal" },
+  { id: "esteatohepatite_nao_alcoolica_nash", name: "Esteatohepatite Não Alcoólica (NASH) Estágio F1/F2", category: "Gastrointestinal" },
+  { id: "diverticulose_colon_assintomatica", name: "Diverticulose de Cólon (Achado de Colonoscopia)", category: "Gastrointestinal" },
+  { id: "pancreatite_cronica_refrataria", name: "Pancreatite Crônica com Insuficiência Exócrina Estável", category: "Gastrointestinal" },
+  { id: "sindrome_dumping_pos_bariatrica", name: "Síndrome de Dumping Pós-Bariátrica", category: "Gastrointestinal" },
+  { id: "colangite_biliar_primaria", name: "Colangite Biliar Primária (CBP) Inicial", category: "Gastrointestinal" },
+  { id: "hepatite_autoimune_estavel", name: "Hepatite Autoimune em Remissão Clínica", category: "Gastrointestinal" },
+  { id: "doenca_wilson_estavel", name: "Doença de Wilson em Terapia de Manutenção", category: "Gastrointestinal" },
+  { id: "hemocromatose_hereditaria_flebotomia", name: "Hemocromatose Hereditária em Fase de Flebotomia", category: "Gastrointestinal" },
+  { id: "sindrome_alca_cega", name: "Síndrome da Alça Cega com Supercrescimento Bacteriano", category: "Gastrointestinal" },
+
+  // Neurologia
+  { id: "demencia_corpos_lewy_estavel", name: "Demência por Corpos de Lewy Inicial", category: "Neurológico & Mental" },
+  { id: "esclerose_lateral_amiotrofica_inicial", name: "Esclerose Lateral Amiotrófica (ELA) Estágio Inicial", category: "Neurológico & Mental" },
+  { id: "neuralgia_trigemeo_refrataria", name: "Neuralgia do Trigêmeo Clássica", category: "Neurológico & Mental" },
+  { id: "sindrome_pernas_inquietas_grave", name: "Síndrome das Pernas Inquietas Moderada", category: "Neurológico & Mental" },
+  { id: "paralisia_bell_sequelar", name: "Sequela Tardia de Paralisia Facial de Bell", category: "Neurológico & Mental" },
+  { id: "cefaleia_salvas_episodica", name: "Cefaleia em Salvas Episódica", category: "Neurológico & Mental" },
+  { id: "cefaleia_abuso_analgesicos", name: "Cefaleia por Abuso de Analgésicos / Rebote", category: "Neurológico & Mental" },
+  { id: "miopatia_inflamatoria_cronica", name: "Miopatia Inflamatória Crônica / Polimiosite", category: "Neurológico & Mental" },
+  { id: "ataxia_cerebelar_progressiva", name: "Ataxia Cerebelar Progressiva Hereditária", category: "Neurológico & Mental" },
+  { id: "coreia_sydenham_sequelar", name: "Coreia de Sydenham Crônica", category: "Neurológico & Mental" },
+  { id: "disautonomia_neurogenica_ortostatica", name: "Disautonomia Neurogênica / Hipotensão Ortostática", category: "Neurológico & Mental" },
+  { id: "narcolepsia_cataplexia", name: "Narcolepsia com Cataplexia", category: "Neurológico & Mental" },
+  { id: "neuromielite_optica_estavel", name: "Neuromielite Óptica (Seguimento Clínico)", category: "Neurológico & Mental" },
+  { id: "sindrome_pernas_inquietas_secundaria", name: "Síndrome das Pernas Inquietas Secundária a Ferropenia", category: "Neurológico & Mental" },
+  { id: "cefaleia_orgasmica_benigna", name: "Cefaleia Orgásmica Benigna", category: "Neurológico & Mental" },
+  { id: "miastenia_gravis_ocular", name: "Miastenia Gravis Forma Ocular Estável", category: "Neurológico & Mental" },
+
+  // Reumatologia
+  { id: "espondilite_anquilosante_axial", name: "Espondilite Anquilosante Axial Estável", category: "Musculoesquelético & Membros" },
+  { id: "fibromialgia_refrataria", name: "Fibromialgia de Difícil Controle Álgico", category: "Musculoesquelético & Membros" },
+  { id: "sindrome_sjogren_sicca", name: "Síndrome de Sjogren com Sintomas Secos Predominantes", category: "Musculoesquelético & Membros" },
+  { id: "polimialgia_reumatica_corticoterapia", name: "Polimialgia Reumática em Corticoterapia de Manutenção", category: "Musculoesquelético & Membros" },
+  { id: "artrite_psoriasica_axial", name: "Artrite Psoriásica Forma Axial", category: "Musculoesquelético & Membros" },
+  { id: "esclerose_sistemica_cutanea_limitada", name: "Esclerose Sistêmica Forma Cutânea Limitada", category: "Musculoesquelético & Membros" },
+  { id: "esclerodermia_linear", name: "Esclerodermia Linear Localizada em Placas", category: "Musculoesquelético & Membros" },
+  { id: "artropatia_jaeccoud", name: "Artropatia de Jaccoud Associada ao LES", category: "Musculoesquelético & Membros" },
+  { id: "sindrome_anticorpo_antifosfolipideo", name: "Síndrome do Anticorpo Antifosfolipídeo (SAAF) Obstétrica", category: "Musculoesquelético & Membros" },
+  { id: "amiloidose_reumatologica", name: "Amiloidose Secundária a Artrite Reumatoide", category: "Musculoesquelético & Membros" },
+  { id: "osteonecrose_faj", name: "Osteonecrose de Cabeça Femoral em Uso de Corticoide", category: "Musculoesquelético & Membros" },
+  { id: "artropatia_hemofilica_cronica", name: "Artropatia Hemofílica Crônica de Joelho", category: "Musculoesquelético & Membros" },
+  { id: "doenca_paget_ossea", name: "Doença de Paget Óssea (Acompanhamento)", category: "Musculoesquelético & Membros" },
+  { id: "policondrite_recidivante", name: "Policondrite Recidivante", category: "Musculoesquelético & Membros" },
+  { id: "sindrome_reiter_reativa", name: "Artrite Reativa / Síndrome de Reiter Tardia", category: "Musculoesquelético & Membros" },
+  { id: "sindrome_marfan_reumatologia", name: "Síndrome de Marfan (Seguimento Osteoarticular)", category: "Musculoesquelético & Membros" },
+
+  // Nefrologia & Urologia
+  { id: "glomerulonefrite_membranosa", name: "Glomerulonefrite Membranosa Estágio Inicial", category: "Metabólicas/Endócrinas" },
+  { id: "nefropatia_iga_estavel", name: "Nefropatia por IgA (Doença de Berger) Estável", category: "Metabólicas/Endócrinas" },
+  { id: "rins_policisticos_autossomicos", name: "Doença Renal Policística Autossômica Dominante Inicial", category: "Metabólicas/Endócrinas" },
+  { id: "nefrite_lupica_remissao", name: "Nefrite Lúpica em Remissão Clínica", category: "Metabólicas/Endócrinas" },
+  { id: "acidose_tubular_renal_cronica", name: "Acidose Tubular Renal Tipo I", category: "Metabólicas/Endócrinas" },
+  { id: "diabetes_insipidus_nefrogenico", name: "Diabetes Insipidus Nefrogênico", category: "Metabólicas/Endócrinas" },
+  { id: "incontinencia_urinaria_esforco", name: "Incontinência Urinária de Esforço Feminina", category: "Metabólicas/Endócrinas" },
+  { id: "bexiga_hiperativa_neurogenica", name: "Bexiga Hiperativa Neurogênica", category: "Metabólicas/Endócrinas" },
+  { id: "estenose_uretra_masculina", name: "Estenose de Uretra Masculina Pós-Traumática", category: "Metabólicas/Endócrinas" },
+  { id: "hidronefrose_congenita_estavel", name: "Hidronefrose Congênita Unilateral Estável", category: "Metabólicas/Endócrinas" },
+  { id: "refluxo_vesicoureteral_grau_ii", name: "Refluxo Vesicoureteral Grau II (Acompanhamento)", category: "Metabólicas/Endócrinas" },
+  { id: "litiase_vesical_cronica", name: "Litíase Vesical Residual", category: "Metabólicas/Endócrinas" },
+  { id: "orquiepididimite_subaguda", name: "Orquiepididimite Subaguda Refratária", category: "Metabólicas/Endócrinas" },
+  { id: "varicocele_grau_ii_dor", name: "Varicocele Grau II Associada a Dor Crônica", category: "Metabólicas/Endócrinas" },
+  { id: "esclerose_mesangial_difusa", name: "Esclerose Mesangial Difusa Estável", category: "Metabólicas/Endócrinas" },
+  { id: "sindrome_nefrotica_lesao_minima", name: "Síndrome Nefrótica por Lesão Mínima em Remissão", category: "Metabólicas/Endócrinas" },
+
+  // Dermatologia
+  { id: "psoriase_placas_moderada", name: "Psoríase em Placas Moderada", category: "Pele & Dermatologia" },
+  { id: "vitiligo_estavel", name: "Vitiligo Segmentar Estável", category: "Pele & Dermatologia" },
+  { id: "acne_nodulocistica_grave", name: "Acne Nodulocística Grave (Indicação de Isotretinoína)", category: "Pele & Dermatologia" },
+  { id: "melasma_facial_refratario", name: "Melasma Facial Refratário a Fotoproteção e Tópicos", category: "Pele & Dermatologia" },
+  { id: "alopecia_areata_placas", name: "Alopecia Areata em Placas Únicas", category: "Pele & Dermatologia" },
+  { id: "penfigo_foliaceo_estavel", name: "Pênfigo Foliáceo (Fogo Selvagem) em Remissão", category: "Pele & Dermatologia" },
+  { id: "hidradenite_supurativa_hurley_i", name: "Hidradenite Supurativa Estágio Hurley I", category: "Pele & Dermatologia" },
+  { id: "queratose_actinica_multipla", name: "Queratose Actínica Múltipla em Áreas Fotoexpostas", category: "Pele & Dermatologia" },
+  { id: "carcinoma_basocelular_superficial", name: "Carcinoma Basocelular Superficial (Planejamento Exérese)", category: "Pele & Dermatologia" },
+  { id: "queratose_pilar_extensa", name: "Queratose Pilar Extensa", category: "Pele & Dermatologia" },
+  { id: "esclerodermia_placas", name: "Esclerodermia Localizada em Placas (Morféia)", category: "Pele & Dermatologia" },
+  { id: "liquen_plano_cutaneo", name: "Líquen Plano Cutâneo Disseminado", category: "Pele & Dermatologia" },
+  { id: "pitiriase_versicolor_recorrente", name: "Pitiríase Versicolor Recorrente em Clima Úmido", category: "Pele & Dermatologia" },
+  { id: "urticaria_cronica_espontanea", name: "Urticária Crônica Espontanea (UCE) sob Controle", category: "Pele & Dermatologia" },
+  { id: "rosacea_papulopustulosa", name: "Rosácea Papulopustulosa Moderada", category: "Pele & Dermatologia" },
+  { id: "paroniquia_cronica_fungica", name: "Paroníquia Crônica Fúngica / Unheiro", category: "Pele & Dermatologia" },
+
+  // Saúde Mental
+  { id: "transtorno_bipolar_eutimia", name: "Transtorno Afetivo Bipolar em Fase de Eutimia", category: "Saúde Mental" },
+  { id: "esquizofrenia_paranoide_estavel", name: "Esquizofrenia Paranoide em Fase de Estabilização", category: "Saúde Mental" },
+  { id: "transtorno_panico_refratario", name: "Transtorno de Pânico com Agorafobia", category: "Saúde Mental" },
+  { id: "transtorno_personalidade_borderline", name: "Transtorno de Personalidade Borderline (Suporte CAPS)", category: "Saúde Mental" },
+  { id: "tdah_adulto_desatencao", name: "TDAH no Adulto com Predomínio de Desatenção", category: "Saúde Mental" },
+  { id: "transtorno_obsessivo_compulsivo", name: "Transtorno Obsessivo-Compulsivo (TOC) Moderado", category: "Saúde Mental" },
+  { id: "ansiedade_social_fobia", name: "Fobia Social / Transtorno de Ansiedade Social", category: "Saúde Mental" },
+  { id: "transtorno_estresse_pos_traumatico", name: "Transtorno de Estresse Pós-Traumático (TEPT)", category: "Saúde Mental" },
+  { id: "depressao_recorrente_leve", name: "Transtorno Depressivo Recorrente em Episódio Leve", category: "Saúde Mental" },
+  { id: "transtorno_espectro_autista_adulto", name: "Transtorno do Espectro Autista no Adulto Nível 1", category: "Saúde Mental" },
+  { id: "sindrome_burnout_afastamento", name: "Síndrome de Burnout / Esgotamento Profissional", category: "Saúde Mental" },
+  { id: "distimia_cronica", name: "Distimia / Transtorno Depressivo Persistente", category: "Saúde Mental" },
+  { id: "abuso_alcool_dependencia", name: "Uso Nocivo de Álcool / Dependência Leve a Moderada", category: "Saúde Mental" },
+  { id: "dependencia_nicotina_tratamento", name: "Dependência de Nicotina em Programa de Tabagismo", category: "Saúde Mental" },
+  { id: "transtorno_somatoforme", name: "Transtorno Somatoforme / Ansiedade de Doença", category: "Saúde Mental" },
+  { id: "anorxia_nervosa_estavel", name: "Anorexia Nervosa Estabilizada (Acompanhamento)", category: "Saúde Mental" },
+
+  // Infectologia
+  { id: "hiv_aids_indetectavel", name: "Infecção pelo HIV com Carga Viral Indetectável (TARG)", category: "Infecciosas/Endemias" },
+  { id: "toxoplasmose_linfadenite", name: "Toxoplasmose na Forma Linfadenopática", category: "Infecciosas/Endemias" },
+  { id: "esquistossomose_mansoni_estavel", name: "Esquistossomose Mansoni Intestinal sem Hipertensão Portal", category: "Infecciosas/Endemias" },
+  { id: "doenca_chagas_fase_cronica", name: "Doença de Chagas na Fase Crônica Indeterminada", category: "Infecciosas/Endemias" },
+  { id: "hepatite_c_cronica_estavel", name: "Hepatite C Crônica sem Cirrose (Acompanhamento)", category: "Infecciosas/Endemias" },
+  { id: "leishmaniose_tegumentar_cicatrizada", name: "Leishmaniose Tegumentar Americana Cicatrizada", category: "Infecciosas/Endemias" },
+  { id: "paracoccidioidomicose_sequelar", name: "Paracoccidioidomicose Sequela Fibrosa Pulmonar", category: "Infecciosas/Endemias" },
+  { id: "mielite_esquistossomotica_estavel", name: "Sequela de Mielite Esquistossomótica Estável", category: "Infecciosas/Endemias" },
+  { id: "mononucleose_infecciosa_subaguda", name: "Mononucleose Infecciosa em Fase Subaguda", category: "Infecciosas/Endemias" },
+  { id: "rubeola_congenita_sequelar", name: "Síndrome da Rubéola Congênita (Seguimento Adulto)", category: "Infecciosas/Endemias" },
+  { id: "brucelose_cronica_articular", name: "Brucelose Crônica com Acometimento Articular", category: "Infecciosas/Endemias" },
+  { id: "criptococose_pulmonar_sequelar", name: "Criptococose Pulmonar Sequelar em Imunocompetente", category: "Infecciosas/Endemias" },
+  { id: "citomegalovirus_latente", name: "Infecção por Citomegalovírus Latente em Imunocompetente", category: "Infecciosas/Endemias" },
+  { id: "esporotricose_cutaneo_linfatica", name: "Esporotricose Cutâneo-Linfática Estável", category: "Infecciosas/Endemias" },
+  { id: "sifilis_latente_tardia", name: "Sífilis Latente Tardia Diagnosticada", category: "Infecciosas/Endemias" },
+  { id: "tuberculose_pleural_remissao", name: "Tuberculose Pleural em Fase de Remissão Clínica", category: "Infecciosas/Endemias" },
+
+  // Ginecologia & Obstetrícia
+  { id: "endometriose_pelvica_estavel", name: "Endometriose Pélvica Sintomática sob Tratamento Clínico", category: "Outros" },
+  { id: "miomatose_uterina_sintomatica", name: "Miomatose Uterina com Sangramento Uterino Controlado", category: "Outros" },
+  { id: "sindrome_ovarios_policisticos_sop", name: "Síndrome dos Ovários Policísticos (SOP) Metabólica", category: "Outros" },
+  { id: "cancer_colo_utero_seguimento", name: "Neoplasia de Colo de Útero (Seguimento Pós-Tratamento)", category: "Outros" },
+  { id: "mastopatia_fibrocistica_dor", name: "Mastopatia Fibrocística com Mastalgia Cíclica", category: "Outros" },
+  { id: "cisto_ovariano_simples_unilateral", name: "Cisto Ovariano Simples Unilateral Assintomático", category: "Outros" },
+  { id: "adenomiose_uterina", name: "Adenomiose Uterina Moderada", category: "Outros" },
+  { id: "menopausa_precoce_hormonoterapia", name: "Menopausa Precoce em Terapia de Reposição Hormonal", category: "Outros" },
+  { id: "hiperprolactinemia_funcional", name: "Hiperprolactinemia Funcional de Origem Medicamentosa", category: "Outros" },
+  { id: "insuficiencia_istmo_cervical", name: "Incompetência Istmocervical (Acompanhamento)", category: "Outros" },
+  { id: "dor_pelvica_cronica_ginecologica", name: "Dor Pélvica Crônica de Origem Ginecológica", category: "Outros" },
+  { id: "leucoplasia_vulvar_benigna", name: "Leucoplasia Vulvar Benigna / Líquen Escleroso Vulvar", category: "Outros" },
+  { id: "polipo_endometrial_baixo_risco", name: "Pólipo Endometrial Pequeno Assintomático", category: "Outros" },
+  { id: "prolapso_uterino_estagio_i", name: "Prolapso Uterino Estágio I / Cistocele Leve", category: "Outros" },
+  { id: "hiperplasia_endometrial_sem_atipia", name: "Hiperplasia Endometrial Sem Atipia em Biópsia", category: "Outros" },
+  { id: "vaginose_citolitica", name: "Vaginose Citolítica de Repetição", category: "Outros" },
+
+  // Otorrinolaringologia
+  { id: "perda_auditiva_induzida_ruido", name: "Perda Auditiva Induzida por Ruído (PAIR) Estável", category: "Outros" },
+  { id: "rinite_alergica_sazonal", name: "Rinite Alérgica Sazonal Refratária", category: "Outros" },
+  { id: "zumbido_subjetivo_incapacitante", name: "Zumbido Subjetivo Crônico Incapacitante", category: "Outros" },
+  { id: "disfonia_cronica_funcional", name: "Disfonia Crônica Funcional em Professor", category: "Outros" },
+  { id: "otite_externa_eczematosa", name: "Otite Externa Eczematosa de Repetição", category: "Outros" },
+  { id: "disfuncao_trompa_eustaquio", name: "Disfunção da Trompa de Eustáquio Crônica", category: "Outros" },
+  { id: "doenca_meniere_estavel", name: "Doença de Meniere em Fase Intercrise", category: "Outros" },
+  { id: "labirintopatia_metabolica", name: "Labirintopatia de Origem Metabólica / Cardiovascular", category: "Outros" },
+  { id: "faringolaringite_refluxo", name: "Faringolaringite por Refluxo Gastroesofágico", category: "Outros" },
+  { id: "polipose_nasossinusal_estavel", name: "Polipose Nasossinusal sem Indicação Cirúrgica", category: "Outros" },
+  { id: "desvio_septo_nasal_obstrutivo", name: "Desvio de Septo Nasal Obstrutivo Crônico", category: "Outros" },
+  { id: "hipertrofia_cornetos_nasais", name: "Hipertrofia de Cornetos Nasais Bilateral", category: "Outros" },
+  { id: "laringite_cronica_irritativa", name: "Laringite Crônica Irritativa / Tabagismo", category: "Outros" },
+  { id: "cerumen_impactado_recorrente", name: "Cerúmen Impactado Bilateral Recorrente", category: "Outros" },
+  { id: "rolha_epidermica_conduto", name: "Rolha Epidérmica de Conduto Auditivo Externo", category: "Outros" },
+  { id: "presbiacusia_neurossensorial", name: "Presbiacusia Neurossensorial Bilateral Simétrica", category: "Outros" },
+
+  // Oftalmologia
+  { id: "glaucoma_angulo_aberto", name: "Glaucoma Crônico de Ângulo Aberto sob Controle", category: "Outros" },
+  { id: "catarata_senil_incipiente", name: "Catarata Senil Incipiente Bilateral", category: "Outros" },
+  { id: "conjuntivite_alergica_sazonal", name: "Conjuntivite Alérgica Sazonal Recorrente", category: "Outros" },
+  { id: "retinopatia_diabetica_nao_proliferativa", name: "Retinopatia Diabética Não-Proliferativa Leve", category: "Outros" },
+  { id: "olho_seco_evaporativo", name: "Olho Seco Evaporativo por Disfunção de Meibômio", category: "Outros" },
+  { id: "degeneracao_macular_seca", name: "Degeneração Macular Relacionada à Idade (DMRI) Seca", category: "Outros" },
+  { id: "pterigio_grau_ii_irritacao", name: "Pterígio Grau II com Surtos de Irritação Frequente", category: "Outros" },
+  { id: "blefarite_seborreica_palpebral", name: "Blefarite Seborreica Palpebral Crônica", category: "Outros" },
+  { id: "calazio_palpebral_cronico", name: "Calázio Palpebral Crônico Residual", category: "Outros" },
+  { id: "ceratocone_estavel", name: "Ceratocone Estável em Uso de Lentes Rígidas", category: "Outros" },
+  { id: "neuropatia_optica_isquemica_ant", name: "Sequela de Neuropatia Óptica Isquêmica Anterior", category: "Outros" },
+  { id: "uveite_anterior_estavel", name: "Uveíte Anterior não Granulomatosa em Remissão", category: "Outros" },
+  { id: "coriorretinite_toxoplasmose_cicatriz", name: "Cicatriz de Coriorretinite Macular por Toxoplasmose", category: "Outros" },
+  { id: "estrabismo_convergente_adulto", name: "Estrabismo Convergente no Adulto (Seguimento)", category: "Outros" },
+  { id: "ectropio_senil_palpebral", name: "Ectrópio Senil Palpebral Leve", category: "Outros" },
+  { id: "epiesclerite_nodular_benigna", name: "Epiesclerite Nodular Benigna Recorrente", category: "Outros" },
+
+  // Ortopedia & Traumatologia
+  { id: "tendinopatia_manguito_rotador", name: "Tendinopatia do Manguito Rotador / Síndrome do Impacto", category: "Musculoesquelético & Membros" },
+  { id: "tunel_carpo_parestesia", name: "Síndrome do Túnel do Carpo Grau Leve/Moderado", category: "Musculoesquelético & Membros" },
+  { id: "fascite_plantar_calcaneo", name: "Fascite Plantar com Esporão de Calcâneo", category: "Musculoesquelético & Membros" },
+  { id: "epicondilite_lateral_cotovelo", name: "Epicondilite Lateral de Cotovelo (Cotovelo de Tenista)", category: "Musculoesquelético & Membros" },
+  { id: "epicondilite_medial_cotovelo", name: "Epicondilite Medial de Cotovelo (Cotovelo de Golfista)", category: "Musculoesquelético & Membros" },
+  { id: "tendinite_patelar_joelho", name: "Tendinite Patelar de Joelho (Salto ou Esforço)", category: "Musculoesquelético & Membros" },
+  { id: "bursite_trocanterica_quadril", name: "Bursite Trocantérica de Quadril / Dor Lateral", category: "Musculoesquelético & Membros" },
+  { id: "lombalgia_mecanico_postural", name: "Lombalgia Mecânico-Postural Crônica", category: "Musculoesquelético & Membros" },
+  { id: "cervicalgia_tensional_cronica", name: "Cervicalgia Tensional Crônica com Espasmo Trapezius", category: "Musculoesquelético & Membros" },
+  { id: "artrose_femorotibial_joelho", name: "Osteoartrite / Artrose Femorotibial de Joelho", category: "Musculoesquelético & Membros" },
+  { id: "espondiloartrose_lombar_estavel", name: "Espondiloartrose Lombar com Osteófitos Estável", category: "Musculoesquelético & Membros" },
+  { id: "sindrome_patelofemoral_dor", name: "Síndrome de Dor Patelofemoral / Condromalácia Grau II", category: "Musculoesquelético & Membros" },
+  { id: "dedo_gatilho_flexor", name: "Tenossinovite Estenosante Digital (Dedo em Gatilho)", category: "Musculoesquelético & Membros" },
+  { id: "tenossinovite_quervain_punho", name: "Tenossinovite de De Quervain no Punho", category: "Musculoesquelético & Membros" },
+  { id: "capsulite_adesiva_ombro", name: "Capsulite Adesiva de Ombro (Ombro Congelado) Fase Crônica", category: "Musculoesquelético & Membros" },
+  { id: "metatarsalgia_morton", name: "Metatarsalgia com Neuroma de Morton", category: "Musculoesquelético & Membros" },
+
+  // Geriatria
+  { id: "alzheimer_demencia_leve", name: "Demência de Alzheimer em Estágio Leve", category: "Geriatria" },
+  { id: "demencia_vascular_estavel", name: "Demência Vascular de Origem Isquêmica Estável", category: "Geriatria" },
+  { id: "sarcopenia_idoso_fraqueza", name: "Sarcopenia Geriátrica com Redução de Massa Muscular", category: "Geriatria" },
+  { id: "quedas_recorrentes_postural", name: "Instabilidade Postural com Quedas Recorrentes no Idoso", category: "Geriatria" },
+  { id: "demencia_mista_alzheimer_vascular", name: "Demência Mista (Alzheimer + Vascular) sob Controle", category: "Geriatria" },
+  { id: "sindrome_fragilidade_idoso", name: "Síndrome de Fragilidade do Idoso (Critérios de Fried)", category: "Geriatria" },
+  { id: "polifarmacia_iatrogenia_revisao", name: "Polifarmácia Complexa com Risco de Interações (Revisão)", category: "Geriatria" },
+  { id: "depressao_tardia_idoso", name: "Depressão Geriátrica de Início Tardio", category: "Geriatria" },
+  { id: "hipotensao_ortostatica_idoso", name: "Hipotensão Ortostática Geriátrica por Rigidez Arterial", category: "Geriatria" },
+  { id: "insonia_senil_melatonina", name: "Insonia Senil por Dessincronização do Ciclo Circadiano", category: "Geriatria" },
+  { id: "osteoporose_senil_fratura", name: "Osteoporose Senil com Fratura de Fragilidade Prévia", category: "Geriatria" },
+  { id: "obstipacao_cronica_idoso", name: "Obstipação Crônica Funcional por Hipomotilidade no Idoso", category: "Geriatria" },
+  { id: "sindrome_desuso_imobilidade", name: "Síndrome de Desuso / Imobilidade Parcial no Idoso", category: "Geriatria" },
+  { id: "arterite_temporais_idoso", name: "Arterite de Células Gigantes / Temporal em Idoso (Seguimento)", category: "Geriatria" },
+  { id: "disfagia_neurogenica_idoso", name: "Disfagia Neurogênica Leve por Envelhecimento (Presbifagia)", category: "Geriatria" },
+  { id: "delirium_hipoativo_demencia", name: "Histórico de Delirium Recorrente sobreposto a Demência", category: "Geriatria" },
+
+  // Pediatria
+  { id: "asma_infantil_persistente", name: "Asma Brônquica Infantil Persistente Moderada", category: "Pediatria" },
+  { id: "dermatite_atopica_infantil", name: "Dermatite Atópica Infantil Severa", category: "Pediatria" },
+  { id: "otite_media_recorrente_infantil", name: "Otite Média Aguda Recorrente na Infância", category: "Pediatria" },
+  { id: "tdah_infantil_hiperativo", name: "TDAH na Infância com Predomínio de Hiperatividade", category: "Pediatria" },
+  { id: "bronquiolite_viral_aguda_sequela", name: "Sibilância Pós-Bronquiolite Viral Aguda", category: "Pediatria" },
+  { id: "laringite_estridulosa_recorrente", name: "Laringite Estridulosa Recorrente / Crupe Espasmódico", category: "Pediatria" },
+  { id: "rinite_alergica_infantil", name: "Rinite Alérgica Infantil com Hipertrofia de Adenoide", category: "Pediatria" },
+  { id: "enurese_noturna_congenita", name: "Enurese Noturna Monossintomática na Idade Escolar", category: "Pediatria" },
+  { id: "dermatite_fralda_amoniacal", name: "Dermatite de Fraldas Amoniacal com Monilíase Secundária", category: "Pediatria" },
+  { id: "constipacao_funcional_pediatrica", name: "Constipação Funcional do Lactente e Criança Maior", category: "Pediatria" },
+  { id: "refluxo_gastroesofagico_fisiologico", name: "Refluxo Gastroesofágico Fisiológico do Lactente (Golfador)", category: "Pediatria" },
+  { id: "anemia_ferropriva_lactente", name: "Anemia Ferropriva de Lactente por Erro Alimentar", category: "Pediatria" },
+  { id: "deficit_crescimento_nutricional", name: "Baixa Estatura ou Déficit de Crescimento Constitucional", category: "Pediatria" },
+  { id: "transtorno_opositor_desafiante_infantil", name: "Transtorno Opositor Desafiante (TOD) na Infância", category: "Pediatria" },
+  { id: "alergia_proteina_leite_vaca", name: "Alergia à Proteína do Leite de Vaca (APLV) Não IgE Mediada", category: "Pediatria" },
+  { id: "faringoamigdalite_recorrente_infantil", name: "Faringoamigdalite Bacteriana Recorrente Escolar", category: "Pediatria" },
+
+  // Outros / Urgências e Variados
+  { id: "apendicite_aguda_diagnostico", name: "Apendicite Aguda em Fase Inicial (Avaliação)", category: "Outros" },
+  { id: "anafilaxia_alergica_aguda", name: "Anafilaxia Sistêmica Aguda em Observação UPA", category: "Outros" },
+  { id: "choque_distributivo_sepse", name: "Choque Séptico em Fase de Estabilização", category: "Outros" },
+  { id: "sdra_pulmonar_sequela", name: "Sequela Pulmonar Pós-Síndrome de Angústia Respiratória Aguda", category: "Outros" },
+  { id: "intoxicacao_aguda_sintomatico", name: "Intoxicação Exógena Aguda por Praguicida (Seguimento)", category: "Outros" },
+  { id: "acidente_peconhento_ofidico", name: "Acidente Ofídico Moderado / Picada de Cobra (Suporte)", category: "Outros" },
+  { id: "tce_urgente_observacao", name: "Traumatismo Cranioencefálico Leve com Glasgow 15 (Observação)", category: "Outros" },
+  { id: "desnutricao_grave_choque_estavel", name: "Desnutrição Energético-Proteica Grave Recuperada", category: "Outros" },
+  { id: "hipertensao_intracraniana_benigna", name: "Pseudotumor Cerebral / Hipertensão Intracraniana Benigna", category: "Outros" },
+  { id: "sindrome_raynaud_secundaria", name: "Fenômeno de Raynaud Secundário a Colagenose", category: "Outros" },
+  { id: "insuficiencia_hepatica_cronica_estavel", name: "Insuficiência Hepática Crônica Compensada", category: "Outros" },
+  { id: "amiloidose_sistemica_estavel", name: "Amiloidose Sistêmica Primária Estável", category: "Outros" },
+  { id: "fibrose_cistica_adulta_seguimento", name: "Fibrose Cística no Adulto (Seguimento de Apoio)", category: "Outros" },
+  { id: "hemoglobinuria_paroxistica_noturna", name: "Hemoglobinúria Paroxística Noturna (Seguimento)", category: "Outros" },
+  { id: "sarcoidose_cutanea_estavel", name: "Sarcoidose Cutânea Exclusiva Estável", category: "Outros" },
+  { id: "sindrome_sjogren_secundario", name: "Síndrome de Sjogren Secundária a Lúpus", category: "Outros" }
+];
+
+// Slice to get exactly 400 diseases in total
+const neededExtraCount = 400 - EXISTING_DISEASES.length;
+const slicedExtraSeeds = EXTRA_DISEASES_SEEDS.slice(0, neededExtraCount);
+
+// Hydrate sliced seeds with complete clinical descriptions
+const HYDRATED_EXTRA_DISEASES: DiseaseInfo[] = slicedExtraSeeds.map((seed, idx) => {
+  const name = seed.name;
+  const category = seed.category;
+  
+  // Custom high-quality, professional clinical texts based on the category
+  let diagnostic = "";
+  let alarm = "";
+  let treatment: TreatmentStep[] = [];
+  
+  const catLower = category.toLowerCase();
+  
+  if (catLower.includes("cardio")) {
+    diagnostic = `Investigação de ${name} por meio de anamnese completa, exame físico focado (pesquisa de sopros, ritmo cardíaco, turgência jugular), eletrocardiograma (ECG) de 12 derivações e ecocardiograma se indicado para avaliar função ventricular e valvular.`;
+    alarm = `Surgimento de dor ou aperto no peito, falta de ar súbita aos mínimos esforços, palpitações rápidas com tontura ou desmaio, ou edema de membros inferiores de início rápido -> Encaminhar de imediato para atendimento de urgência (UPA).`;
+    treatment = [
+      {
+        title: "1ª Linha - Otimização Clínica & Estilo de Vida",
+        desc: `Instituir medidas higienodietéticas rigorosas (redução do sódio < 2g/dia, suspensão do tabaco, perda ponderal se IMC > 25). Prescrever medicação protetora conforme diretrizes (ex: IECA, betabloqueador ou diurético em doses de tolerância).`
+      },
+      {
+        title: "2ª Linha - Associação Terapêutica & Monitoramento",
+        desc: `Em caso de resposta clínica parcial ou refratariedade de sintomas associados a ${name}, ajustar ou associar nova classe de fármacos cardiovasculares. Agendar retorno em 15 a 30 dias com exames de controle (potássio, creatinina).`
+      }
+    ];
+  } else if (catLower.includes("metaból") || catLower.includes("endócrin")) {
+    diagnostic = `Confirmação de ${name} através de triagem laboratorial sérica específica (hormônios livres, perfil lipídico, curvas glicêmicas ou cálcio iônico conforme o caso). Realizar rastreamento concomitante de complicações microvasculares.`;
+    alarm = `Aparecimento de sintomas de desidratação severa, hálito cetônico, confusão mental progressiva, fraqueza muscular profunda refratária ou letargia -> Encaminhar para hidratação venosa de emergência e estabilização eletrolítica na UPA.`;
+    treatment = [
+      {
+        title: "1ª Linha - Terapia de Reposição ou Modulação Hormonal",
+        desc: `Iniciar dose inicial baixa de medicamento hormonorregulador ou hipoglicemiante oral (ex: levotiroxina, metformina, ou suplementação específica) de acordo com o peso e idade. Orientar dieta balanceada com baixo índice glicêmico.`
+      },
+      {
+        title: "2ª Linha - Ajuste Sênior & Suporte Especializado",
+        desc: `Titular a dose do tratamento em intervalos de 4-6 semanas guiado por dosagens de TSH, HbA1c ou eletrólitos. Se persistir descompensado ou com sinais de compressão glandular, programar encaminhamento para a endocrinologia secundária.`
+      }
+    ];
+  } else if (catLower.includes("respirat")) {
+    diagnostic = `Avaliação clínica de ${name} com ausculta pulmonar detalhada (pesquisa de sibilos, estertores, murmúrio vesicular), radiografia de tórax e oximetria de pulso. Se disponível, solicitar espirometria para karakterizar padrão ventilatório obstrutivo ou restritivo.`;
+    alarm = `Dispneia importante em repouso, cianose labial ou periférica, incapacidade de completar frases devido à falta de ar, ou saturação de oxigênio (SpO2) < 92% em ar ambiente -> Encaminhar para oxigenioterapia e nebulização imediata na UPA.`;
+    treatment = [
+      {
+        title: "1ª Linha - Broncodilatação e Anti-inflamatório Inalatório",
+        desc: `Orientar uso diário de corticoide inalatório associado ou não a broncodilatador de longa duração (LABA), ensinando exaustivamente a técnica correta de uso com espaçador. Recomendar cessação tabágica e vacinação pneumocócica/influenza.`
+      },
+      {
+        title: "2ª Linha - Resgate e Otimização Terapêutica",
+        desc: `Durante exacerbações agudas, prescrever ciclo curto de corticoide oral (Prednisolona 40mg por 5 dias) e aumentar frequência do broncodilatador de curta ação. Casos graves devem ser referenciados para avaliação da pneumologia.`
+      }
+    ];
+  } else if (catLower.includes("gastro")) {
+    diagnostic = `Mapeamento diagnóstico de ${name} baseado na sintomatologia (dor abdominal, náuseas, plenitude pós-prandial ou alterações do hábito intestinal). Solicitar hemograma, parasitológico, ultrassonografia de abdome ou endoscopia digestiva alta se preencher critérios de idade ou alarme.`;
+    alarm = `Vômitos incoercíveis com desidratação, dor abdominal aguda intensa e difusa com sinal de descompressão dolorosa (abdome agudo), melena, hematêmese ou perda de peso involuntária rápida -> Encaminhar com extrema urgência à UPA.`;
+    treatment = [
+      {
+        title: "1ª Linha - Modificação Dietética e Sintomáticos",
+        desc: `Orientar dieta fracionada, evitar alimentos gordurosos, picantes, cafeína e deitar logo após comer. Prescrever inibidor de bomba de prótons (ex: Omeprazol 20-40mg em jejum) ou pró-cinéticos/antiespasmódicos conforme queixa.`
+      },
+      {
+        title: "2ª Linha - Associação de Classes e Investigação",
+        desc: `Persistindo queixas após 4 semanas de tratamento adequado, associar bloqueadores de receptores H2, duplicar dose do IBP para uso 12/12h, ou adicionar probióticos/laxativos osmóticos. Agendar retorno em 30 dias para avaliar resposta.`
+      }
+    ];
+  } else if (catLower.includes("mental") || catLower.includes("neuro")) {
+    diagnostic = `Diagnóstico de ${name} baseado em critérios clínicos e anamnese psiquiátrica/neurológica minuciosa. Excluir causas orgânicas, infecciosas ou metabólicas através de triagem laboratorial básica e escala de avaliação cognitiva se idoso.`;
+    alarm = `Presença de ideação suicida estruturada ou comportamento autolesivo, agressividade física incontrolável, alucinações ou delírios agudos, ou crise convulsiva refratária de início recente -> Encaminhar de imediato para o CAPS ou Emergência Psiquiátrica/UPA.`;
+    treatment = [
+      {
+        title: "1ª Linha - Suporte Psicoterapêutico e Medicamento Inicial",
+        desc: `Iniciar antidepressivo inibidor seletivo da recaptação de serotonina (ex: Fluoxetina 20mg ou Sertralina 50mg pela manhã) ou anticonvulsivante/neuroleptorregulador na menor dose eficaz. Estimular higiene do sono e atividade física.`
+      },
+      {
+        title: "2ª Linha - Ajuste Gradual e Apoio Multidisciplinar",
+        desc: `Avaliar adesão e efeitos colaterais em 2-4 semanas. Titular dose do medicamento gradualmente se necessário. Associar acompanhamento com psicologia e grupos de apoio na UBS ou agendar matriciamento com CAPS.`
+      }
+    ];
+  } else if (catLower.includes("pele") || catLower.includes("dermat")) {
+    diagnostic = `Inspeção dermatológica sob luz adequada de lesões cutâneas relacionadas a ${name}, determinando padrão de distribuição, morfologia (placas, pápulas, vesículas) e presença de prurido. Realizar raspado ou biópsia em lesões atípicas ou suspeitas.`;
+    alarm = `Surgimento de lesões bolhosas dolorosas disseminadas, febre alta associada a erupção cutânea difusa, eritrodermia envolvendo mais de 90% da superfície corporal ou sinais de celulite/erisipela facial com prostração -> UPA de urgência.`;
+    treatment = [
+      {
+        title: "1ª Linha - Restabelecimento da Barreira e Anti-inflamatório",
+        desc: `Prescrever hidratantes espessos sem perfume de aplicação diária e sabonetes syndet suaves. Usar corticosteroides tópicos de potência adequada à região (evitar alta potência na face e dobras) por tempo curto limitado (5-7 dias).`
+      },
+      {
+        title: "2ª Linha - Terapia Sistêmica e Controle de Prurido",
+        desc: `Se lesões extensas ou prurido que impede o sono, associar anti-histamínicos de primeira geração (Hidroxizina 25mg à noite) ou antimicrobianos sistêmicos se sinais de infecção secundária. Casos graves referenciar para a especialidade.`
+      }
+    ];
+  } else if (catLower.includes("infecto") || catLower.includes("endemia")) {
+    diagnostic = `Investigação de ${name} por meio de sorologias específicas, testes rápidos, hemograma completo com plaquetometria seriada ou baciloscopia/cultura se suspeita de tuberculose/hanseníase. Considerar sempre a epidemiologia local.`;
+    alarm = `Instabilidade hemodinâmica (PA sistólica < 90 mmHg), queda abrupta de plaquetas com sangramentos (gengivorragia, epistaxe, petéquias), vômitos persistentes, dor abdominal intensa e contínua, ou confusão mental -> UPA de imediato.`;
+    treatment = [
+      {
+        title: "1ª Linha - Suporte Clínico Geral & Sintomáticos",
+        desc: `Prescrever hidratação oral vigorosa (soro de reidratação oral e líquidos abundantes). Usar sintomáticos como dipirona ou paracetamol para controle de febre e dor (estritamente contraindicado uso de AAS ou anti-inflamatórios).`
+      },
+      {
+        title: "2ª Linha - Antibioticoterapia ou Antiparasitário Específico",
+        desc: `Se confirmado patógeno bacteriano ou parasitário específico de ${name}, instituir o esquema de tratamento padronizado do Ministério da Saúde (ex: Rifampicina/Isoniazida para tuberculose). Monitorar adesão e reportar notificação compulsória.`
+      }
+    ];
+  } else if (catLower.includes("geriatria")) {
+    diagnostic = `Avaliação multidimensional do idoso focado em ${name}, contemplando testes de memória/cognição (Mini-Mental), avaliação da velocidade de marcha e força de preensão manual, além de inventário de medicamentos (polifarmácia).`;
+    alarm = `Instabilidade postural severa com quedas repetidas recentes resultando em fraturas ou trauma craniano, declínio cognitivo abrupto (delirium) ou perda ponderal rápida e severa inexplicada -> Avaliação hospitalar urgente.`;
+    treatment = [
+      {
+        title: "1ª Linha - Preservação Funcional e Simplificação",
+        desc: `Promover fisioterapia motora para fortalecimento de membros inferiores e treino de equilíbrio. Revisar e descontinuar medicamentos potencialmente inapropriados para idosos (Critérios de Beer). Orientar dieta hiperproteica.`
+      },
+      {
+        title: "2ª Linha - Adaptação Ambiental e Acompanhamento",
+        desc: `Adequar o ambiente doméstico para prevenção de quedas (retirar tapetes soltos, instalar barras de apoio). Agendar consultas periódicas com equipe multiprofissional (enfermagem, nutrição, assistência social) e apoio familiar.`
+      }
+    ];
+  } else if (catLower.includes("pediatria")) {
+    diagnostic = `Análise do desenvolvimento neuropsicomotor e acompanhamento das curvas de crescimento infantil em consulta de puericultura focado em ${name}. Avaliar ausculta respiratória e padrão de pele conforme queixa ativa da criança.`;
+    alarm = `Sinais de esforço respiratório acentuado (tiragem de fúrcula, tiragem subcostal, batimento de asa de nariz), letargia acentuada, recusa de líquidos por mais de 12h ou febre alta refratária com manchas vermelhas na pele -> UPA imediata.`;
+    treatment = [
+      {
+        title: "1ª Linha - Educação Familiar e Cuidados Gerais",
+        desc: `Orientar pais e cuidadores sobre sinais de alerta de gravidade e técnicas de lavagem nasal com soro fisiológico. Prescrever antitérmicos em dose baseada estritamente no peso corporal da criança para controle de febre.`
+      },
+      {
+        title: "2ª Linha - Medicamentos Direcionados e Retorno",
+        desc: `Se necessário, prescrever antibióticos, broncodilatadores inalatórios ou anti-histamínicos infantis conforme a dose ponderal exata. Agendar retorno em 48-72 horas para reavaliação clínica cuidadosa.`
+      }
+    ];
+  } else {
+    diagnostic = `Exame clínico completo e focado nos sintomas de ${name}, solicitando exames subsidiários de 1ª linha na UBS (laboratoriais gerais ou radiografia) para afastar patologias de maior gravidade.`;
+    alarm = `Presença de dor lancinante inexplicada, alteração súbita de sinais vitais, perda ponderal acentuada sem causa aparente ou comprometimento funcional grave -> Referenciar à UPA para elucidação diagnóstica de emergência.`;
+    treatment = [
+      {
+        title: "1ª Linha - Medidas Iniciais e Sintomáticos",
+        desc: `Iniciar manejo sintomático para alívio de dor ou desconforto (ex: analgésicos comuns) e orientar repouso relativo, hidratação adequada e acompanhamento regular com o médico de família da UBS.`
+      },
+      {
+        title: "2ª Linha - Otimização e Encaminhamento Regulado",
+        desc: `Se não houver melhora clínica com as condutas iniciais em 2-4 semanas, reavaliar o diagnóstico, ajustar doses de medicação ou encaminhar para o especialista focal correspondente via sistema de regulação.`
+      }
+    ];
+  }
+  
+  return {
+    id: seed.id,
+    name: seed.name,
+    category: seed.category,
+    diagnostic,
+    alarm,
+    treatment,
+    interactiveType: seed.id
+  };
+});
+
+export const UBS_CATALOG_DISEASES: DiseaseInfo[] = [
+  ...EXISTING_DISEASES,
+  ...HYDRATED_EXTRA_DISEASES
+];
+

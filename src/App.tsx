@@ -46,11 +46,16 @@ import {
   TrendingUp,
   UserCheck,
   Sparkles,
-  Plus
+  Plus,
+  Lock,
+  Key,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UBS_CATALOG_DISEASES } from './ubsCatalog';
 import SymptomDiagnosticModule from './components/SymptomDiagnosticModule';
+import AmbulatoriosModule from './components/AmbulatoriosModule';
 
 // --- Mental Health Screening Constants ---
 const PHQ9_QUESTIONS = [
@@ -7954,6 +7959,7 @@ function Sidebar({ activeSection, onSelect, isOpen, setIsOpen }: { activeSection
     { id: 'dashboard', icon: LayoutDashboard, label: 'Início' },
     { id: 'symptoms', icon: Brain, label: 'Análise de Sintomas' },
     { id: 'ubs', icon: Stethoscope, label: 'Atenção Básica / UBS' },
+    { id: 'ambulatorio', icon: ClipboardList, label: 'Ambulatórios' },
     { id: 'emergency', icon: ShieldAlert, label: 'Pronto Socorro' },
     { id: 'drugs', icon: Pill, label: 'Doses & KD' },
     { id: 'calculators', icon: Calculator, label: 'Calculadoras' },
@@ -8038,6 +8044,29 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<AppSection>('dashboard');
   const [selectedDisease, setSelectedDisease] = useState<typeof PRESCRIPTIONS[0] | null>(null);
   
+  // --- Password Authentication State ---
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('pedsocorro_auth') === 'true';
+  });
+  const [passwordInput, setPasswordInput] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (passwordInput === '9669') {
+      sessionStorage.setItem('pedsocorro_auth', 'true');
+      setIsAuthenticated(true);
+      setPasswordError(false);
+    } else if (passwordInput.length >= 4 && passwordInput !== '9669') {
+      setPasswordError(true);
+      const timer = setTimeout(() => {
+        setPasswordInput('');
+        setPasswordError(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [passwordInput]);
+
   // --- State for UBS Module Hoisting ---
   const [selectedUbsDiseaseId, setSelectedUbsDiseaseId] = useState<string>('drge');
   const [selectedUbsSubTab, setSelectedUbsSubTab] = useState<'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia'>('guia');
@@ -8071,6 +8100,159 @@ export default function App() {
   }, [isDark]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-100 dark:bg-[#090D1A] text-slate-900 dark:text-slate-300 transition-colors duration-300 flex flex-col justify-between p-6">
+        {/* Top bar with dark mode toggle */}
+        <div className="flex justify-end max-w-md mx-auto w-full">
+          <button 
+            onClick={() => setIsDark(!isDark)}
+            className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+            aria-label="Toggle dark mode"
+          >
+            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+        </div>
+
+        {/* Center Card */}
+        <div className="flex-1 flex items-center justify-center max-w-md mx-auto w-full py-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={passwordError ? {
+              opacity: 1,
+              y: 0,
+              x: [0, -12, 12, -12, 12, -8, 8, -4, 4, 0],
+              transition: { duration: 0.5, ease: "easeInOut" }
+            } : { opacity: 1, y: 0, x: 0 }}
+            className="w-full bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/60 p-8 rounded-[32px] shadow-2xl flex flex-col items-center"
+          >
+            {/* Pulsing Lock Icon */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 rounded-full bg-rose-500/20 blur-xl animate-pulse" />
+              <div className="relative w-16 h-16 rounded-3xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                <Lock size={28} />
+              </div>
+            </div>
+
+            <h1 className="font-serif font-black italic text-2xl text-slate-800 dark:text-white mb-2 text-center tracking-tight">
+              Acesso Restrito
+            </h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400 text-center max-w-xs mb-8 leading-relaxed">
+              Pedsocorro é um ambiente médico profissional. Insira o código de segurança para acessar os protocolos e diretrizes de conduta.
+            </p>
+
+            {/* Password input display: dots */}
+            <div className="flex justify-center gap-4 mb-6 cursor-pointer" onClick={() => document.getElementById('pass-gate-input')?.focus()}>
+              {[0, 1, 2, 3].map((index) => {
+                const isFilled = passwordInput.length > index;
+                return (
+                  <div 
+                    key={index} 
+                    className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
+                      passwordError 
+                        ? 'border-rose-500 bg-rose-500' 
+                        : isFilled 
+                          ? 'border-rose-600 bg-rose-600 dark:border-rose-500 dark:bg-rose-500 scale-110 shadow-lg shadow-rose-500/30' 
+                          : 'border-slate-300 dark:border-slate-700 bg-transparent'
+                    }`}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Invisible native input for screen readers and standard typing */}
+            <input 
+              id="pass-gate-input"
+              type="password"
+              pattern="[0-9]*"
+              inputMode="numeric"
+              maxLength={4}
+              value={passwordInput}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9]/g, '');
+                if (val.length <= 4) setPasswordInput(val);
+              }}
+              className="sr-only"
+              autoFocus
+              placeholder="••••"
+            />
+
+            {/* Optional text input view if user prefers toggling */}
+            <div className="text-[10px] font-mono tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-6 flex items-center gap-1.5 cursor-pointer select-none" onClick={() => setShowPassword(!showPassword)}>
+              <span className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                {showPassword ? 'Ocultar Código' : 'Exibir Código'}
+              </span>
+              {showPassword ? <EyeOff size={10} /> : <Eye size={10} />}
+            </div>
+
+            {showPassword && passwordInput.length > 0 && (
+              <div className="text-lg font-mono font-black text-rose-600 dark:text-rose-400 tracking-[0.3em] mb-6">
+                {passwordInput}
+              </div>
+            )}
+
+            {/* Error message */}
+            <div className="h-6 mb-2 flex items-center justify-center">
+              {passwordError && (
+                <span className="text-xs text-rose-500 font-bold flex items-center gap-1.5 animate-fade-in">
+                  <XCircle size={14} /> Senha incorreta. Tente novamente.
+                </span>
+              )}
+            </div>
+
+            {/* Keypad */}
+            <div className="grid grid-cols-3 gap-3 w-full max-w-[280px]">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => {
+                    if (passwordInput.length < 4) {
+                      setPasswordInput(prev => prev + num);
+                    }
+                  }}
+                  className="w-full aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-750 flex items-center justify-center text-lg font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:scale-95 transition-all shadow-sm cursor-pointer"
+                >
+                  {num}
+                </button>
+              ))}
+              <button
+                type="button"
+                onClick={() => setPasswordInput('')}
+                className="w-full aspect-square rounded-2xl bg-slate-100/60 dark:bg-slate-800/20 flex items-center justify-center text-xs font-black uppercase text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 active:scale-95 transition-all cursor-pointer"
+              >
+                Limpar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (passwordInput.length < 4) {
+                    setPasswordInput(prev => prev + '0');
+                  }
+                }}
+                className="w-full aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-750 flex items-center justify-center text-lg font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:scale-95 transition-all shadow-sm cursor-pointer"
+              >
+                0
+              </button>
+              <button
+                type="button"
+                onClick={() => setPasswordInput(prev => prev.slice(0, -1))}
+                className="w-full aspect-square rounded-2xl bg-slate-100/60 dark:bg-slate-800/20 flex items-center justify-center text-xs font-black uppercase text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 active:scale-95 transition-all cursor-pointer"
+              >
+                Apagar
+              </button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Footer info */}
+        <div className="text-center text-[10px] text-slate-400 dark:text-slate-600 uppercase tracking-widest font-bold">
+          © 2026 Pedsocorro • Protocolo Seguro Encriptado
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#CAD3DC] dark:bg-[#090D1A] text-slate-900 dark:text-slate-300 transition-colors duration-300">
@@ -8114,9 +8296,21 @@ export default function App() {
               </div>
               <button 
                 onClick={() => setIsDark(!isDark)}
-                className="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:scale-105 active:scale-95 transition-all shadow-sm"
+                className="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+                title={isDark ? "Ativar Modo Claro" : "Ativar Modo Escuro"}
               >
                 {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              </button>
+              <button 
+                onClick={() => {
+                  sessionStorage.removeItem('pedsocorro_auth');
+                  setIsAuthenticated(false);
+                  setPasswordInput('');
+                }}
+                className="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+                title="Bloquear Aplicativo (Sair)"
+              >
+                <Lock size={19} />
               </button>
            </div>
         </header>
@@ -8128,6 +8322,7 @@ export default function App() {
               {activeSection === 'symptoms' && <motion.div key="sy" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Análise de Sintomas & Auxílio Diagnóstico" subtitle="Algoritmo de triagem clínica cruzada para Atenção Básica (UBS) e Pronto Atendimento (UPA/PS)." icon={Brain} /><SymptomDiagnosticModule /></motion.div>}
 
               {activeSection === 'ubs' && <motion.div key="ub" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Atenção Básica / UBS" subtitle="Protocolos de vigilância, pré-natal, doenças crônicas e escores de saúde mental." icon={Stethoscope} /><UbsModule activeSubTab={selectedUbsSubTab} setActiveSubTab={setSelectedUbsSubTab} selectedGuiaDiseaseId={selectedUbsDiseaseId} setSelectedGuiaDiseaseId={setSelectedUbsDiseaseId} /></motion.div>}
+              {activeSection === 'ambulatorio' && <motion.div key="am" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><AmbulatoriosModule /></motion.div>}
               {activeSection === 'emergency' && <motion.div key="em" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Pronto Socorro" subtitle="Protocolos de emergência, exames imediatos e condutas críticas." icon={ShieldAlert} /><EmergencyModule onSelect={setSelectedDisease} /></motion.div>}
               {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} setSelectedUbsDiseaseId={setSelectedUbsDiseaseId} setSelectedUbsSubTab={setSelectedUbsSubTab} /></motion.div>}
               {activeSection === 'drugs' && <motion.div key="dr" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Guia de Dosagem" subtitle="Doses recomendadas para prática clínica hospitalar e ambulatorial." icon={Pill} /><DrugsModule /></motion.div>}
@@ -8286,9 +8481,12 @@ export default function App() {
 
         <footer className="p-8 border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-slate-400">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                  <ShieldCheck size={14} className="text-rose-500" />
                  <span>Protocolos revisados 2026.1 - Base Pedsocorro Integrada</span>
+                 <span className="ml-2 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 font-bold border border-teal-150 dark:border-teal-900/50">
+                   {UBS_CATALOG_DISEASES.length} Doenças Cadastradas
+                 </span>
               </div>
               <div className="flex gap-6 uppercase tracking-widest text-[10px]">
                  <a href="#" className="hover:text-rose-600">Diretrizes</a>

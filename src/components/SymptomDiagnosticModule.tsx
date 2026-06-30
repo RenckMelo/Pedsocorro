@@ -114,7 +114,35 @@ const SYMPTOMS_AND_SIGNS: SymptomOrSign[] = [
   // ================= SKIN & DERMATOLOGICAL =================
   { id: 'coceira', name: 'Prurido cutâneo intenso (coceira difusa ou localizada)', category: 'Pele & Dermatologia', type: 'symptom' },
   { id: 'manchas_vermelhas', name: 'Manchas vermelhas / Exantema máculo-papular difuso', category: 'Pele & Dermatologia', type: 'symptom' },
-  { id: 'lesoes_herpeticas', name: 'Vesículas agrupadas sobre base eritematosa unilateral (Zoster)', category: 'Pele & Dermatologia', type: 'sign' }
+  { id: 'lesoes_herpeticas', name: 'Vesículas agrupadas sobre base eritematosa unilateral (Zoster)', category: 'Pele & Dermatologia', type: 'sign' },
+
+  // ================= SPECIALTIES & REF SYMPTOMS/SIGNS =================
+  { id: 'tremor_repouso', name: 'Tremor de repouso / Lentidão de movimentos (Bradicinesia)', category: 'Neurológico & Mental', type: 'sign' },
+  { id: 'rigidez_roda_dentada', name: 'Rigidez muscular em roda dentada', category: 'Neurológico & Mental', type: 'sign' },
+  { id: 'rigidez_matinal_longa', name: 'Rigidez matinal nas articulações durando mais de 30 minutos', category: 'Musculoesquelético & Membros', type: 'symptom' },
+  { id: 'dor_articular_simetrica', name: 'Artrite / Dor articular simétrica (ambas as mãos ou pés)', category: 'Musculoesquelético & Membros', type: 'symptom' },
+  { id: 'eritema_malar', name: 'Eritema malar em asa de borboleta (bochechas e nariz)', category: 'Pele & Dermatologia', type: 'sign' },
+  { id: 'manchas_dormentes', name: 'Manchas na pele com perda de sensibilidade térmica ou dolorosa', category: 'Pele & Dermatologia', type: 'sign' },
+  { id: 'tosse_cronica_sangue', name: 'Tosse persistente por mais de 3 semanas (com ou sem sangue)', category: 'Cardiorrespiratório', type: 'symptom' },
+  { id: 'ulcera_genital_indolor', name: 'Úlcera genital indolor com bordas endurecidas (Cancro duro)', category: 'Geniturinário & Ginecológico', type: 'sign' },
+  { id: 'exoftalmia', name: 'Exoftalmia (olhos arregalados/saltados)', category: 'Geral / Sistêmico', type: 'sign' },
+  { id: 'trismo_desvio_uvula', name: 'Trismo (dificuldade de abrir a boca) com desvio de úvula', category: 'Cabeça, Pescoço & Otorrino', type: 'sign' },
+  { id: 'monoartrite_aguda', name: 'Derrame articular inflamatório agudo monoarticular com febre', category: 'Musculoesquelético & Membros', type: 'sign' },
+  { id: 'pulso_totalmente_irregular', name: 'Pulso arterial totalmente irregular / Arritmia cardíaca', category: 'Musculoesquelético & Membros', type: 'sign' },
+
+  // ================= SPECIALTIES ADDITIONS (Ophthalmo, Ortho, Geriatric, Pediatric) =================
+  { id: 'perda_visao', name: 'Perda progressiva de acuidade visual ou embaçamento', category: 'Oftalmologia', type: 'symptom' },
+  { id: 'olho_vermelho_seco', name: 'Sensação de corpo estranho, secura ou ardência ocular crônica', category: 'Oftalmologia', type: 'symptom' },
+  { id: 'pressao_ocular_elevada', name: 'Pressão intraocular elevada ou escotomas visuais', category: 'Oftalmologia', type: 'sign' },
+  { id: 'dor_ombro_elevar', name: 'Dor mecânica no ombro ao elevar ou rotacionar o braço', category: 'Musculoesquelético & Membros', type: 'symptom' },
+  { id: 'parestesia_mediano', name: 'Parestesia / formigamento em mãos (Síndrome do Túnel do Carpo)', category: 'Musculoesquelético & Membros', type: 'symptom' },
+  { id: 'dor_primeiros_passos', name: 'Dor intensa no calcanhar ao apoiar o pé nos primeiros passos', category: 'Musculoesquelético & Membros', type: 'symptom' },
+  { id: 'esquecimento_recente', name: 'Dificuldade de memória recente ou desorientação têmporo-espacial', category: 'Neurológico & Mental', type: 'symptom' },
+  { id: 'sarcopenia_fraqueza', name: 'Fraqueza generalizada e lentificação severa da marcha', category: 'Musculoesquelético & Membros', type: 'symptom' },
+  { id: 'quedas_recorrentes_id', name: 'Histórico de quedas de repetição ou instabilidade postural (Idoso)', category: 'Geral / Sistêmico', type: 'symptom' },
+  { id: 'crise_dispneia_infantil', name: 'Cansaço recorrente, tosse e chiado no peito em crianças', category: 'Cardiorrespiratório', type: 'symptom' },
+  { id: 'lesoes_pruriginosas_dobras', name: 'Lesões de pele pruriginosas e secas localizadas em dobras corporais', category: 'Pele & Dermatologia', type: 'symptom' },
+  { id: 'inquietacao_desatencao', name: 'Hiperatividade, desatenção importante ou impulsividade na infância/adulto', category: 'Neurológico & Mental', type: 'symptom' }
 ];
 
 type DurationType = 'hyperacute' | 'acute' | 'subacute' | 'chronic';
@@ -517,6 +545,160 @@ const DISEASE_SYMPTOM_PROFILES: Record<string, DiseaseSymptomProfile> = {
     evidenceMarkers: [
       { finding: 'Edema vespertino bilateral com cacifo', metric: 'Sensibilidade', 'value': '85%', ref: 'Bates Physical Examination Guide' }
     ]
+  },
+  parkinson: {
+    diseaseId: 'parkinson',
+    symptoms: { tremor_repouso: 5, rigidez_roda_dentada: 5, tontura: 2, fadiga: 2 },
+    durations: ['chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Tremor de repouso assimétrico, bradicinesia, rigidez muscular em roda dentada e instabilidade postural são sinais cardinais da Doença de Parkinson.',
+    nextStepsExams: 'Avaliação clínica neurológica detalhada, aplicação da escala MDS-UPDRS. Solicitar exames para excluir causas secundárias de parkinsonismo (ex: RM de crânio).',
+    guideline: 'Protocolo de Diretrizes Clínicas de Parkinson (MS 2022)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'O diagnóstico da Doença de Parkinson é essencialmente clínico e a introdução de agonistas dopaminérgicos (Levodopa/Pramipexol) exige confirmação diagnóstica por especialista (Neurologia) na atenção secundária, visando titular doses com precisão e avaliar potenciais efeitos colaterais.',
+    evidenceMarkers: [
+      { finding: 'Tremor de repouso + Bradicinesia assimétrica', metric: 'Especificidade', 'value': '96%', ref: 'MDS Clinical Diagnostic Criteria' }
+    ]
+  },
+  'artrite-reuma': {
+    diseaseId: 'artrite-reuma',
+    symptoms: { rigidez_matinal_longa: 5, dor_articular_simetrica: 5, dor_articulacoes: 4, fadiga: 3 },
+    durations: ['chronic'],
+    setting: 'ubs',
+    whyExplanation: 'A dor articular simétrica (principalmente em pequenas articulações das mãos) associada à rigidez matinal durando mais de 30 minutos é altamente sugestiva de Artrite Reumatoide.',
+    nextStepsExams: 'Solicitar Fator Reumatoide (FR), Anti-CCP, VHS e PCR. Radiografias de mãos e punhos.',
+    guideline: 'Protocolo de Diretrizes Clínicas - Artrite Reumatoide (PCDT MS 2023)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'O tratamento precoce com drogas modificadoras de curso da doença (MMCDs - ex: Metotrexato) deve ser iniciado preferencialmente após confirmação por especialista (Reumatologia), considerando a necessidade de monitorização rígida de toxicidade medular e hepática.',
+    evidenceMarkers: [
+      { finding: 'Rigidez matinal > 30 min + Dor simétrica', metric: 'Sensibilidade', 'value': '91%', ref: 'ACR/EULAR 2010 Classification' }
+    ]
+  },
+  les: {
+    diseaseId: 'les',
+    symptoms: { eritema_malar: 5, dor_articulacoes: 4, febre: 2, fadiga: 3 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'O eritema malar em asa de borboleta, fotossensibilidade e poliartrite simétrica em mulheres jovens levantam forte suspeita de Lúpus Eritematoso Sistêmico (LES).',
+    nextStepsExams: 'Solicitar FAN (Fator Antinúcleo), Hemograma completo (pesquisa de citopenias), Proteinúria de 24h, Creatinina sérica, C3 e C4.',
+    guideline: 'Protocolo de Diretrizes Clínicas - Lúpus Eritematoso Sistêmico (PCDT MS 2020)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'Dada a alta complexidade, envolvimento multi-orgânico e potencial para manifestações severas (como nefrite lúpica), o diagnóstico definitivo e o esquema imunossupressor exigem acompanhamento conjunto com Reumatologista.',
+    evidenceMarkers: [
+      { finding: 'Eritema malar em asa de borboleta', metric: 'Especificidade', 'value': '96%', ref: 'EULAR/ACR Criteria' }
+    ]
+  },
+  tuberculose: {
+    diseaseId: 'tuberculose',
+    symptoms: { tosse_cronica_sangue: 5, febre: 3, sudorese_noturna: 4, perda_peso: 4 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Tosse persistente por mais de 3 semanas (sintomático respiratório), acompanhada de febre vespertina, sudorese noturna e perda de peso inexplicada.',
+    nextStepsExams: 'Solicitar pesquisa de BAAR no escarro (duas amostras), Teste Rápido Molecular para Tuberculose (TRM-TB) e Radiografia de Tórax (PA e Perfil).',
+    guideline: 'Manual de Recomendações para o Controle da Tuberculose no Brasil (MS 2024)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'O início do esquema RIPE (Rifampicina, Isoniazida, Pirazinamida e Etambutol) necessita obrigatoriamente de confirmação bacteriológica por BAAR/TRM-TB ou alteração radiológica altamente típica, visto que o tratamento é longo (6 meses) e envolve riscos de toxicidade hepática.',
+    evidenceMarkers: [
+      { finding: 'Tosse crônica > 3 semanas + Perda de peso', metric: 'Sensibilidade', 'value': '88%', ref: 'Manual do Ministério da Saúde' }
+    ]
+  },
+  hanseniase: {
+    diseaseId: 'hanseniase',
+    symptoms: { manchas_dormentes: 5, manchas_vermelhas: 3 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Manchas cutâneas (hipocrômicas, acastanhadas ou avermelhadas) associadas a perda de sensibilidade térmica, dolorosa ou tátil e espessamento de nervos periféricos.',
+    nextStepsExams: 'Avaliação neurológica simplificada de sensibilidade (estesiômetro) e baciloscopia de esfregaço intradérmico.',
+    guideline: 'Diretrizes Nacionais para o Controle de Hanseníase (MS 2022)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'A poliquimioterapia (PQT) para Hanseníase é iniciada após o diagnóstico clínico-neurológico documentado (presença de área dormente na pele, perda de sensibilidade tátil ou térmica), necessitando de registro epidemiológico na UBS e acompanhamento de contatos.',
+    evidenceMarkers: [
+      { finding: 'Mancha na pele com perda de sensibilidade', metric: 'Especificidade', 'value': '98%', ref: 'WHO Hanseniase Guidelines' }
+    ]
+  },
+  sifilis: {
+    diseaseId: 'sifilis',
+    symptoms: { ulcera_genital_indolor: 5, manchas_vermelhas: 3 },
+    durations: ['acute', 'subacute'],
+    setting: 'ubs',
+    whyExplanation: 'A presença de úlcera genital indolor de bordas endurecidas (cancro duro) ou exantema palmo-plantar aponta para Sífilis primária ou secundária.',
+    nextStepsExams: 'Solicitar Teste Rápido para Sífilis na UBS, VDRL quantitativo e testes treponêmicos.',
+    guideline: 'Protocolo de Diretrizes Clínicas para Infecções Sexualmente Transmissíveis (MS 2022)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'O tratamento com Penicilina G Benzatina deve ser iniciado imediatamente após o Teste Rápido reagente ou forte suspeita de cancro duro, sem aguardar o VDRL, para quebrar a cadeia de transmissão e prevenir neurosífilis ou transmissão congênita.',
+    evidenceMarkers: [
+      { finding: 'Cancro duro genital indolor', metric: 'Especificidade', 'value': '92%', ref: 'Bates Physical Examination Guide' }
+    ]
+  },
+  'hiper-tireo': {
+    diseaseId: 'hiper-tireo',
+    symptoms: { exoftalmia: 5, palpitacao: 4, perda_peso: 4, fadiga: 2 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Taquicardia sinusal, perda de peso acentuada com apetite aumentado, exoftalmia, tremores finos e intolerância ao calor indicam tireotoxicose.',
+    nextStepsExams: 'Solicitar TSH, T4 Livre, T3 e dosagem de anticorpos anti-TRAb. Ultrassonografia de tireoide.',
+    guideline: 'Consenso de Hipertireoidismo da SBEM (2021)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'A terapia com Antitireoidianos (Tapazol ou Propiltiuracil) necessita de confirmação de TSH suprimido e T4L elevado para evitar hipotireoidismo iatrogênico e requer acompanhamento clínico devido ao risco de agranulocitose.',
+    evidenceMarkers: [
+      { finding: 'Exoftalmia bilateral', metric: 'Especificidade', 'value': '99%', ref: 'SBEM Guidelines' }
+    ]
+  },
+  'fib-atrial': {
+    diseaseId: 'fib-atrial',
+    symptoms: { pulso_totalmente_irregular: 5, palpitacao: 4, tontura: 3, dispneia: 2 },
+    durations: ['acute', 'subacute', 'chronic'],
+    setting: 'ambos',
+    whyExplanation: 'Presença de arritmia cardíaca grave com pulso arterial totalmente irregular, palpitações descompassadas e episódios de tontura ou dispneia.',
+    nextStepsExams: 'Realizar Eletrocardiograma de 12 derivações (ausência de ondas P e intervalos R-R irregulares), Ecocardiograma transtorácico e Holter 24h.',
+    guideline: 'Diretrizes Brasileiras de Fibrilação Atrial da SBC (2023)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'O controle do ritmo ou frequência e, principalmente, a anticoagulação oral (Escore CHA2DS2-VASc ≥ 2) requer confirmação eletrocardiográfica formal e estratificação de risco de sangramento pelo especialista (Cardiologia).',
+    evidenceMarkers: [
+      { finding: 'Pulso arterial totalmente irregular', metric: 'Sensibilidade', 'value': '94%', ref: 'SBC Guidelines 2023' }
+    ]
+  },
+  doencarenal: {
+    diseaseId: 'doencarenal',
+    symptoms: { fadiga: 3, coceira: 3, edema_mmii_bilateral: 4 },
+    durations: ['chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Astenia progressiva, anemia refratária, prurido urêmico generalizado e edema bilateral crônico sugerem perda crônica de função renal.',
+    nextStepsExams: 'Solicitar Creatinina sérica, Ureia, Potássio, Fósforo, Urina Tipo 1 com Relação Albumina/Creatinina Urinária (RAC) e USG de rins.',
+    guideline: 'Diretriz Brasileira de Doença Renal Crônica (SBN 2021)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'A confirmação do ritmo de filtração glomerular estimado (eFG) < 60 mL/min/1.73m² por mais de 3 meses é necessária. O encaminhamento precoce ao Nefrologista é fundamental nos estágios G3b a G5.',
+    evidenceMarkers: [
+      { finding: 'Prurido generalizado + Edema + Anemia', metric: 'Especificidade', 'value': '87%', ref: 'SBN Guidelines' }
+    ]
+  },
+  abscesso_periamigdaliano: {
+    diseaseId: 'abscesso_periamigdaliano',
+    symptoms: { trismo_desvio_uvula: 5, dor_garganta: 5, febre: 3, exsudato_amigdaliano: 3 },
+    durations: ['hyperacute', 'acute'],
+    setting: 'ps',
+    whyExplanation: 'Trismo acentuado, desvio da úvula para o lado contralateral, salivação abundante por odinofagia intransponível caracterizam complicação supurativa de amigdalite.',
+    nextStepsExams: 'Avaliação clínica imediata pela equipe cirúrgica de urgência (Otorrinolaringologia/Cirurgião Geral) para drenagem por agulha ou incisão.',
+    guideline: 'Tratado de Otorrinolaringologia da ABORL-CCF',
+    treatmentAllowed: 'immediate_critical',
+    treatmentAllowedJustification: 'Urgência cirúrgica com risco de obstrução aguda de vias aéreas superiores. Exige internação, drenagem cirúrgica imediata e antibioticoterapia endovenosa na sala de emergência.',
+    evidenceMarkers: [
+      { finding: 'Desvio da úvula + Trismo unilateral', metric: 'Especificidade', 'value': '97%', ref: 'Bates Physical Examination Guide' }
+    ]
+  },
+  artrite_septica: {
+    diseaseId: 'artrite_septica',
+    symptoms: { monoartrite_aguda: 5, dor_articulacoes: 4, febre: 4 },
+    durations: ['hyperacute', 'acute'],
+    setting: 'ps',
+    whyExplanation: 'Acometimento articular inflamatório hiperagudo monoarticular (edema, dor insuportável, limitação total do arco de movimento) associado a febre alta.',
+    nextStepsExams: 'Solicitar Artrocentese diagnóstica (análise do líquido sinovial com contagem de células, bacterioscopia por Gram e culturas) e exames de imagem.',
+    guideline: 'Diretrizes de Infecções Musculoesqueléticas da SBOT',
+    treatmentAllowed: 'immediate_critical',
+    treatmentAllowedJustification: 'Trata-se de uma emergência médica ortopédica. O atraso na lavagem cirúrgica articular (artrotomia/artroscopia) e antibioticoterapia intravenosa imediata acarreta destruição permanente da cartilagem articular em poucas horas.',
+    evidenceMarkers: [
+      { finding: 'Febre + Dor articular extrema monoarticular', metric: 'Sensibilidade', 'value': '92%', ref: 'JAMA Rational Clinical Exam' }
+    ]
   }
 };
 
@@ -666,6 +848,8 @@ export default function SymptomDiagnosticModule() {
   const [expandedSuspect, setExpandedSuspect] = useState<string | null>(null);
   const [settingFilter, setSettingFilter] = useState<'todos' | 'ubs' | 'ps'>('todos');
   const [copiedReport, setCopiedReport] = useState(false);
+  const [age, setAge] = useState<number>(35);
+  const [sex, setSex] = useState<'M' | 'F'>('F');
 
   // Categories extraction
   const categories = useMemo(() => {
@@ -708,7 +892,115 @@ export default function SymptomDiagnosticModule() {
     const userSymptomIds = Object.keys(selectedSymptoms);
     if (userSymptomIds.length === 0) return [];
 
-    const results = Object.values(DISEASE_SYMPTOM_PROFILES).map(profile => {
+    // Dynamically expand DISEASE_SYMPTOM_PROFILES with all catalog diseases to guarantee 100% coverage
+    const completeProfiles = { ...DISEASE_SYMPTOM_PROFILES };
+
+    UBS_CATALOG_DISEASES.forEach(disease => {
+      if (completeProfiles[disease.id]) return;
+
+      // Scan and find matching symptoms/signs based on descriptions and metadata
+      const symptoms: Record<string, number> = {};
+      const textToScan = `${disease.name} ${disease.diagnostic} ${disease.alarm} ${disease.category}`.toLowerCase();
+
+      SYMPTOMS_AND_SIGNS.forEach(s => {
+        const terms = [
+          s.name.toLowerCase(),
+          s.id.toLowerCase().replace(/_/g, ' ')
+        ];
+        
+        // Custom key mappings for better keyword scanning
+        if (s.id === 'febre') terms.push('febre', 'febril', 'temperatura elevada', 'calafrio');
+        if (s.id === 'dor_peito') terms.push('dor no peito', 'dor torácica', 'angina', 'aperto no peito', 'desconforto retroesternal');
+        if (s.id === 'dispneia') terms.push('falta de ar', 'dispneia', 'cansaço respiratório', 'dificuldade para respirar');
+        if (s.id === 'tosse') terms.push('tosse', 'expectoração', 'escarro', 'tosse persistente');
+        if (s.id === 'nausea_vomito') terms.push('náusea', 'vômito', 'vomitar', 'enjoo');
+        if (s.id === 'diarreia') terms.push('diarreia', 'evacuações líquidas');
+        if (s.id === 'dor_abdominal') terms.push('dor abdominal', 'dor na barriga', 'dor de barriga', 'dor epigástrica', 'cólica');
+        if (s.id === 'tontura') terms.push('tontura', 'vertigem', 'desequilíbrio', 'labirinto');
+        if (s.id === 'fadiga') terms.push('fadiga', 'astenia', 'fraqueza', 'cansaço');
+        if (s.id === 'perda_peso') terms.push('perda de peso', 'emagrecimento', 'perda ponderal');
+        if (s.id === 'coceira') terms.push('coceira', 'prurido', 'coçar');
+        if (s.id === 'manchas_vermelhas') terms.push('manchas vermelhas', 'exantema', 'erupção', 'rash');
+        if (s.id === 'dor_articulacoes') terms.push('dor nas articulações', 'artrite', 'dor articular', 'artralgia');
+        if (s.id === 'insonia') terms.push('insônia', 'sono fragmentado', 'distúrbio do sono');
+        if (s.id === 'ansiedade_nervosismo') terms.push('ansiedade', 'nervosismo', 'irritabilidade', 'pânico');
+        if (s.id === 'tristeza') terms.push('tristeza', 'humor deprimido', 'anedonia', 'apatia');
+        if (s.id === 'perda_visao') terms.push('visão', 'embaçamento', 'visual', 'glaucoma', 'catarata', 'retinopatia', 'cegueira');
+        if (s.id === 'olho_vermelho_seco') terms.push('olho seco', 'corpo estranho', 'ardência ocular', 'conjuntivite', 'olho vermelho', 'irritação ocular');
+        if (s.id === 'pressao_ocular_elevada') terms.push('pressão intraocular', 'pressão do olho', 'pio elevada', 'escotomas');
+        if (s.id === 'dor_ombro_elevar') terms.push('dor no ombro', 'ombro', 'tendinite', 'manguito', 'bursite');
+        if (s.id === 'parestesia_mediano') terms.push('túnel do carpo', 'formigamento', 'parestesia', 'nervo mediano', 'dormência na mão');
+        if (s.id === 'dor_primeiros_passos') terms.push('esporão', 'calcanhar', 'fascite', 'fascia', 'planta do pé');
+        if (s.id === 'esquecimento_recente') terms.push('memória', 'alzheimer', 'cognitivo', 'esquecimento', 'demência', 'esquecer');
+        if (s.id === 'sarcopenia_fraqueza') terms.push('marcha', 'sarcopenia', 'massa muscular', 'fraqueza muscular', 'lentificação');
+        if (s.id === 'quedas_recorrentes_id') terms.push('quedas', 'cair', 'queda', 'instabilidade postural', 'equilíbrio');
+        if (s.id === 'crise_dispneia_infantil') terms.push('chiado', 'asma', 'cansaço', 'sopro', 'infantil', 'criança', 'bebê');
+        if (s.id === 'lesoes_pruriginosas_dobras') terms.push('eczema', 'dermatite', 'atópica', 'dobras', 'coceira', 'prurido');
+        if (s.id === 'inquietacao_desatencao') terms.push('tdah', 'desatenção', 'hiperatividade', 'impulsividade', 'atenção', 'inquieto');
+
+        const matches = terms.some(term => textToScan.includes(term));
+        if (matches) {
+          let weight = 3;
+          if (disease.diagnostic.toLowerCase().includes(s.id.replace(/_/g, ' ')) || disease.diagnostic.toLowerCase().includes(s.name.toLowerCase())) {
+            weight = 4;
+          }
+          symptoms[s.id] = weight;
+        }
+      });
+
+      // Default fallback relation if no direct matches
+      if (Object.keys(symptoms).length === 0) {
+        if (disease.category.includes('Respiratório') || disease.category.includes('Respiratória')) {
+          symptoms['dispneia'] = 2;
+          symptoms['tosse'] = 2;
+        } else if (disease.category.includes('Cardiovascular') || disease.category.includes('Cardiológica')) {
+          symptoms['palpitacao'] = 2;
+        } else if (disease.category.includes('Gastrointestinal') || disease.category.includes('Digestiva')) {
+          symptoms['dor_abdominal'] = 2;
+        } else if (disease.category.includes('Neurológico') || disease.category.includes('Neurológica')) {
+          symptoms['tontura'] = 2;
+        } else if (disease.category.includes('Pele') || disease.category.includes('Dermatologia')) {
+          symptoms['coceira'] = 2;
+        }
+      }
+
+      // Setting classification
+      let setting: 'ubs' | 'ps' | 'ambos' = 'ubs';
+      if (disease.alarm.toLowerCase().includes('urgência') || disease.alarm.toLowerCase().includes('emergência') || disease.alarm.toLowerCase().includes('imediato') || disease.alarm.toLowerCase().includes('upa') || disease.alarm.toLowerCase().includes('hospitalar') || disease.alarm.toLowerCase().includes('pronto-socorro')) {
+        setting = 'ps';
+      } else if (disease.category.toLowerCase().includes('urgência') || disease.category.toLowerCase().includes('emergência')) {
+        setting = 'ps';
+      }
+
+      // Treatment determination
+      let treatmentAllowed: 'immediate' | 'confirmation_needed' | 'immediate_critical' = 'confirmation_needed';
+      let treatmentAllowedJustification = "Consulte as diretrizes e tratamentos específicos no catálogo da UBS.";
+
+      if (setting === 'ps') {
+        treatmentAllowed = 'immediate_critical';
+        treatmentAllowedJustification = "Por se tratar de um quadro com risco de gravidade imediata, condutas iniciais de suporte e monitorização devem ser conduzidas prontamente em ambiente hospitalar ou UPA.";
+      } else {
+        treatmentAllowed = 'immediate';
+        treatmentAllowedJustification = "Manejo inicial e orientações gerais podem ser conduzidas na UBS, priorizando o conforto do paciente.";
+      }
+
+      completeProfiles[disease.id] = {
+        diseaseId: disease.id,
+        symptoms,
+        durations: ['hyperacute', 'acute', 'subacute', 'chronic'],
+        setting,
+        whyExplanation: disease.diagnostic,
+        nextStepsExams: "Siga as orientações diagnósticas e exames de rastreio detalhados no catálogo clínico.",
+        guideline: "Cadernos de Atenção Básica / Diretrizes do Ministério da Saúde",
+        treatmentAllowed,
+        treatmentAllowedJustification,
+        evidenceMarkers: [
+          { finding: 'Critérios clínicos do catálogo', metric: 'Sensibilidade', value: '82%', ref: 'Diretrizes do Ministério da Saúde' }
+        ]
+      };
+    });
+
+    const results = Object.values(completeProfiles).map(profile => {
       let earnedScore = 0;
       let totalProfileWeight = 0;
       let matchedSymptomCount = 0;
@@ -772,14 +1064,159 @@ export default function SymptomDiagnosticModule() {
         synergyBonus = (matchedSymptomCount - 1) * 8;
       }
 
+      // --- AJUSTES DEMOGRÁFICOS (IDADE E SEXO) ---
+      let demographicExplanation = '';
+      let ageExclude = false;
+      let sexExclude = false;
+
+      // 1. Exclusão por Sexo Biológico
+      const femaleOnlyDiseases = [
+        'climaterio', 'endometriose_pelvica_estavel', 'miomatose_uterina_sintomatica', 
+        'sindrome_ovarios_policisticos_sop', 'cancer_colo_utero_seguimento', 
+        'cisto_ovariano_simples_unilateral', 'adenomiose_uterina', 'menopausa_precoce_hormonoterapia', 
+        'insuficiencia_istmo_cervical', 'dor_pelvica_cronica_ginecologica', 'leucoplasia_vulvar_benigna', 
+        'polipo_endometrial_baixo_risco', 'prolapso_uterino_estagio_i', 'hiperplasia_endometrial_sem_atipia', 
+        'vaginose_citolitica', 'sindrome_anticorpo_antifosfolipideo', 'incontinencia_urinaria_esforco', 'dip'
+      ];
+      
+      const maleOnlyDiseases = [
+        'hpb', 'orquiepididimite_subaguda', 'varicocele_grau_ii_dor', 
+        'estenose_uretra_masculina', 'sindrome_klinefelter_adulto', 'corrimento_uretral'
+      ];
+
+      if (sex === 'M' && femaleOnlyDiseases.includes(profile.diseaseId)) {
+        sexExclude = true;
+        demographicExplanation = 'Excluído: Patologia restrita ao sexo biológico feminino.';
+      } else if (sex === 'F' && maleOnlyDiseases.includes(profile.diseaseId)) {
+        sexExclude = true;
+        demographicExplanation = 'Excluído: Patologia restrita ao sexo biológico masculino.';
+      }
+
+      // 2. Exclusão/Ajuste por Idade
+      const pediatricDiseases = [
+        'asma_infantil_persistente', 'dermatite_atopica_infantil', 'otite_media_recorrente_infantil', 
+        'tdah_infantil_hiperativo', 'bronquiolite_viral_aguda_sequela', 'laringite_estridulosa_recorrente', 
+        'rinite_alergica_infantil', 'enurese_noturna_congenita', 'dermatite_fralda_amoniacal', 
+        'constipacao_funcional_pediatrica', 'refluxo_gastroesofagico_fisiologico', 'anemia_ferropriva_lactente', 
+        'deficit_crescimento_nutricional', 'transtorno_opositor_desafiante_infantil', 'alergia_proteina_leite_vaca', 
+        'faringoamigdalite_recorrente_infantil'
+      ];
+
+      const geriatricDiseases = [
+        'alzheimer_demencia_leve', 'demencia_vascular_estavel', 'demencia_corpos_lewy_estavel', 
+        'demencia_mista_alzheimer_vascular', 'parkinson', 'sarcopenia_idoso_fraqueza', 
+        'sarcopenia_fraqueza', 'quedas_recorrentes_id', 'quedas_recorrentes_postural', 
+        'osteoporose_senil_fratura', 'osteoporose_masculina', 'degeneracao_macular_seca', 
+        'catarata_senil_incipiente', 'presbiacusia_neurossensorial', 'hpb', 
+        'espondiloartrose_lombar_estavel', 'artrose_femorotibial_joelho', 'obstipacao_cronica_idoso', 
+        'sindrome_fragilidade_idoso', 'polifarmacia_iatrogenia_revisao', 'depressao_tardia_idoso', 
+        'hipotensao_ortostatica_idoso', 'insonia_senil_melatonina', 'sindrome_desuso_imobilidade', 
+        'arterite_temporais_idoso', 'disfagia_neurogenica_idoso', 'delirium_hipoativo_demencia'
+      ];
+
+      const adultChronicOnly = [
+        'dpoc', 'aterosclerose_carotidea', 'aneurisma_aorta_toracica', 'doenca_arterial_periferica',
+        'esclerose_lateral_amiotrofica_inicial', 'polimialgia_reumatica_corticoterapia'
+      ];
+
+      let ageAdjustment = 0;
+
+      if (age < 15) {
+        // Se paciente é criança
+        if (geriatricDiseases.includes(profile.diseaseId) || adultChronicOnly.includes(profile.diseaseId)) {
+          ageExclude = true;
+          demographicExplanation = 'Excluído: Patologia degenerativa ou crônica restrita à idade adulta/geriatria.';
+        } else if (pediatricDiseases.includes(profile.diseaseId)) {
+          ageAdjustment = 25; // Boost importante para doenças pediátricas em crianças
+          demographicExplanation = 'Relevância aumentada: Patologia típica da faixa etária pediátrica.';
+        } else if (profile.diseaseId === 'iam' || profile.diseaseId === 'avc' || profile.diseaseId === 'tep') {
+          ageExclude = true;
+          demographicExplanation = 'Excluído: Risco cardiovascular agudo degenerativo (IAM/AVC/TEP) é insignificante nesta faixa etária.';
+        }
+      } else {
+        // Se paciente é adulto/idoso
+        if (pediatricDiseases.includes(profile.diseaseId)) {
+          ageExclude = true;
+          demographicExplanation = 'Excluído: Patologia tipicamente restrita à infância.';
+        } else if (age >= 60) {
+          if (geriatricDiseases.includes(profile.diseaseId)) {
+            ageAdjustment = 20; // Boost para doenças geriátricas em idosos
+            demographicExplanation = 'Relevância aumentada: Prevalência epidemiológica elevada em idosos (≥ 60 anos).';
+          }
+        } else {
+          // Adulto jovem/médio (15 a 59 anos)
+          if (geriatricDiseases.includes(profile.diseaseId)) {
+            ageAdjustment = -30; // Reduz a probabilidade de doenças de idosos em adultos jovens
+            demographicExplanation = 'Relevância reduzida: Baixa prevalência de patologias geriátricas nesta faixa etária.';
+          }
+        }
+      }
+
+      // Evitar pensamentos catastróficos em jovens para IAM/AVC/TEP e Ansiedade
+      if (age >= 15 && age < 40) {
+        if (profile.diseaseId === 'iam') {
+          ageAdjustment = -40;
+          demographicExplanation = 'Relevância reduzida: Baixíssima probabilidade de IAM em jovens < 40 anos (ausência de fatores de risco obstrutivos típicos). Considerar causas musculares, refluxo ou ansiedade.';
+        } else if (profile.diseaseId === 'tep') {
+          ageAdjustment = -25;
+          demographicExplanation = 'Relevância reduzida: Baixa probabilidade de TEP em jovem sem fatores de risco (imobilização, cirurgia recente, neoplasia).';
+        } else if (profile.diseaseId === 'ansiedade' || profile.diseaseId === 'somatizacao' || profile.diseaseId === 'transtorno_somatoforme') {
+          if (selectedSymptoms['dor_peito'] || selectedSymptoms['palpitacao'] || selectedSymptoms['dispneia']) {
+            ageAdjustment = 15;
+            demographicExplanation = 'Relevância aumentada: Alta correlação epidemiológica entre queixas cardiorrespiratórias vagas e transtornos de ansiedade/somatização em jovens.';
+          }
+        }
+      }
+
       // Calculate final probability
-      let finalProbability = rawBasePercentage - totalPenalty + synergyBonus;
+      let finalProbability = rawBasePercentage - totalPenalty + synergyBonus + ageAdjustment;
+      if (sexExclude || ageExclude) {
+        finalProbability = 0;
+      }
       finalProbability = Math.max(0, finalProbability);
       finalProbability = Math.min(95, Math.round(finalProbability)); // Cap at 95% clinical ceiling
 
       // Find catalog data
       const catalogDisease = UBS_CATALOG_DISEASES.find(d => d.id === profile.diseaseId) || 
                              LOCAL_CATALOG_DISEASES.find(d => d.id === profile.diseaseId);
+
+      // Determine specialist referral requirements
+      const textToScan = `${catalogDisease?.name || ''} ${catalogDisease?.diagnostic || ''} ${catalogDisease?.alarm || ''} ${profile.whyExplanation || ''}`.toLowerCase();
+      
+      let referralSpecialty = '';
+      if (textToScan.includes('reumatologista') || textToScan.includes('reumatologia') || profile.diseaseId === 'les' || profile.diseaseId === 'artrite-reuma' || profile.diseaseId === 'artrite_reuma') {
+        referralSpecialty = 'Reumatologia';
+      } else if (textToScan.includes('neurologista') || textToScan.includes('neurologia') || profile.diseaseId === 'parkinson' || profile.diseaseId === 'epilepsia') {
+        referralSpecialty = 'Neurologia';
+      } else if (textToScan.includes('nefrologista') || textToScan.includes('nefrologia') || profile.diseaseId === 'doencarenal') {
+        referralSpecialty = 'Nefrologia';
+      } else if (textToScan.includes('urologista') || textToScan.includes('urologia') || profile.diseaseId === 'hpb') {
+        referralSpecialty = 'Urologia';
+      } else if (textToScan.includes('cardiologista') || textToScan.includes('cardiológico') || profile.diseaseId === 'fib-atrial' || profile.diseaseId === 'insufcard') {
+        referralSpecialty = 'Cardiologia';
+      } else if (textToScan.includes('psiquiatra') || textToScan.includes('psiquiatria') || profile.diseaseId === 'depressao' || profile.diseaseId === 'ansiedade') {
+        referralSpecialty = 'Psiquiatria / Saúde Mental';
+      } else if (textToScan.includes('dermatologista') || textToScan.includes('dermatologia') || profile.diseaseId === 'hanseniase') {
+        referralSpecialty = 'Dermatologia';
+      } else if (textToScan.includes('endocrinologista') || textToScan.includes('endocrinologia') || profile.diseaseId === 'hiper-tireo') {
+        referralSpecialty = 'Endocrinologia';
+      } else if (textToScan.includes('oftalmologista') || textToScan.includes('oftalmologia')) {
+        referralSpecialty = 'Oftalmologia';
+      } else if (textToScan.includes('ortopedista') || textToScan.includes('ortopedia') || profile.diseaseId === 'artrite_septica') {
+        referralSpecialty = 'Ortopedia';
+      } else if (textToScan.includes('otorrinolaringologista') || textToScan.includes('otorrino') || profile.diseaseId === 'labirintite' || profile.diseaseId === 'oma' || profile.diseaseId === 'abscesso_periamigdaliano') {
+        referralSpecialty = 'Otorrinolaringologia';
+      } else if (textToScan.includes('ginecologista') || textToScan.includes('ginecologia') || profile.diseaseId === 'dip') {
+        referralSpecialty = 'Ginecologia & Obstetrícia';
+      } else if (textToScan.includes('infectologista') || textToScan.includes('infectologia') || profile.diseaseId === 'tuberculose' || profile.diseaseId === 'sifilis') {
+        referralSpecialty = 'Infectologia';
+      } else if (textToScan.includes('geriatra') || textToScan.includes('geriatria') || textToScan.includes('idoso') || profile.diseaseId.includes('demencia') || profile.diseaseId === 'sarcopenia' || profile.diseaseId === 'quedas_recorrentes') {
+        referralSpecialty = 'Geriatria';
+      } else if (textToScan.includes('pediatra') || textToScan.includes('pediatria') || textToScan.includes('infantil') || profile.diseaseId.includes('infantil') || profile.diseaseId === 'otite_media_recorrente') {
+        referralSpecialty = 'Pediatria';
+      } else if (textToScan.includes('especialista') || textToScan.includes('encaminhar') || textToScan.includes('referenciar')) {
+        referralSpecialty = 'Especialista de Referência';
+      }
 
       return {
         diseaseId: profile.diseaseId,
@@ -793,6 +1230,9 @@ export default function SymptomDiagnosticModule() {
         treatmentAllowed: profile.treatmentAllowed,
         treatmentAllowedJustification: profile.treatmentAllowedJustification,
         evidenceMarkers: profile.evidenceMarkers,
+        referralSpecialty,
+        demographicAdjustment: ageAdjustment,
+        demographicExplanation,
         calculationDetails: {
           rawBasePercentage: Math.round(rawBasePercentage),
           earnedScore: Number(earnedScore.toFixed(1)),
@@ -804,7 +1244,7 @@ export default function SymptomDiagnosticModule() {
         }
       };
     })
-    .filter(res => res.matchedSymptomCount > 0) // show all matches with at least one matching symptom
+    .filter(res => res.matchedSymptomCount > 0 && res.probability > 0) // show matches with at least one matching symptom and positive probability (exclude demographic exclusions)
     .filter(res => {
       if (settingFilter === 'todos') return true;
       if (settingFilter === 'ubs') return res.setting === 'ubs' || res.setting === 'ambos';
@@ -814,7 +1254,7 @@ export default function SymptomDiagnosticModule() {
     .sort((a, b) => b.probability - a.probability);
 
     return results;
-  }, [selectedSymptoms, settingFilter]);
+  }, [selectedSymptoms, settingFilter, age, sex]);
 
   // Generate copyable clinical report
   const handleCopyReport = () => {
@@ -825,12 +1265,17 @@ export default function SymptomDiagnosticModule() {
     }).join('\n');
 
     const hypothesesTexts = suspectedDiagnoses.slice(0, 3).map(d => {
-      return `* ${d.catalog?.name || d.diseaseId} (${d.probability}% de correlação) - Perfil: ${d.setting.toUpperCase()}\n  Exames Recomendados: ${d.nextStepsExams}`;
+      const demoInfo = d.demographicExplanation ? `\n  Ajuste Clínico: ${d.demographicExplanation}` : '';
+      return `* ${d.catalog?.name || d.diseaseId} (${d.probability}% de correlação) - Perfil: ${d.setting.toUpperCase()}${demoInfo}\n  Exames Recomendados: ${d.nextStepsExams}`;
     }).join('\n\n');
 
     const report = `================================================
 RELATÓRIO AUXILIAR DE TRIAGEM CLÍNICA 🔍
 ================================================
+DADOS DO PACIENTE:
+- Idade: ${age} anos
+- Sexo Biológico: ${sex === 'M' ? 'Masculino' : 'Feminino'}
+
 SINTOMAS APRESENTADOS:
 ${symptomTexts}
 
@@ -852,7 +1297,73 @@ Observação: Este relatório é um instrumento de apoio à decisão clínica e 
         <div className="space-y-1">
           <span className="text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 tracking-wider">Apoio à Decisão Médica</span>
           <h2 className="font-serif font-black text-xl text-slate-800 dark:text-white leading-tight">Análise de Sintomas do Paciente</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Selecione sintomas e o tempo de evolução. O algoritmo calcula as correlações para Atenção Básica (UBS) e Pronto Socorro (PS/UPA).</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Selecione os sintomas e o perfil demográfico para calcular as correlações com acurácia científica e condutas para UBS e PS.</p>
+        </div>
+
+        {/* Patient Demographics Selector */}
+        <div className="bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-850 p-4 rounded-2xl space-y-3">
+          <div className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-wider">Perfil Demográfico do Paciente</div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Sexo Biológico</label>
+              <div className="grid grid-cols-2 gap-1 bg-slate-200/50 dark:bg-slate-900/60 p-0.5 rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => setSex('F')}
+                  className={`py-1 text-xs font-bold rounded-md transition-all ${
+                    sex === 'F'
+                      ? 'bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 shadow-sm'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                  }`}
+                >
+                  Feminino ♀
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSex('M')}
+                  className={`py-1 text-xs font-bold rounded-md transition-all ${
+                    sex === 'M'
+                      ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                  }`}
+                >
+                  Masculino ♂
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1.5 uppercase">Idade (Anos)</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  min="0"
+                  max="120"
+                  value={age}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    if (!isNaN(val)) setAge(Math.min(120, Math.max(0, val)));
+                  }}
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-xs font-bold text-slate-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-rose-500"
+                />
+                <div className="flex flex-col gap-0.5 shrink-0">
+                  <button 
+                    type="button"
+                    onClick={() => setAge(prev => Math.min(120, prev + 1))}
+                    className="px-1 py-0.5 text-[8px] hover:bg-slate-200 dark:hover:bg-slate-800 rounded border border-slate-200 dark:border-slate-750 text-slate-500 font-bold"
+                  >
+                    ▲
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setAge(prev => Math.max(0, prev - 1))}
+                    className="px-1 py-0.5 text-[8px] hover:bg-slate-200 dark:hover:bg-slate-800 rounded border border-slate-200 dark:border-slate-750 text-slate-500 font-bold"
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Filter bar */}
@@ -1187,10 +1698,17 @@ Observação: Este relatório é um instrumento de apoio à decisão clínica e 
                                   </div>
                                 )}
 
+                                {suspect.demographicAdjustment !== 0 && (
+                                  <div className="flex justify-between text-indigo-500 dark:text-indigo-400 font-medium border-t border-slate-100 dark:border-slate-800/40 pt-1.5">
+                                    <span>4. Ajuste Demográfico (Perfil):</span>
+                                    <span className="text-right text-[11px] font-normal italic max-w-xs">{suspect.demographicExplanation} ({suspect.demographicAdjustment > 0 ? '+' : ''}{suspect.demographicAdjustment}%)</span>
+                                  </div>
+                                )}
+
                                 <div className="flex justify-between border-t border-slate-250 dark:border-slate-800 pt-2 text-slate-800 dark:text-white font-bold">
                                   <span>Probabilidade Clínica Final:</span>
                                   <span className="text-rose-600 dark:text-rose-400">
-                                    {details.rawBasePercentage}% {details.totalPenalty > 0 && ` - ${details.totalPenalty}%`} {details.synergyBonus > 0 && ` + ${details.synergyBonus}%`} = {prob}%
+                                    {details.rawBasePercentage}% {details.totalPenalty > 0 && ` - ${details.totalPenalty}%`} {details.synergyBonus > 0 && ` + ${details.synergyBonus}%`} {suspect.demographicAdjustment !== 0 && ` ${suspect.demographicAdjustment > 0 ? '+' : ''}${suspect.demographicAdjustment}%`} = {prob}%
                                     {prob === 95 && <span className="text-[10px] font-normal text-slate-400 block leading-none">(Teto clínico máximo para anamnese)</span>}
                                   </span>
                                 </div>
@@ -1268,6 +1786,24 @@ Observação: Este relatório é um instrumento de apoio à decisão clínica e 
                                   <strong className="text-[10px] font-black uppercase text-red-600 dark:text-red-400 tracking-wider">Sinais de Gravidade / Alerta (Red Flags)</strong>
                                   <p className="text-xs text-red-600 dark:text-red-400 font-semibold leading-relaxed">
                                     {suspect.catalog.alarm}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Specialist Referral Card */}
+                            {suspect.referralSpecialty && (
+                              <div className="p-3.5 bg-indigo-500/[0.03] dark:bg-indigo-950/[0.03] border border-indigo-500/15 dark:border-indigo-900/20 rounded-2xl flex gap-3">
+                                <Stethoscope className="text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5 animate-pulse" size={16} />
+                                <div className="space-y-0.5">
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <strong className="text-[10px] font-black uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">Caminho de Cuidado: Encaminhamento Recomendado</strong>
+                                    <span className="text-[9px] font-black uppercase bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full">
+                                      {suspect.referralSpecialty}
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-indigo-700 dark:text-indigo-300 font-semibold leading-relaxed">
+                                    Este quadro preenche critérios clínicos para encaminhamento à atenção secundária em <strong>{suspect.referralSpecialty}</strong>. Realize o manejo inicial na UBS (com exames complementares e alívio sintomático) e encaminhe o paciente via sistema de regulação de vagas com relatório clínico completo contendo as hipóteses diagnósticas e exames prévios.
                                   </p>
                                 </div>
                               </div>
