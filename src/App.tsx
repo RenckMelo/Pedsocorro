@@ -50,6 +50,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UBS_CATALOG_DISEASES } from './ubsCatalog';
+import SymptomDiagnosticModule from './components/SymptomDiagnosticModule';
 
 // --- Mental Health Screening Constants ---
 const PHQ9_QUESTIONS = [
@@ -82,7 +83,7 @@ const MENTAL_OPTIONS = [
 ];
 
 // --- Types ---
-type AppSection = 'dashboard' | 'drugs' | 'calculators' | 'flowcharts' | 'prescriptions' | 'summaries' | 'history' | 'lab' | 'emergency' | 'ambulatorio' | 'ubs';
+type AppSection = 'dashboard' | 'drugs' | 'calculators' | 'flowcharts' | 'prescriptions' | 'summaries' | 'history' | 'lab' | 'emergency' | 'ambulatorio' | 'ubs' | 'symptoms';
 
 interface Medication {
   id: string;
@@ -7951,6 +7952,7 @@ function CalculatorModule({ addToHistory }: { addToHistory: (t: string, r: strin
 function Sidebar({ activeSection, onSelect, isOpen, setIsOpen }: { activeSection: AppSection; onSelect: (s: AppSection) => void; isOpen: boolean; setIsOpen: (o: boolean) => void }) {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Início' },
+    { id: 'symptoms', icon: Brain, label: 'Análise de Sintomas' },
     { id: 'ubs', icon: Stethoscope, label: 'Atenção Básica / UBS' },
     { id: 'emergency', icon: ShieldAlert, label: 'Pronto Socorro' },
     { id: 'drugs', icon: Pill, label: 'Doses & KD' },
@@ -8122,6 +8124,8 @@ export default function App() {
         {/* Content Area */}
         <main className="p-4 md:p-10 max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
            <AnimatePresence mode="wait">
+
+              {activeSection === 'symptoms' && <motion.div key="sy" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Análise de Sintomas & Auxílio Diagnóstico" subtitle="Algoritmo de triagem clínica cruzada para Atenção Básica (UBS) e Pronto Atendimento (UPA/PS)." icon={Brain} /><SymptomDiagnosticModule /></motion.div>}
 
               {activeSection === 'ubs' && <motion.div key="ub" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Atenção Básica / UBS" subtitle="Protocolos de vigilância, pré-natal, doenças crônicas e escores de saúde mental." icon={Stethoscope} /><UbsModule activeSubTab={selectedUbsSubTab} setActiveSubTab={setSelectedUbsSubTab} selectedGuiaDiseaseId={selectedUbsDiseaseId} setSelectedGuiaDiseaseId={setSelectedUbsDiseaseId} /></motion.div>}
               {activeSection === 'emergency' && <motion.div key="em" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Pronto Socorro" subtitle="Protocolos de emergência, exames imediatos e condutas críticas." icon={ShieldAlert} /><EmergencyModule onSelect={setSelectedDisease} /></motion.div>}
