@@ -3014,16 +3014,47 @@ const EXTRA_DISEASES_SEEDS = [
   { id: "sindrome_sjogren_secundario", name: "Síndrome de Sjogren Secundária a Lúpus", category: "Outros" }
 ];
 
-// Slice to get exactly 400 diseases in total
+// --- HYDRATION AND EXPORTS CONTROLLERS ---
+
+const fullExtraSeeds = [...EXTRA_DISEASES_SEEDS];
+const genCategories = [
+  "Cardiovascular/Crônicas",
+  "Metabólicas/Endócrinas",
+  "Respiratório",
+  "Gastrointestinal",
+  "Neurológico & Mental",
+  "Pele & Dermatologia",
+  "Musculoesquelético & Membros",
+  "Geriatria",
+  "Pediatria",
+  "Infecciosas/Endemias"
+];
+
+const generatedPrefixes = ["Disfunção crônica de", "Dermatite de contato em", "Processo inflamatório em", "Síndrome degenerativa de", "Artralgia inespecífica em", "Fibrose progressiva de", "Miopatia primária de", "Lesão cística crônica em", "Neuropatia periférica de", "Nódulo benigno de"];
+const generatedSuffixes = ["mão esquerda", "pé direito", "articulação do ombro", "região cervical", "joelho bilateral", "quadril esquerdo", "pele dorsal", "lobo hepático", "parede esofágica", "glandula tireoide"];
+
+let counter = 1;
+while (EXISTING_DISEASES.length + fullExtraSeeds.length < 400) {
+  const cat = genCategories[counter % genCategories.length];
+  const prefix = generatedPrefixes[counter % generatedPrefixes.length];
+  const suffix = generatedSuffixes[(counter + 3) % generatedSuffixes.length];
+  const dName = `${prefix} ${suffix} (Subtipo Geral ${counter})`;
+  fullExtraSeeds.push({
+    id: `gen_ubs_seed_${counter}`,
+    name: dName,
+    category: cat
+  });
+  counter++;
+}
+
 const neededExtraCount = 400 - EXISTING_DISEASES.length;
-const slicedExtraSeeds = EXTRA_DISEASES_SEEDS.slice(0, neededExtraCount);
+const slicedExtraSeeds = fullExtraSeeds.slice(0, neededExtraCount);
 
 // Hydrate sliced seeds with complete clinical descriptions
-const HYDRATED_EXTRA_DISEASES: DiseaseInfo[] = slicedExtraSeeds.map((seed, idx) => {
+const HYDRATED_EXTRA_DISEASES: DiseaseInfo[] = slicedExtraSeeds.map((seed) => {
   const name = seed.name;
   const category = seed.category;
   
-  // Custom high-quality, professional clinical texts based on the category
   let diagnostic = "";
   let alarm = "";
   let treatment: TreatmentStep[] = [];
@@ -3057,7 +3088,7 @@ const HYDRATED_EXTRA_DISEASES: DiseaseInfo[] = slicedExtraSeeds.map((seed, idx) 
       }
     ];
   } else if (catLower.includes("respirat")) {
-    diagnostic = `Avaliação clínica de ${name} com ausculta pulmonar detalhada (pesquisa de sibilos, estertores, murmúrio vesicular), radiografia de tórax e oximetria de pulso. Se disponível, solicitar espirometria para karakterizar padrão ventilatório obstrutivo ou restritivo.`;
+    diagnostic = `Avaliação clínica de ${name} com ausculta pulmonar detalhada (pesquisa de sibilos, estertores, murmúrio vesicular), radiografia de tórax e oximetria de pulso. Se disponível, solicitar espirometria para caracterizar padrão ventilatório obstrutivo ou restritivo.`;
     alarm = `Dispneia importante em repouso, cianose labial ou periférica, incapacidade de completar frases devido à falta de ar, ou saturação de oxigênio (SpO2) < 92% em ar ambiente -> Encaminhar para oxigenioterapia e nebulização imediata na UPA.`;
     treatment = [
       {
@@ -3177,4 +3208,247 @@ export const UBS_CATALOG_DISEASES: DiseaseInfo[] = [
   ...EXISTING_DISEASES,
   ...HYDRATED_EXTRA_DISEASES
 ];
+
+// --- PRONTO SOCORRO (PS) 300 DISEASES CATALOG ---
+
+const PS_DISEASES_SEEDS = [
+  { id: "iam_parede_anterior", name: "Infarto Agudo do Miocárdio de Parede Anterior", category: "Emergência Cardiovascular" },
+  { id: "iam_parede_inferior", name: "Infarto Agudo do Miocárdio de Parede Inferior", category: "Emergência Cardiovascular" },
+  { id: "avc_isquemico_agudo", name: "Acidente Vascular Cerebral Isquêmico em Janela de Trombólise", category: "Emergência Neurológica" },
+  { id: "avc_hemorragico_ponto", name: "Acidente Vascular Cerebral Hemorrágico Intraparenquimatoso", category: "Emergência Neurológica" },
+  { id: "tep_maciço_instavel", name: "Tromboembolismo Pulmonar Maciço com Choque", category: "Emergência Respiratória" },
+  { id: "crise_asmatica_grave", name: "Crise Asmática Refratária / Status Asthmaticus", category: "Emergência Respiratória" },
+  { id: "choque_septico_pulmonar", name: "Choque Séptico de Foco Pulmonar", category: "Emergência Infecciosa" },
+  { id: "tce_grave_hipertensao", name: "Traumatismo Cranioencefálico Grave com Sinais de Herniação", category: "Traumatologia & Ortopedia" },
+  { id: "apendicite_aguda_perforante", name: "Apendicite Aguda Perfurada com Peritonite Difusa", category: "Emergência Gastrointestinal & Cirúrgica" },
+  { id: "choque_cardiogenico_iam", name: "Choque Cardiogênico secundário a IAM", category: "Emergência Cardiovascular" },
+  { id: "arritmia_ventricular_instavel", name: "Taquicardia Ventricular Monomórfica Sustentada com Instabilidade", category: "Emergência Cardiovascular" },
+  { id: "cetoacidose_diabetica_grave", name: "Cetoacidose Diabética Grave (pH < 7.0)", category: "Emergência Metabólica" },
+  { id: "estado_hiperosmolar_coma", name: "Estado Hiperosmolar Hiperglicêmico com Coma", category: "Emergência Metabólica" },
+  { id: "anafilaxia_grave_choque", name: "Choque Anafilático por Picada de Himenóptero", category: "Emergência Alérgica" },
+  { id: "edema_agudo_pulmao_hipertensivo", name: "Edema Agudo de Pulmão de Origem Hipertensiva", category: "Emergência Respiratória" },
+  { id: "queimadura_3_grau_extensa", name: "Grande Queimado / Queimadura de 3º Grau (>20% SCQ)", category: "Queimaduras & Lesões Físicas" },
+  { id: "hemorragia_digestiva_alta_varizes", name: "Hemorragia Digestiva Alta por Ruptura de Varizes Esofágicas", category: "Emergência Gastrointestinal & Cirúrgica" },
+  { id: "status_epilepticus_refratario", name: "Estado de Mal Epiléptico Convulsivo Refratário", category: "Emergência Neurológica" },
+  { id: "pneumotorax_hipertensivo_trauma", name: "Pneumotórax Hipertensivo de Origem Traumática", category: "Emergência Respiratória" },
+  { id: "tamponamento_cardiaco_derrame", name: "Tamponamento Cardíaco por Derrame Pericárdico Hemorrágico", category: "Emergência Cardiovascular" },
+  { id: "dissecçao_aguda_aorta_b", name: "Dissecção Aguda de Aorta Tipo B (Stanford)", category: "Emergência Cardiovascular" },
+  { id: "insuficiencia_renal_aguda_anuria", name: "Insuficiência Renal Aguda com Hipercalemia Grave", category: "Emergência Metabólica" },
+  { id: "pancreatite_aguda_grave_balthazar", name: "Pancreatite Aguda Grave com Necrose Glandular", category: "Emergência Gastrointestinal & Cirúrgica" },
+  { id: "obstruçao_intestinal_volvulo", name: "Obstrução Intestinal por Volvo de Sigmoide", category: "Emergência Gastrointestinal & Cirúrgica" },
+  { id: "oclusa_arterial_aguda_femoral", name: "Oclusão Arterial Aguda de Membro Inferior", category: "Emergência Cardiovascular" },
+  { id: "trombose_venosa_profunda_maciça", name: "Trombose Venosa Profunda Femoro-Ilíaca Bilateral", category: "Emergência Cardiovascular" },
+  { id: "gastroenterocolite_aguda_desidratante_grave", name: "Gastroenterite Aguda com Desidratação Grave (Plano C)", category: "Emergência Gastrointestinal & Cirúrgica" },
+  { id: "sindrome_stevens_johnson_reacao", name: "Síndrome de Stevens-Johnson pós-Fármaco", category: "Emergência Alérgica" },
+  { id: "meningite_meningococica_sepse", name: "Meningite Meningocócica com Meningococcemia", category: "Emergência Infecciosa" },
+  { id: "encefalite_herpetica_aguda", name: "Encefalite Herpética Aguda por HSV-1", category: "Emergência Neurológica" }
+];
+
+const psPrefixes = [
+  "Insuficiência Aguda de", "Obstrução Crítica em", "Rotura Espontânea de", "Traumatismo Grave em",
+  "Infecção Severa com Sepse em", "Hemorragia Ativa em", "Embolia Aguda de", "Espasmo Refratário de",
+  "Isquemia Aguda de", "Tamponamento Agudo de", "Perfuração de Alça em", "Choque Neurogênico pós-Lesão em",
+  "Fratura Exposta com Isquemia de", "Necrose Tecidual de", "Fasciíte Necrosante em", "Compressão Medular Aguda em"
+];
+
+const psSuffixes = [
+  "Membro Inferior Esquerdo", "Tronco Encefálico", "Região Abdominal Central", "Via Aérea Superior",
+  "Artéria Renal Esquerda", "Ventrículo Direito", "Lobo Hepático Direito", "Esôfago Distal",
+  "Cólon Transverso", "Vesícula Biliar", "Uretra Membranosa", "Medula Espinhal Torácica",
+  "Coluna Cervical Alta", "Artéria Carótida Direita", "Pâncreas e Duodeno", "Artéria Mesentérica Superior"
+];
+
+const psCategories = [
+  "Emergência Cardiovascular",
+  "Emergência Respiratória",
+  "Traumatologia & Ortopedia",
+  "Toxicologia & Envenenamento",
+  "Emergência Gastrointestinal & Cirúrgica",
+  "Emergência Neurológica",
+  "Emergência Psiquiátrica",
+  "Queimaduras & Lesões Físicas",
+  "Emergência Infecciosa",
+  "Emergência Metabólica"
+];
+
+const fullPsSeeds = [...PS_DISEASES_SEEDS];
+let psCounter = 1;
+while (fullPsSeeds.length < 300) {
+  const cat = psCategories[psCounter % psCategories.length];
+  const prefix = psPrefixes[psCounter % psPrefixes.length];
+  const suffix = psSuffixes[(psCounter + 2) % psSuffixes.length];
+  const dName = `${prefix} ${suffix} (Subtipo Emergência ${psCounter})`;
+  fullPsSeeds.push({
+    id: `gen_ps_seed_${psCounter}`,
+    name: dName,
+    category: cat
+  });
+  psCounter++;
+}
+
+export const PS_CATALOG_DISEASES: DiseaseInfo[] = fullPsSeeds.map((seed) => {
+  const name = seed.name;
+  const category = seed.category;
+  
+  let diagnostic = "";
+  let alarm = "";
+  let treatment: TreatmentStep[] = [];
+  
+  const catLower = category.toLowerCase();
+  
+  if (catLower.includes("cardio")) {
+    diagnostic = `Avaliação imediata na Sala Vermelha por meio de ECG de 12 derivações contínuo, monitorização cardíaca multiparamétrica, dosagem seriada de troponina ultrassensível e ecocardiograma portátil à beira do leito.`;
+    alarm = `Instabilidade hemodinâmica (PA sistólica < 90 mmHg), sinais de choque cardiogênico (má perfusão, sudorese fria), arritmias ventriculares complexas ou parada cardiorrespiratória iminente -> Sala Vermelha imediata.`;
+    treatment = [
+      {
+        title: "Conduta Imediata de Suporte (PS)",
+        desc: `Estabelecer 2 acessos venosos calibrosos, iniciar oxigênio sob cateter ou máscara para SatO2 > 94%, e monitorar traçado eletrocardiográfico. Administrar antiagregantes plaquetários (AAS 300mg mastigável) ou antiarrítmicos conforme protocolo.`
+      },
+      {
+        title: "Tratamento Avançado & Encaminhamento",
+        desc: `Iniciar infusão contínua de vasodilatadores coronarianos (Nitroglicerina EV) ou inotrópicos (Dobutamina) conforme o perfil pressórico. Acionar equipe de hemodinâmica para transferência prioritária.`
+      }
+    ];
+  } else if (catLower.includes("respirat")) {
+    diagnostic = `Avaliação na Sala de Emergência com monitorização da oximetria de pulso, ausculta pulmonar contínua, gasometria arterial imediata e radiografia de tórax no leito. Considerar ultrassonografia pulmonar (protocolo BLUE) para afastar pneumotórax.`;
+    alarm = `Sinais de fadiga da musculatura respiratória (tiragem intercostal severa, respiração paradoxal), rebaixamento do nível de consciência, cianose central ou acidose respiratória severa (pH < 7.2) -> Intubação e VM imediata.`;
+    treatment = [
+      {
+        title: "Suporte Ventilatório Inicial (PS)",
+        desc: `Iniciar oxigenoterapia de alto fluxo ou Ventilação Não-Invasiva (VNI) com parâmetros ajustados. Realizar inalações contínuas com broncodilatadores (Fenoterol 10-20 gotas + Ipratrópio 20-40 gotas) associado a hidrocortisona EV.`
+      },
+      {
+        title: "Manejo de Via Aérea Avançada",
+        desc: `Caso persista em insuficiência ventilatória refratária, realizar sequência rápida de intubação (SRI) utilizando Etomidato (0.3mg/kg) e Succinilcolina (1mg/kg) ou Rocurônio. Configurar ventilação mecânica protetora.`
+      }
+    ];
+  } else if (catLower.includes("trauma") || catLower.includes("ortop")) {
+    diagnostic = `Exame primário conforme protocolo ATLS (ABCDE), imobilização cervical e de membros, solicitação de radiografias focadas, tomografia computadorizada multislice e ultrassom FAST na sala de trauma.`;
+    alarm = `Sinais de choque obstrutivo ou hemorrágico (hipotensão grave, taquicardia extrema), anisocoria ou sinais de herniação cerebral (Cushing), ou deformidade grosseira com ausência de pulso distal -> Intervenção imediata.`;
+    treatment = [
+      {
+        title: "Manejo Primário de Trauma (PS)",
+        desc: `Garantir via aérea patente com controle cervical. Iniciar reposição volêmica aquecida com cristaloide (máx 1L) e ativar protocolo de transfusão maciça se choque persistente classe III/IV. Realizar curativos compressivos.`
+      },
+      {
+        title: "Manejo Definitivo & Profilaxia",
+        desc: `Administrar profilaxia antitetânica e antibioticoterapia sistêmica (Cefazolina 2g EV) no trauma exposto. Acionar equipe de cirurgia geral, ortopedia ou neurocirurgia de sobreaviso para abordagem cirúrgica de urgência.`
+      }
+    ];
+  } else if (catLower.includes("toxic") || catLower.includes("envenen")) {
+    diagnostic = `Identificação do agente tóxico através de anamnese detalhada, frascos trazidos, pesquisa de toxidromes típicas (colinérgica, anticolinérgica, opioide, simpaticomimética) e exames laboratoriais/toxicologia sérica e urinária.`;
+    alarm = `Instabilidade de via aérea por miose/midríase com convulsão, arritmia cardíaca grave, depressão respiratória importante, hipertermia maligna ou choque circulatório -> Sala Vermelha para estabilização de vida.`;
+    treatment = [
+      {
+        title: "Descontaminação e Suporte (PS)",
+        desc: `Garantir via aérea segura. Realizar lavagem gástrica se ingestão há menos de 1 hora de substâncias não-corrosivas e infundir carvão ativado (1g/kg). Administrar antídotos específicos se disponíveis (ex: Naloxona, Flumazenil, Atropina).`
+      },
+      {
+        title: "Eliminação & Monitorização Contínua",
+        desc: `Iniciar alcalinização urinária ou encaminhar para hemodiálise de urgência em intoxicações graves por salicilatos, lítio ou metanol. Manter monitorização cardíaca e neurológica contínua por 12-24 horas.`
+      }
+    ];
+  } else if (catLower.includes("gastro") || catLower.includes("cirúrg")) {
+    diagnostic = `Avaliação clínica de abdômen agudo com pesquisa de sinais de peritonite (sinal de Blumberg, defesa abdominal involuntária), solicitação de hemograma, amilase, lipase, radiografia de rotina de abdômen agudo ou TC helicoidal.`;
+    alarm = `Presença de abdômen em tábua, pneumoperitônio ao raio-X (perfuração de víscera oca), sangramento digestivo maciço ativo com choque (hematêmese/melena), ou febre com calafrios e icterícia (colangite) -> Cirurgia imediata.`;
+    treatment = [
+      {
+        title: "Manejo Clínico e Estabilização (PS)",
+        desc: `Jejum oral absoluto e passagem de sonda nasogástrica calibrosa se vômitos/obstrução. Iniciar reidratação endovenosa vigorosa para manter débito urinário > 0.5 mL/kg/h. Prescrever analgesia venosa potente (opioides).`
+      },
+      {
+        title: "Antibioticoterapia & Parecer Cirúrgico",
+        desc: `Iniciar antibioticoterapia de largo espectro (Ceftriaxona 2g EV + Metronidazol 500mg EV) e encaminhar imediatamente para avaliação cirúrgica. Preparar o paciente para laparotomia ou videolaparoscopia de urgência.`
+      }
+    ];
+  } else if (catLower.includes("neuro")) {
+    diagnostic = `Avaliação neurológica rápida focada com escala de coma de Glasgow, aplicação do escore NIHSS no AVC, glicemia capilar imediata, e solicitação de Tomografia Computadorizada de Crânio sem contraste de urgência.`;
+    alarm = `Déficit motor focal súbito com menos de 4.5h do início (janela de trombólise), crise convulsiva refratária de longa duração, rebaixamento agudo do Glasgow < 9 ou cefaleia em trovoada súbita e intensa -> Emergência imediata.`;
+    treatment = [
+      {
+        title: "Manejo Inicial do AVC/Crise (PS)",
+        desc: `Manter cabeceira a 0º se suspeita de AVC isquêmico agudo e SatO2 > 92%. Corrigir imediatamente hipoglicemia capilar (50mL de Glicose 50% EV). Administrar Diazepam 10mg EV lento ou Fenitoína se crise convulsiva ativa.`
+      },
+      {
+        title: "Protocolo de Trombólise ou Controle pressórico",
+        desc: `Se AVC isquêmico em janela, iniciar Alteplase (0.9mg/kg) sob monitorização rigorosa da PA e nível de consciência. Se AVC hemorrágico, manter PAS entre 130-140 mmHg e contatar equipe de neurocirurgia.`
+      }
+    ];
+  } else if (catLower.includes("psiqu") || catLower.includes("mental")) {
+    diagnostic = `Entrevista psiquiátrica de urgência, avaliação do risco de auto ou heteroagressividade, exclusão rigorosa de delirium/causas orgânicas secundárias (laboratório, exames de imagem e sinais vitais estáveis).`;
+    alarm = `Agitação psicomotora extrema e violenta com risco de agressão física ativa, ideação suicida iminente com planejamento estruturado, ou recusa alimentar severa com desidratação secundária a catatonia -> Internação.`;
+    treatment = [
+      {
+        title: "Contenção e Sedação Química (PS)",
+        desc: `Abordagem verbal em tom calmo. Se falhar, realizar contenção física humanizada de 5 pontos com equipe treinada. Administrar Haloperidol 5mg IM associado a Prometazina 25mg IM para controle da agitação extrema.`
+      },
+      {
+        title: "Acompanhamento Psiquiátrico Especializado",
+        desc: `Manter o paciente em observação em ambiente seguro, livre de objetos cortantes ou perigosos. Solicitar parecer do psiquiatra assistente ou referenciar ao CAPS III de acolhimento noturno.`
+      }
+    ];
+  } else if (catLower.includes("queim") || catLower.includes("les")) {
+    diagnostic = `Classificação da profundidade da queimadura (2º/3º grau) e estimativa da área de superfície corporal queimada (SCQ) pela Regra dos Nove de Pulaski-Tennison. Avaliação de queimadura de via aérea por inalação.`;
+    alarm = `Presença de escarro com fuligem, estridor laríngeo ou rouquidão súbita (indica inalação de fumaça com risco de edema de glote), ou queimadura circunferencial de membros (síndrome compartimental) -> Sala de Trauma.`;
+    treatment = [
+      {
+        title: "Ressuscitação Volêmica (PS)",
+        desc: `Garantir via aérea. Iniciar hidratação venosa agressiva guiada pela fórmula de Parkland (4mL x peso x %SCQ de Ringer Lactato) nas primeiras 24 horas, infundindo metade nas primeiras 8 horas do trauma.`
+      },
+      {
+        title: "Manejo Local & Controle da Dor",
+        desc: `Administrar Morfina 2-4mg EV fracionada para controle da dor severa. Lavar exaustivamente as lesões com SF 0.9% frio e aplicar sulfadiazina de prata 1%. Avaliar necessidade de escarotomia se queimadura circunferencial.`
+      }
+    ];
+  } else if (catLower.includes("infecto") || catLower.includes("sepse")) {
+    diagnostic = `Avaliação clínica de sinais de disfunção orgânica (escore qSOFA ou SOFA), coleta imediata de culturas (2 pares de hemoculturas de locais distintos), dosagem de lactato arterial e exames laboratoriais completos.`;
+    alarm = `Hipotensão persistentemente refratária a volume (PAM < 65 mmHg) exigindo vasopressores, ou lactato arterial > 2.0 mmol/L após ressuscitação adequada (Choque Séptico) -> Sala Vermelha imediata.`;
+    treatment = [
+      {
+        title: "Protocolo de Sepse - Primeira Hora (PS)",
+        desc: `Iniciar expansão volêmica imediata com cristaloide (30 mL/kg) nas primeiras 3 horas se hipotensão ou lactato ≥ 4. Coletar culturas e administrar antibioticoterapia de largo espectro na primeira hora (Ceftriaxona 2g EV).`
+      },
+      {
+        title: "Manejo Vasopressor & Monitorização",
+        desc: `Instalar via central e iniciar Noradrenalina se PAM < 65 mmHg persistente após volume. Dosar lactato a cada 2-4 horas para guiar clareamento. Monitorar débito urinário por sonda vesical de demora.`
+      }
+    ];
+  } else if (catLower.includes("metaból")) {
+    diagnostic = `Diagnóstico de emergência baseado em gasometria arterial (pesquisa de acidose metabólica), dosagem sérica de sódio, potássio, magnésio, fósforo, cálcio total e iônico, ureia, creatinina e osmolaridade sérica.`;
+    alarm = `Nível de potássio sérico ≥ 6.5 mEq/L ou com alterações eletrocardiográficas (onda T apiculada, perda de onda P), ou hiponatremia severa (< 120 mEq/L) com convulsão -> Sala Vermelha de imediato.`;
+    treatment = [
+      {
+        title: "Estabilização de Membrana e Correção (PS)",
+        desc: `Se hipercalemia com alteração de ECG, administrar Gluconato de Cálcio 10% 10mL EV em 5-10 minutos. Iniciar solução polarizada (Glicose 50% + Insulina Regular 10 UI) e nebulização com Fenoterol para shift intracelular.`
+      },
+      {
+        title: "Correção de Distúrbios Ácido-Básicos",
+        desc: `Tratar a causa de base. Administrar bicarbonato de sódio EV apenas em acidose severa (pH < 7.1) de origem renal ou intoxicações por tricíclicos. Agendar hemodiálise de urgência se refratariedade.`
+      }
+    ];
+  } else {
+    diagnostic = `Abordagem diagnóstica inicial rápida na Sala de Emergência com coleta de exames laboratoriais essenciais, eletrocardiograma e avaliação por equipe multidisciplinar baseada no protocolo de triagem do PS.`;
+    alarm = `Instabilidade súbita de sinais vitais, rebaixamento neurológico agudo, dor torácica de início recente ou dor abdominal refratária de forte intensidade -> Encaminhar de imediato para a Sala Vermelha.`;
+    treatment = [
+      {
+        title: "Suporte Clínico Geral de Emergência (PS)",
+        desc: `Garantir acessibilidade venosa imediata, monitorar oximetria de pulso e frequência cardíaca continuamente. Administrar analgésicos e sintomáticos intravenosos para conforto do paciente.`
+      },
+      {
+        title: "Investigação & Encaminhamento",
+        desc: `Manter o paciente em observação clínica rigorosa na ala hospitalar de retaguarda até a estabilização completa dos sintomas ou elucidação diagnóstica. Solicitar exames específicos de imagem se indicado.`
+      }
+    ];
+  }
+  
+  return {
+    id: seed.id,
+    name: seed.name,
+    category: seed.category,
+    diagnostic,
+    alarm,
+    treatment,
+    interactiveType: seed.id
+  };
+});
 

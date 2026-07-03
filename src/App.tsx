@@ -53,7 +53,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { UBS_CATALOG_DISEASES } from './ubsCatalog';
+import { UBS_CATALOG_DISEASES, PS_CATALOG_DISEASES, DiseaseInfo } from './ubsCatalog';
 import SymptomDiagnosticModule from './components/SymptomDiagnosticModule';
 import AmbulatoriosModule from './components/AmbulatoriosModule';
 
@@ -6651,13 +6651,15 @@ function Dashboard({
   addToHistory, 
   setSelectedDisease,
   setSelectedUbsDiseaseId,
-  setSelectedUbsSubTab
+  setSelectedUbsSubTab,
+  setSelectedCatalogDisease
 }: { 
   setActiveSection: (s: AppSection) => void; 
   addToHistory: (t: string, r: string) => void; 
   setSelectedDisease: (d: typeof PRESCRIPTIONS[0]) => void;
   setSelectedUbsDiseaseId: (id: string) => void;
   setSelectedUbsSubTab: (tab: 'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia') => void;
+  setSelectedCatalogDisease: (d: DiseaseInfo | null) => void;
 }) {
   const [globalSearch, setGlobalSearch] = useState('');
 
@@ -6670,6 +6672,15 @@ function Dashboard({
 
   // 2. Filter UBS & UPA Catalog Diseases
   const filteredUbsDiseases = UBS_CATALOG_DISEASES.filter(d =>
+    d.name.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    d.category.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    d.diagnostic.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    d.alarm.toLowerCase().includes(globalSearch.toLowerCase()) ||
+    d.treatment.some(t => t.title.toLowerCase().includes(globalSearch.toLowerCase()) || t.desc.toLowerCase().includes(globalSearch.toLowerCase()))
+  );
+
+  // 2.5 Filter Pronto Socorro (PS) Catalog Diseases
+  const filteredPsDiseases = PS_CATALOG_DISEASES.filter(d =>
     d.name.toLowerCase().includes(globalSearch.toLowerCase()) ||
     d.category.toLowerCase().includes(globalSearch.toLowerCase()) ||
     d.diagnostic.toLowerCase().includes(globalSearch.toLowerCase()) ||
@@ -6705,6 +6716,7 @@ function Dashboard({
 
   const hasResults = filteredPrescriptions.length > 0 || 
                      filteredUbsDiseases.length > 0 || 
+                     filteredPsDiseases.length > 0 || 
                      filteredMedications.length > 0 || 
                      filteredSummaries.length > 0;
 
@@ -6780,9 +6792,7 @@ function Dashboard({
                 <button 
                   key={d.id} 
                   onClick={() => { 
-                    setSelectedUbsSubTab('guia');
-                    setSelectedUbsDiseaseId(d.id); 
-                    setActiveSection('ubs'); 
+                    setSelectedCatalogDisease(d);
                     setGlobalSearch(''); 
                   }} 
                   className="p-5 text-left border border-slate-200 dark:border-slate-700/60 rounded-3xl bg-white dark:bg-slate-850/50 hover:bg-teal-500/5 hover:border-teal-400 group transition-all flex flex-col justify-between"
@@ -6790,14 +6800,39 @@ function Dashboard({
                   <div>
                     <div className="flex justify-between items-center mb-2.5">
                       <span className="text-[8px] font-black text-teal-600 dark:text-teal-400 bg-teal-500/10 dark:bg-teal-500/20 px-2 py-0.5 rounded uppercase tracking-widest font-sans">
-                        Legenda: Doença UBS / UPA 🏥
+                        Geral / Atenção Básica 🏥
                       </span>
                     </div>
                     <div className="font-bold text-slate-800 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors uppercase italic font-serif leading-snug">{d.name}</div>
                     <p className="text-[10px] text-slate-400 dark:text-slate-550 mt-2 line-clamp-2 leading-relaxed">{d.diagnostic}</p>
                   </div>
                   <div className="text-[10px] text-slate-400 mt-4 font-bold uppercase tracking-widest flex items-center gap-1 font-sans">
-                    Ver Protocolo Amambulatorial <ChevronRight size={10} />
+                    Ver Protocolo Ambulatorial <ChevronRight size={10} />
+                  </div>
+                </button>
+              ))}
+
+              {/* Pronto Socorro (PS) Diseases */}
+              {filteredPsDiseases.slice(0, 6).map(d => (
+                <button 
+                  key={d.id} 
+                  onClick={() => { 
+                    setSelectedCatalogDisease(d);
+                    setGlobalSearch(''); 
+                  }} 
+                  className="p-5 text-left border border-slate-200 dark:border-slate-700/60 rounded-3xl bg-white dark:bg-slate-850/50 hover:bg-rose-500/5 hover:border-rose-400 group transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-2.5">
+                      <span className="text-[8px] font-black text-rose-600 dark:text-rose-400 bg-rose-500/10 dark:bg-rose-500/20 px-2 py-0.5 rounded uppercase tracking-widest font-sans">
+                        Pronto Socorro / PS 🚨
+                      </span>
+                    </div>
+                    <div className="font-bold text-slate-800 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors uppercase italic font-serif leading-snug">{d.name}</div>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-550 mt-2 line-clamp-2 leading-relaxed">{d.diagnostic}</p>
+                  </div>
+                  <div className="text-[10px] text-slate-400 mt-4 font-bold uppercase tracking-widest flex items-center gap-1 font-sans">
+                    Ver Conduta de Emergência <ChevronRight size={10} />
                   </div>
                 </button>
               ))}
@@ -8070,6 +8105,7 @@ export default function App() {
   // --- State for UBS Module Hoisting ---
   const [selectedUbsDiseaseId, setSelectedUbsDiseaseId] = useState<string>('drge');
   const [selectedUbsSubTab, setSelectedUbsSubTab] = useState<'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia'>('guia');
+  const [selectedCatalogDisease, setSelectedCatalogDisease] = useState<DiseaseInfo | null>(null);
 
   // --- State for History and Search ---
   const [history, setHistory] = useState<{id: string, title: string, result: string, date: string}[]>(() => {
@@ -8324,7 +8360,7 @@ export default function App() {
               {activeSection === 'ubs' && <motion.div key="ub" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Atenção Básica / UBS" subtitle="Protocolos de vigilância, pré-natal, doenças crônicas e escores de saúde mental." icon={Stethoscope} /><UbsModule activeSubTab={selectedUbsSubTab} setActiveSubTab={setSelectedUbsSubTab} selectedGuiaDiseaseId={selectedUbsDiseaseId} setSelectedGuiaDiseaseId={setSelectedUbsDiseaseId} /></motion.div>}
               {activeSection === 'ambulatorio' && <motion.div key="am" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><AmbulatoriosModule /></motion.div>}
               {activeSection === 'emergency' && <motion.div key="em" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Pronto Socorro" subtitle="Protocolos de emergência, exames imediatos e condutas críticas." icon={ShieldAlert} /><EmergencyModule onSelect={setSelectedDisease} /></motion.div>}
-              {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} setSelectedUbsDiseaseId={setSelectedUbsDiseaseId} setSelectedUbsSubTab={setSelectedUbsSubTab} /></motion.div>}
+              {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} setSelectedUbsDiseaseId={setSelectedUbsDiseaseId} setSelectedUbsSubTab={setSelectedUbsSubTab} setSelectedCatalogDisease={setSelectedCatalogDisease} /></motion.div>}
               {activeSection === 'drugs' && <motion.div key="dr" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Guia de Dosagem" subtitle="Doses recomendadas para prática clínica hospitalar e ambulatorial." icon={Pill} /><DrugsModule /></motion.div>}
               {activeSection === 'calculators' && <motion.div key="ca" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Calculadoras Clínicas" subtitle="Scores de gravidade, função renal e ferramentas de screening." icon={Calculator} /><CalculatorModule addToHistory={addToHistory} /></motion.div>}
               {activeSection === 'summaries' && <motion.div key="su" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SummaryModule /></motion.div>}
@@ -8479,13 +8515,107 @@ export default function App() {
           )}
         </AnimatePresence>
 
+        {/* Catalog Disease Detail Modal */}
+        <AnimatePresence>
+          {selectedCatalogDisease && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedCatalogDisease(null)}
+                className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
+              />
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                className="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-[40px] shadow-2xl overflow-hidden overflow-y-auto max-h-[90vh] custom-scrollbar"
+              >
+                <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm sticky top-0 z-10">
+                  <div>
+                    <span className="inline-block px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest mb-4 shadow-sm bg-teal-500 text-white shadow-teal-500/20">
+                      {selectedCatalogDisease.category}
+                    </span>
+                    <h2 className="text-4xl font-serif font-black italic tracking-tighter text-slate-800 dark:text-white leading-tight">
+                      {selectedCatalogDisease.name}
+                    </h2>
+                  </div>
+                  <button 
+                    onClick={() => setSelectedCatalogDisease(null)}
+                    className="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 transition-all"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+
+                <div className="p-10 space-y-10">
+                  {/* Critério Diagnóstico */}
+                  <div>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 flex items-center gap-2">
+                      <Stethoscope size={14} className="text-teal-600" /> Critério Diagnóstico / Descrição
+                    </h4>
+                    <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed font-semibold p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
+                      {selectedCatalogDisease.diagnostic}
+                    </p>
+                  </div>
+
+                  {/* Sinais de Alarme */}
+                  {selectedCatalogDisease.alarm && (
+                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 flex items-center gap-2">
+                        <AlertTriangle size={14} className="text-amber-500" /> Sinais de Alarme & Alerta Vermelho
+                      </h4>
+                      <div className="p-6 bg-amber-500/10 dark:bg-amber-500/20 border-l-4 border-amber-500 rounded-r-3xl text-amber-800 dark:text-amber-200 font-bold text-sm leading-relaxed">
+                        {selectedCatalogDisease.alarm}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Treatment Steps */}
+                  <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
+                      <Activity size={14} className="text-rose-600" /> Conduta e Manejo Terapêutico
+                    </h4>
+                    <div className="space-y-4">
+                      {selectedCatalogDisease.treatment.map((step, idx) => (
+                        <div key={idx} className="flex gap-6 p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 group hover:border-teal-500/30 transition-colors">
+                          <div className="w-10 h-10 rounded-2xl bg-teal-600/10 flex items-center justify-center text-teal-600 shrink-0 font-bold text-base shadow-sm group-hover:bg-teal-600 group-hover:text-white transition-all">
+                            {idx + 1}
+                          </div>
+                          <div className="space-y-1">
+                            <h5 className="font-bold text-slate-800 dark:text-slate-100 text-base">{step.title}</h5>
+                            <p className="text-slate-600 dark:text-slate-350 text-sm leading-relaxed font-medium">{step.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-10 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-center">
+                   <button 
+                     onClick={() => setSelectedCatalogDisease(null)}
+                     className="w-full py-5 bg-teal-600 text-white rounded-3xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-teal-900/20"
+                   >
+                     Protocolo Lido & Compreendido
+                   </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
         <footer className="p-8 border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-slate-400">
               <div className="flex flex-wrap items-center gap-2">
                  <ShieldCheck size={14} className="text-rose-500" />
                  <span>Protocolos revisados 2026.1 - Base Pedsocorro Integrada</span>
                  <span className="ml-2 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 font-bold border border-teal-150 dark:border-teal-900/50">
-                   {UBS_CATALOG_DISEASES.length} Doenças Cadastradas
+                   {UBS_CATALOG_DISEASES.length} Geral (UBS)
+                 </span>
+                 <span className="ml-1 px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 font-bold border border-rose-150 dark:border-rose-900/50">
+                   {PS_CATALOG_DISEASES.length} Pronto Socorro (PS)
                  </span>
               </div>
               <div className="flex gap-6 uppercase tracking-widest text-[10px]">

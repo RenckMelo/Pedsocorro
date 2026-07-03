@@ -462,6 +462,28 @@ const DISEASE_SYMPTOM_PROFILES: Record<string, DiseaseSymptomProfile> = {
       { finding: 'Sinal de Murphy positivo à palpação', metric: 'Especificidade', 'value': '96%', ref: 'Tokyo Guidelines Study' }
     ]
   },
+  cad: {
+    diseaseId: 'cad',
+    symptoms: { 
+      nausea_vomito: 4, 
+      dor_abdominal: 4, 
+      taquipneia: 5, 
+      desidratacao_sinal: 4, 
+      fadiga: 3, 
+      perda_peso: 3, 
+      sede_excessiva: 5 
+    },
+    durations: ['hyperacute', 'acute'],
+    setting: 'ps',
+    whyExplanation: 'A tríade clássica de polidipsia (sede excessiva), vômitos incoercíveis, dor abdominal aguda, respiração profunda/rápida de Kussmaul (taquipneia) e desidratação indica cetoacidose diabética (CAD).',
+    nextStepsExams: 'Glicemia capilar urgente, Gasometria arterial (pH, Bicarbonato, lactato), Eletrólitos séricos (Potássio, Sódio, Fósforo), Urina 1 (cetonas e glicosúria).',
+    guideline: 'Diretrizes da Sociedade Brasileira de Diabetes (SBD 2025) / ADA 2024',
+    treatmentAllowed: 'immediate_critical',
+    treatmentAllowedJustification: 'A Cetoacidose Diabética é uma emergência médica metabólica de altíssimo risco. Exige monitorização contínua e intervenção agressiva imediata na Sala Vermelha (hidratação vigorosa com SF 0.9% e correção hidroeletrolítica/insulinoterapia) para evitar edema cerebral, choque e óbito.',
+    evidenceMarkers: [
+      { finding: 'Hálito cetônico + Respiração de Kussmaul', metric: 'Especificidade', 'value': '99%', ref: 'JAMA Rational Clinical Exam' }
+    ]
+  },
   icc_descompensada: {
     diseaseId: 'icc_descompensada',
     symptoms: { dispneia: 5, fadiga: 4, ortopneia: 5, edema_mmii_bilateral: 5, turgencia_jugular: 5, estertores_crepitantes: 4, bulhas_hipofoneticas: 2 },
@@ -699,6 +721,76 @@ const DISEASE_SYMPTOM_PROFILES: Record<string, DiseaseSymptomProfile> = {
     evidenceMarkers: [
       { finding: 'Febre + Dor articular extrema monoarticular', metric: 'Sensibilidade', 'value': '92%', ref: 'JAMA Rational Clinical Exam' }
     ]
+  },
+  nefropatia_diabetica: {
+    diseaseId: 'nefropatia_diabetica',
+    symptoms: { edema_mmii_bilateral: 5, fadiga: 4, coceira: 3, sede_excessiva: 4, nausea_vomito: 3 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Presença de albuminúria persistente em paciente com diabetes estabelecido de longa data, evoluindo com edema bilateral progressivo, astenia e sinais de uremia.',
+    nextStepsExams: 'Dosar Creatinina sérica, estimar TFG, dosar Potássio, Relação Albumina/Creatinina Urinária (RAC) em amostra isolada de urina, e Ultrassonografia renal.',
+    guideline: 'Diretrizes da Sociedade Brasileira de Diabetes (SBD 2025) / SBN',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'Requer confirmação laboratorial da proteinúria/albuminúria e estimativa de TFG para estadiamento e início seguro de IECA/BRA (ou dapagliflozina), monitorizando potássio e função renal para evitar lesão iatrogênica.',
+    evidenceMarkers: [
+      { finding: 'Albuminúria (RAC > 30) + Edema', metric: 'Especificidade', value: '92%', ref: 'SBN Guidelines 2021' }
+    ]
+  },
+  glomerulonefrite: {
+    diseaseId: 'glomerulonefrite',
+    symptoms: { edema_mmii_bilateral: 5, fadiga: 3, cefaleia: 3, nausea_vomito: 2 },
+    durations: ['acute', 'subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Síndrome nefrítica ou nefrótica: hematúria, proteinúria, edema bilateral proeminente e hipertensão arterial secundária.',
+    nextStepsExams: 'Exame de urina tipo 1 (pesquisa de hemácias dismórficas e cilindros), Creatinina sérica, Ureia, dosagem de complemento (C3, C4), FAN e ASLO.',
+    guideline: 'Sociedade Brasileira de Nefrologia (SBN 2021)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'A confirmação diagnóstica e a definição etiológica dependem de exames laboratoriais detalhados, perfil imunológico e, frequentemente, biópsia renal guiada por ultrassonografia sob cuidados nefrológicos especializados.',
+    evidenceMarkers: [
+      { finding: 'Cilindros hemáticos + Hematúria dismórfica', metric: 'Especificidade', value: '98%', ref: 'SBN Guidelines' }
+    ]
+  },
+  gastrite: {
+    diseaseId: 'gastrite',
+    symptoms: { azia_queimacao: 5, nausea_vomito: 3, dor_abdominal: 4 },
+    durations: ['acute', 'subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Queimação epigástrica, plenitude pós-prandial dolorosa e náuseas ocasionais indicando inflamação da mucosa gástrica ou úlcera péptica ativa.',
+    nextStepsExams: 'Diagnóstico é fundamentalmente clínico. Solicitar Endoscopia Digestiva Alta (EDA) apenas na vigência de sinais de alarme ou refratariedade terapêutica.',
+    guideline: 'Consenso Brasileiro sobre H. pylori e Dispepsia (FBG)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Na ausência de sinais de alarme (disfagia, vômitos persistentes, perda ponderal, sangramento), as diretrizes recomendam o teste terapêutico com inibidores de bomba de prótons por 4 a 8 semanas como conduta inicial e diagnóstica.',
+    evidenceMarkers: [
+      { finding: 'Dispepsia típica responsiva a antiácidos', metric: 'Especificidade', value: '82%', ref: 'FBG Guidelines' }
+    ]
+  },
+  geca: {
+    diseaseId: 'geca',
+    symptoms: { diarreia: 5, nausea_vomito: 4, dor_abdominal: 3, febre: 2 },
+    durations: ['hyperacute', 'acute'],
+    setting: 'ubs',
+    whyExplanation: 'Instalação súbita de evacuações líquidas recorrentes associada a náuseas, vômitos e cólicas difusas compatível com gastroenterocolite aguda infecciosa.',
+    nextStepsExams: 'Diagnóstico é essencialmente clínico. Solicitar eletrólitos ou gasometria apenas se houver desidratação grave.',
+    guideline: 'Diretrizes de Manejo de Diarreia Aguda (Ministério da Saúde / OMS)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'A terapia de reidratação oral (Soro de Reidratação Oral) e suporte sintomático (Ondansetrona, analgésicos) devem ser conduzidos imediatamente para prevenir ou tratar a desidratação, conforme planos A, B ou C.',
+    evidenceMarkers: [
+      { finding: 'Diarreia líquida súbita autolimitada', metric: 'Especificidade (viral)', value: '85%', ref: 'OMS Guidelines' }
+    ]
+  },
+  crise_hipertensiva_ps: {
+    diseaseId: 'crise_hipertensiva_ps',
+    symptoms: { cefaleia: 4, tontura: 4, palpitacao: 3, dor_peito: 3, dispneia: 3 },
+    durations: ['hyperacute', 'acute'],
+    setting: 'ps',
+    whyExplanation: 'Pico pressórico severo (PA ≥ 180/120 mmHg) acompanhado de cefaleia intensa, tontura rotatória e palpitações de início hiperagudo.',
+    nextStepsExams: 'Avaliação clínica minuciosa, aferição de PA em ambos os braços, ECG de 12 derivações, dosagem de Troponina, Creatinina e Urina Tipo 1 se suspeita de lesão orgânica aguda.',
+    guideline: 'Diretrizes Brasileiras de Hipertensão Arterial da SBC (2020)',
+    treatmentAllowed: 'immediate_critical',
+    treatmentAllowedJustification: 'Requer diferenciação rápida no PS entre emergência hipertensiva (lesão de órgão-alvo ativa que exige anti-hipertensivo venoso como nitroprussiato) e urgência hipertensiva (manejo com medicação oral lenta).',
+    evidenceMarkers: [
+      { finding: 'Cefaleia hiperaguda + PA ≥ 180/120', metric: 'Sensibilidade (para urgência)', value: '95%', ref: 'SBC Guidelines 2020' }
+    ]
   }
 };
 
@@ -841,10 +933,116 @@ const LOCAL_CATALOG_DISEASES: DiseaseInfo[] = [
   }
 ];
 
+const normalizeText = (str: string): string => {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // remove accents
+    .replace(/[^a-z0-9\s_]/g, '')   // remove punctuation/special chars
+    .trim();
+};
+
+const SYMPTOM_KEYWORD_SYNONYMS: Record<string, string[]> = {
+  febre: ['febre', 'febril', 'temperatura elevada', 'calafrio', 'calafrios', 'hipertermia', 'pico febril', 'pirexia'],
+  fadiga: ['fadiga', 'astenia', 'fraqueza', 'cansaco', 'desanimo', 'adinamia', 'prostracao', 'sem forca', 'exausto', 'exaustao'],
+  perda_peso: ['perda de peso', 'emagrecimento', 'perda ponderal', 'emagreceu', 'caquexia', 'perda de massa', 'reducao de peso'],
+  ganho_peso: ['ganho de peso', 'ganho ponderal', 'aumento de peso', 'engordou', 'ganho de massa', 'obeso', 'obesidade'],
+  sudorese_noturna: ['sudorese noturna', 'suor noturno', 'suores noturnos', 'suor a noite', 'sudorese a noite'],
+  sede_excessiva: ['sede', 'polidipsia', 'beber muita agua', 'poliuria', 'sede excessiva', 'bebe muita agua', 'urina excessiva'],
+  picada_animal: ['picada', 'peconhento', 'venenoso', 'cobra', 'escorpiao', 'aranha', 'lagarta', 'ofidico', 'aracnideo', 'mordedura'],
+  ictericia: ['ictericia', 'escleras amareladas', 'pele amarelada', 'amarela', 'coluria', 'acolia', 'olhos amarelos', 'pele amarela'],
+  palidez: ['palidez', 'descorada', 'anemia', 'hipocorado', 'palido', 'paliidez', 'descorado', 'anemico'],
+  desidratacao_sinal: ['desidratacao', 'desidratado', 'desidratada', 'turgor', 'pregueamento', 'mucosas secas', 'olhos fundos', 'boca seca', 'saliva espessa'],
+  cyanose: ['cianose', 'cianotico', 'cyanose', 'extremidades roxas', 'labios roxos', 'extremidades cianoticas'],
+  sinal_provado_laco: ['prova do laco', 'teste do laco', 'fragilidade capilar', 'petequias'],
+  dor_peito: ['dor no peito', 'dor toracica', 'angina', 'aperto no peito', 'desconforto retroesternal', 'dor retroesternal', 'precordialgia', 'dor precordial', 'dor opressiva'],
+  dispneia: ['falta de ar', 'dispneia', 'cansaco respiratorio', 'dificuldade para respirar', 'dificuldade respiratoria', 'ortopneia', 'sufocamento', 'respiracao dificil', 'cansaco ao andar'],
+  tosse: ['tosse', 'expectoracao', 'escarro', 'tossindo', 'tosse persistente', 'tosse produtiva', 'tosse seca', 'pigarro'],
+  chiado_peito: ['chiado', 'sibilo', 'sibilancia', 'sopro no peito', 'piado', 'chiando', 'sibilos'],
+  palpitacao: ['palpitacao', 'batedeira', 'coracao acelerado', 'taquicardia', 'palpitacoes', 'arritmia', 'coracao disparado', 'extrassistoles'],
+  ortopneia: ['ortopneia', 'dispneia paroxistica noturna', 'ar melhora ao sentar', 'dormir com varios travesseiros', 'dispneia ao deitar', 'dpn', 'sufocacao noturna'],
+  taquipneia: ['taquipneia', 'frequencia respiratoria elevada', 'fr elevada', 'respiracao rapida', 'kussmaul', 'taquipneico', 'polipneia'],
+  estertores_crepitantes: ['estertores', 'crepitantes', 'crepitacao', 'estertor', 'estertoracao', 'estertores finos', 'estertores grossos'],
+  sibilos_difusos: ['sibilos difusos', 'sibilancia difusa', 'sibilos expiratorios', 'sibilancia'],
+  murmurio_diminuido: ['murmurio vesicular diminuido', 'murmurio diminuido', 'ausencia de murmurio', 'abolicao do murmurio'],
+  tiragem_intercostal: ['tiragem', 'musculatura acessoria', 'esforco respiratorio', 'retracao intercostal', 'tiragem subcostal', 'batimento de asa de nariz'],
+  sopro_cardiaco: ['sopro', 'sopro cardiaco', 'sopros', 'sopro sistolico', 'sopro diastolico'],
+  turgencia_jugular: ['turgencia jugular', 'jugulares ingurgitadas', 'ingurgitamento jugular', 'estase jugular', 'turgencia de jugulares'],
+  bulhas_hipofoneticas: ['bulhas abafadas', 'bulhas hipofoneticas', 'hipofonese', 'bfa', 'bulhas distantes'],
+  dor_garganta: ['dor de garganta', 'odinofagia', 'garganta inflamada', 'garganta vermelha', 'dificuldade de engolir', 'faringodinia'],
+  sintomas_gripais: ['obstrucao nasal', 'coriza', 'espirros', 'congestao nasal', 'gripe', 'resfriado', 'nariz entupido', 'rinorreia'],
+  exsudato_amigdaliano: ['exsudato', 'placas nas amigdalas', 'placas purulentas', 'amigdalas com pus', 'pontos de pus', 'secrecao purulenta nas amigdalas', 'placa amigdaliana'],
+  hiperemia_faringe: ['hiperemia', 'orofaringe vermelha', 'faringe hiperemiada', 'garganta vermelha', 'hiperemia de mucosa', 'faringite vermelha'],
+  bocio_palpavel: ['bocio', 'tireoide aumentada', 'aumento da tireoide', 'bocio palpavel', 'tiromegalia'],
+  adenopatia_cervical: ['adenopatia', 'linfadenopatia', 'ingua', 'ganglios inchados', 'ganglio doloroso', 'adenopatia cervical', 'linfonodos enfartados', 'linfonodo palpavel'],
+  dor_abdominal: ['dor abdominal', 'dor na barriga', 'dor epigastrica', 'colica abdominal', 'dor de estomago', 'epigastralgia', 'desconforto abdominal'],
+  dor_abdominal_fid: ['fossa iliaca direita', 'fid', 'dor em fossa iliaca', 'ponto de mcburney', 'dor no quadrante inferior direito'],
+  dor_abdominal_hd: ['hipocondrio direito', 'hd', 'dor em hipocondrio direito', 'dor biliar', 'dor no quadrante superior direito'],
+  azia_queimacao: ['azia', 'refluxo', 'pirose', 'queimacao retroesternal', 'queimacao no estomago', 'regurgitacao', 'azia queimacao', 'queime'],
+  nausea_vomito: ['nausea', 'vomito', 'enjoo', 'vomitar', 'emese', 'vomitos', 'nauseas', 'vomitos'],
+  diarreia: ['diarreia', 'evacuacoes liquidas', 'fezes liquidas', 'disenteria', 'fezes amolecidas', 'aumento do numero de evacuacoes'],
+  constipacao: ['constipacao', 'obstipacao', 'prisao de ventre', 'fezes endurecidas', 'ressecamento intestinal', 'dificuldade para evacuar', 'obstipacao', 'constipacao'],
+  sinal_blumberg: ['blumberg', 'descompressao dolorosa', 'descompressao abdominal', 'dor a descompressao'],
+  sinal_murphy: ['murphy', 'sinal de murphy', 'parada inspiratoria', 'dor a palpacao de hipocondrio direito'],
+  abdomen_tabua: ['abdomen em tabua', 'defesa muscular involuntaria', 'rigidez abdominal', 'peritonite', 'abdomen rigido'],
+  rha_ausentes: ['ruidos hidroaereos diminuidos', 'rha ausentes', 'rha diminuidos', 'silencio abdominal', 'ruidos hidroaereos ausentes', 'rha abolidos'],
+  dor_urinar: ['disuria', 'dor ao urinar', 'ardencia ao urinar', 'dificuldade para urinar', 'estranguria', 'dor miccional', 'queimacao ao urinar'],
+  secura_vaginal: ['secura vaginal', 'fogachos', 'calores da menopausa', 'ondas de calor', 'atrofia vaginal', 'prurido vulvar', 'sintomas climatericos'],
+  corrimento_vaginal: ['corrimento vaginal', 'leucorreia', 'prurido vaginal', 'coceira vaginal', 'corrimento grumoso', 'corrimento com odor'],
+  corrimento_uretral: ['corrimento uretral', 'secrecao uretral', 'corrimento peniano', 'corrimento masculino'],
+  sinal_giordano: ['giordano', 'punho percussao lombar', 'dor lombar a percussao', 'sinal de giordano'],
+  cefaleia: ['cefaleia', 'dor de cabeca', 'enxaqueca', 'hemicrania', 'cefalalgia', 'dor de cabeca'],
+  tontura: ['tontura', 'vertigem', 'desequilibrio', 'sensacao de desmaio', 'lipotimia', 'labirintite', 'tonturas', 'vertiginoso'],
+  insonia: ['insonia', 'dificuldade para dormir', 'sono fragmentado', 'despertares noturnos', 'insonia', 'disturbio do sono'],
+  ansiedade_nervosismo: ['ansiedade', 'nervosismo', 'irritabilidade', 'panico', 'preocupacao excessiva', 'tensao', 'ataque de panico', 'crise de ansiedade'],
+  tristeza: ['tristeza', 'humor deprimido', 'anedonia', 'apatia', 'desanimo', 'falta de prazer', 'ideacao suicida', 'depressao', 'choro facil', 'melancolia'],
+  rigidez_nuca: ['rigidez de nuca', 'nuca rigida', 'sinais meningeos', 'kernig', 'brudzinski', 'rigidez nucal'],
+  desview_rima: ['desvio de rima', 'paralisia facial', 'assimetria facial', 'rima facial', 'desvio da rima', 'desvia rima'],
+  deficit_motor: ['deficit motor', 'fraqueza subita', 'perda de forca', 'hemiparesia', 'hemiplegia', 'paralisia de membro', 'fraqueza em um lado'],
+  disartria: ['disartria', 'afasia', 'fala enrolada', 'fala arrastada', 'dificuldade para falar', 'dificuldade de articulacao', 'dificuldade na fala'],
+  pupilas_anisocoricas: ['anisocoria', 'pupilas assimetricas', 'pupilas anisocoricas', 'assimetria de pupilas'],
+  sinal_babinski: ['babinski', 'reflexo plantar extensor', 'sinal de babinski'],
+  dor_articulacoes: ['dor nas articulacoes', 'artrite', 'artralgia', 'dor articular', 'juntas doloridas', 'rigidez articular', 'edema articular', 'poliartrite'],
+  dor_lombar: ['dor lombar', 'lombalgia', 'dor nas costas', 'dor lombosacra', 'lumbago'],
+  dor_panturrilha: ['dor na panturrilha', 'dor na perna', 'panturrilha dolorida', 'dor em panturrilha', 'dor empastamento'],
+  edema_mmii_bilateral: ['edema bilateral', 'edema de membros inferiores', 'membros inferiores inchados', 'pernas inchadas', 'edema mmii', 'cacifo positivo', 'anasarca', 'edema generalizado', 'edema maleolar', 'edema de pernas', 'pernas inchadas ao final do dia'],
+  edema_panturrilha_unilateral: ['edema unilateral', 'edema de panturrilha unilateral', 'panturrilha inchada', 'edema assimetrico', 'assimetria de panturrilha', 'panturrilha assimetrica'],
+  sinal_homans: ['homans', 'sinal de homans', 'dor a dorsiflexao', 'homans positivo'],
+  pulso_assimetrico: ['ausencia de pulso', 'pulsos assimetricos', 'assimetria de pulso', 'pulso assimetrico', 'pulsos diminuidos'],
+  tec_prolongado: ['enchimento capilar prolongado', 'tec prolongado', 'tempo de enchimento capilar', 'perfuso lentificada'],
+  coceira: ['coceira', 'prurido', 'cocar', 'pruriginosa', 'pruriginosas', 'lesao pruriginosa', 'lesoes pruriginosas'],
+  manchas_vermelhas: ['manchas vermelhas', 'exantema', 'erupcao', 'rash', 'maculas', 'papulas', 'lesoes avermelhadas', 'manchas na pele'],
+  lesoes_herpeticas: ['vesculas agrupadas', 'herpes zoster', 'lesoes herpeticas', 'vesiculas sobre base eritematosa', 'cobreiro'],
+  tremor_repouso: ['tremor de repouso', 'bradicinesia', 'lentidao de movimentos', 'tremores', 'tremor parkinsoniano', 'tremor nas maos'],
+  rigidez_roda_dentada: ['roda dentada', 'rigidez em roda dentada', 'hipertonia plastica'],
+  rigidez_matinal_longa: ['rigidez matinal', 'rigidez de juntas pela manha', 'rigidez matinal prolongada'],
+  dor_articular_simetrica: ['dor articular simetrica', 'artrite simetrica', 'juntas simetricas', 'artrite bilateral e simetrica'],
+  eritema_malar: ['eritema malar', 'asa de borboleta', 'erupcao malar', 'eritema em asa de borboleta'],
+  manchas_dormentes: ['manchas dormentes', 'perda de sensibilidade', 'manchas hipocromicas', 'manchas com perda de sensibilidade', 'perda sensitiva na pele'],
+  tosse_cronica_sangue: ['tosse cronica', 'tosse com sangue', 'hemoptise', 'tosse persistente por mais de 3 semanas', 'tosse com raias de sangue'],
+  ulcera_genital_indolor: ['ulcera genital', 'cancro duro', 'ferida genital indolor', 'ferida peniana indolor'],
+  exoftalmia: ['exoftalmia', 'olhos saltados', 'olhos arregalados', 'proptose'],
+  trismo_desview_uvula: ['trismo', 'desvio de uvula', 'abscesso periamigdaliano', 'amigdala deslocada'],
+  monoartrite_aguda: ['derrame articular', 'monoartrite', 'artrite septica', 'artrite de uma articulacao', 'joelho inchado com febre', 'articulacao quente e inchada'],
+  pulso_totalmente_irregular: ['pulso totalmente irregular', 'fibrilacao atrial', 'ritmo irregular', 'pulso irregular', 'fa aguda'],
+  perda_visao: ['perda de visao', 'embacamento visual', 'retinopatia', 'cegueira', 'perda visual', 'visao embacada', 'perda progressiva da visao'],
+  olho_vermelho_seco: ['olho seco', 'corpo estranho', 'ardencia ocular', 'olho vermelho', 'conjuntivite', 'irritacao ocular', 'olho vermelho e seco'],
+  pressao_ocular_elevada: ['pressao intraocular', 'pressao do olho', 'pio elevada', 'glaucoma agudo'],
+  dor_ombro_elevar: ['dor no ombro', 'ombro dolorido', 'tendinite de manguito', 'bursite', 'dor ao elevar o braco'],
+  parestesia_mediano: ['tunel do carpo', 'formigamento', 'parestesia', 'nervo mediano', 'dormencia na mao', 'dormencia nos dedos', 'parestesia em mao'],
+  dor_primeiros_passos: ['fascite', 'esporao', 'dor no calcanhar', 'primeiros passos', 'dor calcanea'],
+  esquecimento_recente: ['esquecimento', 'memoria', 'demencia', 'alzheimer', 'esquecer', 'cognitivo', 'perda de memoria recente'],
+  sarcopenia_fraqueza: ['sarcopenia', 'fraqueza muscular', 'massa muscular diminuida', 'perda de musculo', 'perda de massa magra'],
+  quedas_recorrentes_id: ['quedas', 'queda', 'cair', 'quedas de repeticao', 'instabilidade postural idoso'],
+  crise_dispneia_infantil: ['asma infantil', 'chiado infantil', 'bronquiolite', 'sopro infantil', 'crianca cansada', 'chiado no peito em criancas'],
+  lesoes_pruriginosas_dobras: ['dermatite atopica', 'eczema', 'coceira em dobras', 'lesoes em dobras', 'eczema atopico'],
+  inquietacao_desatencao: ['tdah', 'desatencao', 'hiperatividade', 'impulsividade', 'inquieto', 'transtorno de deficit de atencao']
+};
+
 export default function SymptomDiagnosticModule() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Todas');
-  const [selectedSymptoms, setSelectedSymptoms] = useState<Record<string, DurationType>>({});
+  const [selectedSymptoms, setSelectedSymptoms] = useState<Record<string, 'hyperacute' | 'acute' | 'subacute' | 'chronic'>>({});
   const [expandedSuspect, setExpandedSuspect] = useState<string | null>(null);
   const [settingFilter, setSettingFilter] = useState<'todos' | 'ubs' | 'ps'>('todos');
   const [copiedReport, setCopiedReport] = useState(false);
@@ -878,7 +1076,7 @@ export default function SymptomDiagnosticModule() {
     });
   };
 
-  const handleChangeDuration = (id: string, duration: DurationType) => {
+  const handleChangeDuration = (id: string, duration: 'hyperacute' | 'acute' | 'subacute' | 'chronic') => {
     setSelectedSymptoms(prev => ({ ...prev, [id]: duration }));
   };
 
@@ -895,54 +1093,40 @@ export default function SymptomDiagnosticModule() {
     // Dynamically expand DISEASE_SYMPTOM_PROFILES with all catalog diseases to guarantee 100% coverage
     const completeProfiles = { ...DISEASE_SYMPTOM_PROFILES };
 
-    UBS_CATALOG_DISEASES.forEach(disease => {
+    const allCatalogDiseases = [
+      ...UBS_CATALOG_DISEASES,
+      ...LOCAL_CATALOG_DISEASES
+    ];
+
+    allCatalogDiseases.forEach(disease => {
       if (completeProfiles[disease.id]) return;
 
-      // Scan and find matching symptoms/signs based on descriptions and metadata
+      // Scan and find matching symptoms/signs based on descriptions and metadata with Portuguese normalization
       const symptoms: Record<string, number> = {};
-      const textToScan = `${disease.name} ${disease.diagnostic} ${disease.alarm} ${disease.category}`.toLowerCase();
+      const normalizedTextToScan = normalizeText(`${disease.name} ${disease.diagnostic} ${disease.alarm} ${disease.category}`);
 
       SYMPTOMS_AND_SIGNS.forEach(s => {
-        const terms = [
-          s.name.toLowerCase(),
-          s.id.toLowerCase().replace(/_/g, ' ')
+        const terms: string[] = [
+          normalizeText(s.name),
+          normalizeText(s.id),
+          normalizeText(s.id.replace(/_/g, ' '))
         ];
-        
-        // Custom key mappings for better keyword scanning
-        if (s.id === 'febre') terms.push('febre', 'febril', 'temperatura elevada', 'calafrio');
-        if (s.id === 'dor_peito') terms.push('dor no peito', 'dor torácica', 'angina', 'aperto no peito', 'desconforto retroesternal');
-        if (s.id === 'dispneia') terms.push('falta de ar', 'dispneia', 'cansaço respiratório', 'dificuldade para respirar');
-        if (s.id === 'tosse') terms.push('tosse', 'expectoração', 'escarro', 'tosse persistente');
-        if (s.id === 'nausea_vomito') terms.push('náusea', 'vômito', 'vomitar', 'enjoo');
-        if (s.id === 'diarreia') terms.push('diarreia', 'evacuações líquidas');
-        if (s.id === 'dor_abdominal') terms.push('dor abdominal', 'dor na barriga', 'dor de barriga', 'dor epigástrica', 'cólica');
-        if (s.id === 'tontura') terms.push('tontura', 'vertigem', 'desequilíbrio', 'labirinto');
-        if (s.id === 'fadiga') terms.push('fadiga', 'astenia', 'fraqueza', 'cansaço');
-        if (s.id === 'perda_peso') terms.push('perda de peso', 'emagrecimento', 'perda ponderal');
-        if (s.id === 'coceira') terms.push('coceira', 'prurido', 'coçar');
-        if (s.id === 'manchas_vermelhas') terms.push('manchas vermelhas', 'exantema', 'erupção', 'rash');
-        if (s.id === 'dor_articulacoes') terms.push('dor nas articulações', 'artrite', 'dor articular', 'artralgia');
-        if (s.id === 'insonia') terms.push('insônia', 'sono fragmentado', 'distúrbio do sono');
-        if (s.id === 'ansiedade_nervosismo') terms.push('ansiedade', 'nervosismo', 'irritabilidade', 'pânico');
-        if (s.id === 'tristeza') terms.push('tristeza', 'humor deprimido', 'anedonia', 'apatia');
-        if (s.id === 'perda_visao') terms.push('visão', 'embaçamento', 'visual', 'glaucoma', 'catarata', 'retinopatia', 'cegueira');
-        if (s.id === 'olho_vermelho_seco') terms.push('olho seco', 'corpo estranho', 'ardência ocular', 'conjuntivite', 'olho vermelho', 'irritação ocular');
-        if (s.id === 'pressao_ocular_elevada') terms.push('pressão intraocular', 'pressão do olho', 'pio elevada', 'escotomas');
-        if (s.id === 'dor_ombro_elevar') terms.push('dor no ombro', 'ombro', 'tendinite', 'manguito', 'bursite');
-        if (s.id === 'parestesia_mediano') terms.push('túnel do carpo', 'formigamento', 'parestesia', 'nervo mediano', 'dormência na mão');
-        if (s.id === 'dor_primeiros_passos') terms.push('esporão', 'calcanhar', 'fascite', 'fascia', 'planta do pé');
-        if (s.id === 'esquecimento_recente') terms.push('memória', 'alzheimer', 'cognitivo', 'esquecimento', 'demência', 'esquecer');
-        if (s.id === 'sarcopenia_fraqueza') terms.push('marcha', 'sarcopenia', 'massa muscular', 'fraqueza muscular', 'lentificação');
-        if (s.id === 'quedas_recorrentes_id') terms.push('quedas', 'cair', 'queda', 'instabilidade postural', 'equilíbrio');
-        if (s.id === 'crise_dispneia_infantil') terms.push('chiado', 'asma', 'cansaço', 'sopro', 'infantil', 'criança', 'bebê');
-        if (s.id === 'lesoes_pruriginosas_dobras') terms.push('eczema', 'dermatite', 'atópica', 'dobras', 'coceira', 'prurido');
-        if (s.id === 'inquietacao_desatencao') terms.push('tdah', 'desatenção', 'hiperatividade', 'impulsividade', 'atenção', 'inquieto');
 
-        const matches = terms.some(term => textToScan.includes(term));
+        const synonyms = SYMPTOM_KEYWORD_SYNONYMS[s.id] || [];
+        synonyms.forEach(syn => {
+          terms.push(normalizeText(syn));
+        });
+
+        const uniqueTerms = Array.from(new Set(terms));
+        const matches = uniqueTerms.some(term => normalizedTextToScan.includes(term));
+        
         if (matches) {
-          let weight = 3;
-          if (disease.diagnostic.toLowerCase().includes(s.id.replace(/_/g, ' ')) || disease.diagnostic.toLowerCase().includes(s.name.toLowerCase())) {
-            weight = 4;
+          let weight = 3; // Default intermediate weight for catalog matches
+          const normalizedDiagnostic = normalizeText(disease.diagnostic);
+          const normalizedName = normalizeText(disease.name);
+          const directMatch = uniqueTerms.some(term => normalizedDiagnostic.includes(term) || normalizedName.includes(term));
+          if (directMatch) {
+            weight = 4; // Promoted to high priority if explicitly in name or diagnostic definition
           }
           symptoms[s.id] = weight;
         }
@@ -1029,8 +1213,17 @@ export default function SymptomDiagnosticModule() {
         }
       });
 
-      // Base percentage
-      const rawBasePercentage = totalProfileWeight > 0 ? (earnedScore / totalProfileWeight) * 100 : 0;
+      // Clinical-Grade Dynamic Denominator:
+      // We sum the earned score and the weights of all missing high-importance cardinal symptoms (weight >= 4).
+      // To prevent inflation on very non-specific symptoms, the denominator is bounded to be at least 40% of the total profile weight.
+      let missingCardinalWeight = 0;
+      Object.entries(profile.symptoms).forEach(([sId, weight]) => {
+        if (weight >= 4 && !selectedSymptoms[sId]) {
+          missingCardinalWeight += weight;
+        }
+      });
+      const denominator = Math.max(totalProfileWeight * 0.4, earnedScore + missingCardinalWeight);
+      const rawBasePercentage = denominator > 0 ? (earnedScore / denominator) * 100 : 0;
 
       // Penalize for missing high-weight cardinal symptoms (weight >= 4)
       const missingKeySymptomDetails: { symptomName: string; penalty: number }[] = [];
@@ -1057,6 +1250,25 @@ export default function SymptomDiagnosticModule() {
           });
         }
       });
+
+      // Unexplained Active Symptom Penalty (selected symptoms that are NOT explained by the profile)
+      let unexplainedSymptomPenalty = 0;
+      const highlyGenericSymptoms = ['fadiga', 'febre', 'perda_peso', 'ganho_peso', 'insonia', 'ansiedade_nervosismo', 'tristeza'];
+      if (selectCount > 1) {
+        let unexplainedCount = 0;
+        userSymptomIds.forEach(sId => {
+          if (!profile.symptoms[sId]) {
+            if (highlyGenericSymptoms.includes(sId)) {
+              unexplainedCount += 0.2; // minimal penalty for general systemic symptoms
+            } else {
+              unexplainedCount += 1.0;
+            }
+          }
+        });
+        
+        const penaltyMultiplier = Math.max(3, 12 - matchedSymptomCount * 1.5);
+        unexplainedSymptomPenalty = unexplainedCount * penaltyMultiplier;
+      }
 
       // Synergy bonus
       let synergyBonus = 0;
@@ -1169,7 +1381,75 @@ export default function SymptomDiagnosticModule() {
       }
 
       // Calculate final probability
-      let finalProbability = rawBasePercentage - totalPenalty + synergyBonus + ageAdjustment;
+      let finalProbability = rawBasePercentage - totalPenalty + synergyBonus + ageAdjustment - unexplainedSymptomPenalty;
+
+      // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: DIAGNÓSTICO DIFERENCIAL (EVITAR GECA vs APENDICITE) ---
+      if (selectedSymptoms['diarreia'] && profile.diseaseId === 'apendicite') {
+        finalProbability -= 60; 
+        demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+          'Diferencial de Alta Precisão: Presença de diarreia ativa reduz drasticamente a suspeita de Apendicite (afasta abdômen agudo inflamatório primário).';
+      }
+
+      if ((selectedSymptoms['dor_abdominal_fid'] || selectedSymptoms['sinal_blumberg']) && profile.diseaseId === 'geca') {
+        finalProbability -= 70;
+        demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+          'Diferencial de Alta Precisão: Dor localizada em FID ou sinal de Blumberg positivo são incompatíveis com Gastroenterite simples (GECA).';
+      }
+
+      if ((selectedSymptoms['abdomen_tabua'] || selectedSymptoms['rha_ausentes']) && profile.diseaseId === 'geca') {
+        finalProbability -= 85;
+        demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+          'Diferencial de Alta Precisão: Sinais de peritonite (abdômen em tábua / silêncio abdominal) excluem Gastroenterite (GECA).';
+      }
+
+      // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: CETOACIDOSE DIABÉTICA (CAD) ---
+      if (profile.diseaseId === 'cad') {
+        const hasGis = selectedSymptoms['azia_queimacao'] || selectedSymptoms['diarreia'];
+        const hasCadCardinals = selectedSymptoms['sede_excessiva'] || selectedSymptoms['taquipneia'] || selectedSymptoms['desidratacao_sinal'];
+        if (hasGis && !hasCadCardinals) {
+          finalProbability -= 80;
+          demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+            'Diferencial de Alta Precisão: Sintomas gastrointestinais simples (azia/diarreia) sem sinais cardinais de CAD (polidipsia, desidratação, taquipneia) tornam Cetoacidose extremamente improvável.';
+        }
+      }
+
+      // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: NEFROPATIAS / DOENÇA RENAL ---
+      const isRenalDisease = profile.diseaseId === 'nefropatia_diabetica' || 
+                             profile.diseaseId === 'glomerulonefrite' || 
+                             profile.diseaseId === 'nefropatia_iga_estavel' || 
+                             profile.diseaseId === 'doencarenal';
+      if (isRenalDisease) {
+        const hasGis = selectedSymptoms['azia_queimacao'] || selectedSymptoms['nausea_vomito'] || selectedSymptoms['diarreia'];
+        const hasRenalCardinals = selectedSymptoms['edema_mmii_bilateral'] || selectedSymptoms['fadiga'] || selectedSymptoms['coceira'] || selectedSymptoms['desidratacao_sinal'];
+        if (hasGis && !hasRenalCardinals) {
+          finalProbability -= 90;
+          demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+            'Diferencial de Alta Precisão: Sintomas gastrointestinais agudos isolados sem edema bilateral, fadiga crônica ou prurido urêmico excluem nefropatia ativa primária.';
+        }
+      }
+
+      // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: ISQUEMIA MIOCÁRDICA vs DRGE ---
+      if (profile.diseaseId === 'iam') {
+        const hasAzia = selectedSymptoms['azia_queimacao'];
+        const hasCardioSigns = selectedSymptoms['palpitacao'] || selectedSymptoms['dispneia'] || selectedSymptoms['tec_prolongado'];
+        if (hasAzia && !hasCardioSigns) {
+          finalProbability -= 50;
+          demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+            'Diferencial de Alta Precisão: Queimação retroesternal isolada sem palpitações, dispneia ou sinais de má perfusão reduz fortemente a suspeita de IAM. Considerar causa digestiva (DRGE).';
+        }
+      }
+
+      // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: DIP vs ITU ---
+      if (profile.diseaseId === 'dip') {
+        const hasDorUrinar = selectedSymptoms['dor_urinar'];
+        const hasPelvicSigns = selectedSymptoms['dor_abdominal'] || selectedSymptoms['corrimento_vaginal'] || selectedSymptoms['febre'];
+        if (hasDorUrinar && !hasPelvicSigns) {
+          finalProbability -= 60;
+          demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+            'Diferencial de Alta Precisão: Sintomas urinários isolados em mulher sem dor pélvica, febre ou corrimento direcionam fortemente para Infecção do Trato Urinário, reduzindo probabilidade de DIP.';
+        }
+      }
+
       if (sexExclude || ageExclude) {
         finalProbability = 0;
       }
@@ -1188,17 +1468,17 @@ export default function SymptomDiagnosticModule() {
         referralSpecialty = 'Reumatologia';
       } else if (textToScan.includes('neurologista') || textToScan.includes('neurologia') || profile.diseaseId === 'parkinson' || profile.diseaseId === 'epilepsia') {
         referralSpecialty = 'Neurologia';
-      } else if (textToScan.includes('nefrologista') || textToScan.includes('nefrologia') || profile.diseaseId === 'doencarenal') {
+      } else if (textToScan.includes('nefrologista') || textToScan.includes('nefrologia') || profile.diseaseId === 'doencarenal' || profile.diseaseId === 'nefropatia_diabetica' || profile.diseaseId === 'glomerulonefrite') {
         referralSpecialty = 'Nefrologia';
       } else if (textToScan.includes('urologista') || textToScan.includes('urologia') || profile.diseaseId === 'hpb') {
         referralSpecialty = 'Urologia';
-      } else if (textToScan.includes('cardiologista') || textToScan.includes('cardiológico') || profile.diseaseId === 'fib-atrial' || profile.diseaseId === 'insufcard') {
+      } else if (textToScan.includes('cardiologista') || textToScan.includes('cardiológico') || profile.diseaseId === 'fib-atrial' || profile.diseaseId === 'insufcard' || profile.diseaseId === 'icc_descompensada' || profile.diseaseId === 'crise_hipertensiva_ps') {
         referralSpecialty = 'Cardiologia';
       } else if (textToScan.includes('psiquiatra') || textToScan.includes('psiquiatria') || profile.diseaseId === 'depressao' || profile.diseaseId === 'ansiedade') {
         referralSpecialty = 'Psiquiatria / Saúde Mental';
       } else if (textToScan.includes('dermatologista') || textToScan.includes('dermatologia') || profile.diseaseId === 'hanseniase') {
         referralSpecialty = 'Dermatologia';
-      } else if (textToScan.includes('endocrinologista') || textToScan.includes('endocrinologia') || profile.diseaseId === 'hiper-tireo') {
+      } else if (textToScan.includes('endocrinologista') || textToScan.includes('endocrinologia') || profile.diseaseId === 'hiper-tireo' || profile.diseaseId === 'dm2') {
         referralSpecialty = 'Endocrinologia';
       } else if (textToScan.includes('oftalmologista') || textToScan.includes('oftalmologia')) {
         referralSpecialty = 'Oftalmologia';
