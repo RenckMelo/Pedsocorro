@@ -8541,16 +8541,30 @@ export default function App() {
             <a href="#depoimentos" className="hover:text-rose-600 transition-colors">Residência & SUS</a>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsDark(!isDark)}
               className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:scale-105 transition-all"
+              title={isDark ? "Modo Claro" : "Modo Escuro"}
             >
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
             <button 
+              onClick={() => {
+                setIsSubscribed(true);
+                localStorage.setItem('pedsocorro_subscribed', 'true');
+                sessionStorage.setItem('pedsocorro_auth', 'true');
+                setIsAuthenticated(true);
+                setActiveSection('auth');
+              }}
+              className="px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:scale-105 active:scale-95 transition-all cursor-pointer"
+            >
+              <UserCheck size={16} className="text-rose-600" />
+              <span>Login / Entrar</span>
+            </button>
+            <button 
               onClick={() => setShowPricingModal(true)}
-              className="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-rose-600/25 hover:scale-105 active:scale-95 transition-all"
+              className="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-rose-600/25 hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               Assinar Agora
             </button>
@@ -8575,10 +8589,24 @@ export default function App() {
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <button 
-              onClick={() => setShowPricingModal(true)}
-              className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl shadow-rose-600/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+              onClick={() => {
+                setIsSubscribed(true);
+                localStorage.setItem('pedsocorro_subscribed', 'true');
+                sessionStorage.setItem('pedsocorro_auth', 'true');
+                setIsAuthenticated(true);
+                setActiveSection('auth');
+              }}
+              className="px-8 py-4 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
             >
-              <span>Ver Logística de Preço & Planos</span>
+              <UserCheck size={18} className="text-rose-500" />
+              <span>Já tenho conta (Fazer Login)</span>
+            </button>
+
+            <button 
+              onClick={() => setShowPricingModal(true)}
+              className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl shadow-rose-600/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 cursor-pointer"
+            >
+              <span>Assinar por R$ 10,00/mês</span>
               <ChevronRight size={18} />
             </button>
 
@@ -8587,7 +8615,7 @@ export default function App() {
                 setIsSubscribed(true);
                 localStorage.setItem('pedsocorro_subscribed', 'true');
               }}
-              className="px-8 py-4 bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-2xl font-black uppercase tracking-widest text-sm shadow-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+              className="px-8 py-4 bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-2xl font-black uppercase tracking-widest text-sm shadow-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
             >
               <Zap size={16} className="text-amber-500" />
               <span>Testar Acesso Livre (Demo)</span>
@@ -8693,31 +8721,31 @@ export default function App() {
             {[
               {
                 id: 'academic',
-                name: 'Plano Acadêmico',
+                name: 'Plano Mensal Básico',
                 subtitle: 'Estudantes & Internato',
-                price: '14,90',
+                price: '10,00',
                 period: 'por mês',
-                features: ['Acesso a todas as calculadoras', 'Guia farmacológico completo', 'Fichas de anamnese e pediatria', 'Suporte via comunidade'],
+                features: ['Acesso a todas as calculadoras', 'Guia farmacológico completo', 'Fichas de anamnese e pediatria', 'Notas clínicas com atalhos'],
                 highlight: false,
                 color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
               },
               {
                 id: 'resident',
-                name: 'Plano Residente',
-                subtitle: 'R1 - R3 / Plantonistas (Mais Popular)',
-                price: '29,90',
+                name: 'Plano Mensal Pro',
+                subtitle: 'Médicos, Residentes & Plantonistas (Mais Escolhido)',
+                price: '10,00',
                 period: 'por mês',
-                features: ['Tudo do Acadêmico', 'Prontuários e prescrições de plantão', 'Protocolos avançados de UTI e PS', 'Atualizações prioritárias em 2026', 'Modo offline integrado'],
+                features: ['Acesso Ilimitado Completo', 'Prontuários e prescrições de plantão', 'Protocolos avançados de UTI e PS', 'Atualizações prioritárias em 2026', 'Modo offline e atalhos de notas'],
                 highlight: true,
                 color: 'border-rose-600 bg-white dark:bg-slate-900 ring-2 ring-rose-600/30'
               },
               {
                 id: 'specialist',
-                name: 'Especialista / Clínica',
-                subtitle: 'Médicos e Equipes Médicas',
-                price: '59,90',
-                period: 'por mês',
-                features: ['Tudo do Residente', 'Múltiplos perfis de acesso', 'Suporte médico VIP 24/7', 'Personalização de receituários', 'Exportação avançada PDF'],
+                name: 'Plano Anual Especialista',
+                subtitle: 'Acesso Anual com Suporte VIP',
+                price: '10,00',
+                period: 'por mês (R$ 120,00/ano)',
+                features: ['Tudo do Plano Pro', 'Múltiplos perfis de acesso', 'Suporte médico VIP 24/7', 'Personalização de receituários', 'Exportação avançada PDF'],
                 highlight: false,
                 color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
               }
@@ -8787,9 +8815,9 @@ export default function App() {
                 <div>
                   <span className="text-[10px] font-black uppercase text-rose-600 tracking-wider">Plano Selecionado:</span>
                   <h4 className="font-serif italic font-black text-lg text-slate-900 dark:text-white capitalize">
-                    {selectedPricingPlan === 'academic' && 'Plano Acadêmico (R$ 29,90/mês)'}
-                    {selectedPricingPlan === 'resident' && 'Plano Residente (R$ 59,90/mês)'}
-                    {selectedPricingPlan === 'specialist' && 'Plano Especialista (R$ 119,90/mês)'}
+                    {selectedPricingPlan === 'academic' && 'Plano Mensal Básico (R$ 10,00/mês)'}
+                    {selectedPricingPlan === 'resident' && 'Plano Mensal Pro (R$ 10,00/mês)'}
+                    {selectedPricingPlan === 'specialist' && 'Plano Anual Especialista (R$ 10,00/mês)'}
                   </h4>
                 </div>
                 <button onClick={() => {}} className="text-xs font-bold text-rose-600 underline">Alterar</button>
