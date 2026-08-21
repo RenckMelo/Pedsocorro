@@ -1,0 +1,74 @@
+{
+  "entities": {
+    "users": {
+      "title": "User",
+      "description": "User accounts and medical profiles",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "crm": { "type": "string" },
+        "specialty": { "type": "string" },
+        "avatarColor": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email"]
+    },
+    "folders": {
+      "title": "Folder",
+      "description": "Folders for organizing clinical notes",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "color": { "type": "string" },
+        "icon": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "name"]
+    },
+    "notes": {
+      "title": "Note",
+      "description": "Clinical notes and medical study documents",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "folderId": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title"]
+    },
+    "saved_forms": {
+      "title": "Saved Form",
+      "description": "Saved medical records and anamnesis forms",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "patientName": { "type": "string" },
+        "formType": { "type": "string" },
+        "date": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title"]
+    },
+    "custom_templates": {
+      "title": "Custom Template",
+      "description": "User custom anamnesis section templates",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "icon": { "type": "string" },
+        "specialty": { "type": "string" },
+        "sections": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "title"]
+    }
+  }
+}

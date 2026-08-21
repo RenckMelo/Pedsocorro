@@ -11,6 +11,7 @@ import {
   Activity, 
   Menu, 
   X,
+  Clock,
   XCircle,
   ChevronRight, 
   Droplets, 
@@ -50,12 +51,17 @@ import {
   Lock,
   Key,
   Eye,
-  EyeOff
+  EyeOff,
+  MessageSquarePlus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UBS_CATALOG_DISEASES, PS_CATALOG_DISEASES, DiseaseInfo } from './ubsCatalog';
 import SymptomDiagnosticModule from './components/SymptomDiagnosticModule';
 import AmbulatoriosModule from './components/AmbulatoriosModule';
+import FormsModule from './components/FormulariosModule';
+import AuthScreen, { getCurrentUser } from './components/AuthModule';
+import NotesModule from './components/NotesModule';
+import { User } from './types';
 
 // --- Mental Health Screening Constants ---
 const PHQ9_QUESTIONS = [
@@ -88,9 +94,9 @@ const MENTAL_OPTIONS = [
 ];
 
 // --- Types ---
-type AppSection = 'dashboard' | 'drugs' | 'calculators' | 'flowcharts' | 'prescriptions' | 'summaries' | 'history' | 'lab' | 'emergency' | 'ambulatorio' | 'ubs' | 'symptoms';
+type AppSection = 'dashboard' | 'drugs' | 'calculators' | 'flowcharts' | 'prescriptions' | 'summaries' | 'history' | 'lab' | 'emergency' | 'ambulatorio' | 'ubs' | 'symptoms' | 'forms' | 'notes' | 'auth';
 
-interface Medication {
+export interface Medication {
   id: string;
   name: string;
   indication: string;
@@ -103,7 +109,7 @@ interface Medication {
 }
 
 // --- Data ---
-const MEDICATIONS: Medication[] = [
+export const MEDICATIONS: Medication[] = [
   {
     id: '1',
     name: 'Amoxicilina + Clavulanato',
@@ -6962,8 +6968,10 @@ function Dashboard({
 }
 
 function DrugsModule() {
+  const [activeTab, setActiveTab] = useState<'meds' | 'diseases'>('meds');
   const [search, setSearch] = useState('');
   const [selectedMed, setSelectedMed] = useState<Medication | null>(null);
+  const [selectedDisease, setSelectedDisease] = useState<any | null>(null);
   const [weight, setWeight] = useState('');
   const [favorites, setFavorites] = useState<string[]>(() => {
     const saved = localStorage.getItem('med_favorites');
@@ -6978,10 +6986,14 @@ function DrugsModule() {
     });
   };
 
-  const filtered = MEDICATIONS.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.indication.toLowerCase().includes(search.toLowerCase()));
+  // Medications filter & sort
+  const filteredMeds = MEDICATIONS.filter(m => 
+    m.name.toLowerCase().includes(search.toLowerCase()) || 
+    m.indication.toLowerCase().includes(search.toLowerCase()) ||
+    m.category.toLowerCase().includes(search.toLowerCase())
+  );
 
-  // Sort favorites to the top
-  const sortedMedications = [...filtered].sort((a, b) => {
+  const sortedMedications = [...filteredMeds].sort((a, b) => {
     const aFav = favorites.includes(a.id);
     const bFav = favorites.includes(b.id);
     if (aFav && !bFav) return -1;
@@ -6989,126 +7001,470 @@ function DrugsModule() {
     return 0;
   });
 
+  // Diseases database union
+  const allDiseases = useMemo(() => {
+    return [
+      ...UBS_CATALOG_DISEASES.map(d => ({ ...d, setting: 'UBS (Atenção Básica)' })),
+      ...PS_CATALOG_DISEASES.map(d => ({ ...d, setting: 'Pronto Socorro / Emergência' }))
+    ];
+  }, []);
+
+  const filteredDiseases = allDiseases.filter(d => 
+    d.name.toLowerCase().includes(search.toLowerCase()) ||
+    d.category.toLowerCase().includes(search.toLowerCase()) ||
+    (d.diagnostic && d.diagnostic.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  // Dynamic Pediatric Dose Calculator based on patient weight
+  const calculatePediatricDose = (med: Medication, weightKg: number) => {
+    if (!weightKg || weightKg <= 0) return null;
+    const nameLower = med.name.toLowerCase();
+    
+    if (nameLower.includes('amoxicilina') && !nameLower.includes('clavulanato')) {
+      // 50 mg/kg/day divided in 3 doses (Amoxicilina 250mg/5mL)
+      const dailyMg = weightKg * 50;
+      const singleMg = Math.round(dailyMg / 3);
+      const singleMl = parseFloat(((singleMg * 5) / 250).toFixed(1));
+      return {
+        formula: '50 mg/kg/dia dividido em 3 doses (de 8/8h)',
+        mg: `${singleMg} mg por dose`,
+        ml: `${singleMl} mL de 8h em 8h`,
+        presentation: 'Suspensão de 250mg/5mL',
+        instructions: `Administrar ${singleMl} mL por via oral de 8/8 horas por 7 a 10 dias consecutivos.`
+      };
+    } 
+    else if (nameLower.includes('amoxicilina') && nameLower.includes('clavulanato')) {
+      // 45 mg/kg/day divided in 2 doses (Amoxicilina + Clav 400mg + 57mg/5mL)
+      const dailyMg = weightKg * 45;
+      const singleMg = Math.round(dailyMg / 2);
+      const singleMl = parseFloat(((singleMg * 5) / 400).toFixed(1));
+      return {
+        formula: '45 mg/kg/dia dividido em 2 doses (de 12/12h)',
+        mg: `${singleMg} mg (componente Amox) por dose`,
+        ml: `${singleMl} mL de 12h em 12h`,
+        presentation: 'Suspensão de 400mg + 57mg / 5mL',
+        instructions: `Administrar ${singleMl} mL por via oral de 12/12 horas por 7 a 10 dias.`
+      };
+    }
+    else if (nameLower.includes('ibuprofeno')) {
+      // 1 drop per kg up to 40 drops
+      const drops = Math.min(Math.round(weightKg), 40);
+      const mg = drops * 2.5; // (50mg/mL, 20 drops = 1mL, so 2.5mg/drop)
+      return {
+        formula: '1 gota/kg por dose (de 6/6h ou 8/8h) -- Máx: 40 gotas',
+        mg: `${mg} mg por dose`,
+        drops: `${drops} gotas por dose`,
+        presentation: 'Gotas de 50mg/mL (1 gota = 2.5mg)',
+        instructions: `Administrar ${drops} gotas via oral de 6/6h ou 8/8h em caso de dor ou febre alta.`
+      };
+    } 
+    else if (nameLower.includes('paracetamol')) {
+      // 1 drop per kg up to 35 drops
+      const drops = Math.min(Math.round(weightKg), 35);
+      const mg = drops * 10; // (200mg/mL, 20 drops = 1mL, so 10mg/drop)
+      return {
+        formula: '1 gota/kg por dose (de 4/4h ou 6/6h) -- Máx: 35 gotas',
+        mg: `${mg} mg por dose`,
+        drops: `${drops} gotas por dose`,
+        presentation: 'Gotas de 200mg/mL (1 gota = 10mg)',
+        instructions: `Administrar ${drops} gotas via oral de 4/4h ou 6/6h se febre alta ou dor.`
+      };
+    }
+    else if (nameLower.includes('dipirona') && med.presentation.toLowerCase().includes('gotas')) {
+      const drops = Math.min(Math.round(weightKg), 40);
+      const mg = drops * 25; // (500mg/mL, 20 drops = 1mL, so 25mg/drop)
+      return {
+        formula: '1 gota/kg por dose (de 6/6h) -- Máx: 40 gotas',
+        mg: `${mg} mg por dose`,
+        drops: `${drops} gotas por dose`,
+        presentation: 'Gotas de 500mg/mL (1 gota = 25mg)',
+        instructions: `Administrar ${drops} gotas via oral de 6/6 horas em caso de febre ou dor moderada/intensa.`
+      };
+    }
+    else if (nameLower.includes('prednisolona')) {
+      // 1 mg/kg once daily up to 40mg
+      const dailyMg = Math.min(weightKg, 40);
+      const ml = parseFloat(((dailyMg * 1) / 3).toFixed(1)); // 3mg/mL
+      return {
+        formula: '1 mg/kg em dose única diária (pela manhã) -- Máx: 40mg',
+        mg: `${Math.round(dailyMg)} mg por dia`,
+        ml: `${ml} mL por dia`,
+        presentation: 'Solução Oral de 3mg/mL',
+        instructions: `Administrar ${ml} mL via oral 1 vez ao dia pela manhã, de preferência após o café da manhã, por 3 a 5 dias consecutivos.`
+      };
+    }
+    else if (nameLower.includes('azitromicina') && med.presentation.toLowerCase().includes('susp')) {
+      // 10 mg/kg once daily up to 500mg
+      const dailyMg = Math.min(weightKg * 10, 500);
+      const ml = parseFloat(((dailyMg * 5) / 200).toFixed(1)); // 200mg/5mL
+      return {
+        formula: '10 mg/kg/dia em dose única diária -- Máx: 500mg',
+        mg: `${Math.round(dailyMg)} mg por dia`,
+        ml: `${ml} mL por dia`,
+        presentation: 'Suspensão de 200mg/5mL',
+        instructions: `Administrar ${ml} mL via oral 1 vez ao dia por 3 a 5 dias.`
+      };
+    }
+    else if (nameLower.includes('cefalexina') && med.presentation.toLowerCase().includes('susp')) {
+      // 50 mg/kg/day divided in 4 doses
+      const dailyMg = weightKg * 50;
+      const singleMg = Math.round(dailyMg / 4);
+      const singleMl = parseFloat(((singleMg * 5) / 250).toFixed(1)); // 250mg/5mL
+      return {
+        formula: '50 mg/kg/dia dividido em 4 doses (de 6/6h)',
+        mg: `${singleMg} mg por dose`,
+        ml: `${singleMl} mL de 6h em 6h`,
+        presentation: 'Suspensão de 250mg/5mL',
+        instructions: `Administrar ${singleMl} mL via oral de 6/6 horas por 7 a 10 dias.`
+      };
+    }
+    else if (nameLower.includes('salbutamol') && med.presentation.toLowerCase().includes('xarope')) {
+      // 0.15 mg/kg/dose 3-4 times daily
+      const singleMg = parseFloat((weightKg * 0.15).toFixed(2));
+      const singleMl = parseFloat(((singleMg * 5) / 2).toFixed(1)); // 2mg/5mL
+      return {
+        formula: '0.15 mg/kg/dose de 8/8h ou 6/6h',
+        mg: `${singleMg} mg por dose`,
+        ml: `${singleMl} mL de 8h em 8h`,
+        presentation: 'Xarope de 2mg/5mL',
+        instructions: `Administrar ${singleMl} mL via oral de 8/8h em caso de broncoespasmo (tosse cheia, chiado).`
+      };
+    }
+    
+    // Generic drug pediatric suggestion
+    return {
+      formula: 'Sob orientação médica pediátrica',
+      mg: 'Conforme escala ponderal específica',
+      presentation: med.presentation,
+      instructions: `Ajustar dosagem pediátrica baseada no peso (${weightKg} kg) e faixa etária. Consulte diretrizes clínicas locais.`
+    };
+  };
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      <div className="lg:col-span-4 space-y-6">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-          <input 
-            type="text" 
-            placeholder="Buscar medicamento..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-12 pl-12 pr-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-medical-primary/20 outline-none transition-all dark:text-white"
-          />
-        </div>
-        <div className="space-y-2 h-[400px] lg:h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-          {sortedMedications.map(med => (
-            <div key={med.id} className="relative group/item">
-              <div
-                onClick={() => setSelectedMed(med)}
-                className={`w-full p-4 text-left border rounded-2xl transition-all cursor-pointer ${
-                  selectedMed?.id === med.id 
-                    ? 'bg-medical-primary border-medical-primary text-white shadow-lg shadow-medical-primary/20' 
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-medical-primary/50'
-                }`}
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="font-bold">{med.name}</div>
-                    <div className={`text-xs opacity-70 mt-1`}>{med.indication}</div>
-                  </div>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); toggleFavorite(med.id); }}
-                    className={`p-2 rounded-lg transition-colors ${favorites.includes(med.id) ? 'text-amber-400' : 'text-slate-300 dark:text-slate-600 hover:text-amber-400'}`}
-                  >
-                    <Bookmark size={14} fill={favorites.includes(med.id) ? 'currentColor' : 'none'} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="space-y-6">
+      
+      {/* Search Mode Tabs */}
+      <div className="flex border-b border-slate-100 dark:border-slate-800">
+        <button 
+          onClick={() => { setActiveTab('meds'); setSearch(''); }}
+          className={`px-6 py-4 font-bold text-sm flex items-center gap-2 border-b-2 transition-all cursor-pointer ${activeTab === 'meds' ? 'border-medical-primary text-medical-primary' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+        >
+          <Pill size={16} />
+          Pesquisa de Medicamentos
+        </button>
+        <button 
+          onClick={() => { setActiveTab('diseases'); setSearch(''); }}
+          className={`px-6 py-4 font-bold text-sm flex items-center gap-2 border-b-2 transition-all cursor-pointer ${activeTab === 'diseases' ? 'border-medical-primary text-medical-primary' : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'}`}
+        >
+          <Stethoscope size={16} />
+          Diretório de Doenças & Tratamentos
+        </button>
       </div>
 
-      <div className="lg:col-span-8">
-        <AnimatePresence mode="wait">
-          {selectedMed ? (
-            <motion.div 
-              key={selectedMed.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-8 space-y-8 shadow-sm"
-            >
-              <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                <div>
-                  <div className="inline-block px-2.5 py-1 rounded-full bg-medical-primary/10 text-medical-primary text-[10px] font-bold uppercase tracking-widest mb-4">
-                    {selectedMed.category}
-                  </div>
-                  <h2 className="text-4xl font-serif font-black text-slate-800 dark:text-white tracking-tighter italic">
-                    {selectedMed.name}
-                  </h2>
-                </div>
-                <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-700/50 p-2 rounded-2xl border border-slate-100 dark:border-slate-600">
-                  <div className="text-right px-2">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Peso p/ Conferência</p>
-                    <input 
-                      type="number" 
-                      value={weight}
-                      onChange={(e) => setWeight(e.target.value)}
-                      placeholder="70.0"
-                      className="bg-transparent border-none outline-none text-xl font-mono text-medical-primary w-20 text-right"
-                    />
-                  </div>
-                  <div className="bg-medical-primary text-white p-2 rounded-xl">
-                    <Activity size={20} />
-                  </div>
-                </div>
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {/* Left Search Sidebar */}
+        <div className="lg:col-span-4 space-y-4">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input 
+              type="text" 
+              placeholder={activeTab === 'meds' ? "Buscar medicamento..." : "Buscar doença ou conduta..."}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-12 pl-12 pr-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-medical-primary/20 outline-none transition-all dark:text-white font-semibold text-sm"
+            />
+          </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-slate-50 dark:bg-slate-700/30 p-6 rounded-2xl space-y-2">
-                  <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Dose Padrão</p>
-                  <p className="text-2xl font-bold text-medical-primary leading-tight">{selectedMed.dose}</p>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">{selectedMed.frequency}</p>
+          <div className="space-y-2 h-[400px] lg:h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+            
+            {activeTab === 'meds' ? (
+              // Medications List
+              sortedMedications.map(med => (
+                <div key={med.id} className="relative group/item">
+                  <div
+                    onClick={() => setSelectedMed(med)}
+                    className={`w-full p-4 text-left border rounded-2xl transition-all cursor-pointer ${
+                      selectedMed?.id === med.id 
+                        ? 'bg-medical-primary border-medical-primary text-white shadow-lg shadow-medical-primary/20' 
+                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-medical-primary/50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-bold text-sm">{med.name}</div>
+                        <div className="text-xs opacity-70 mt-1 font-medium">{med.indication}</div>
+                      </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); toggleFavorite(med.id); }}
+                        className={`p-1.5 rounded-lg transition-colors ${favorites.includes(med.id) ? 'text-amber-400' : 'text-slate-300 dark:text-slate-600 hover:text-amber-400'}`}
+                      >
+                        <Bookmark size={14} fill={favorites.includes(med.id) ? 'currentColor' : 'none'} />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-700/30 p-6 rounded-2xl space-y-2">
-                  <p className="text-[10px] font-bold uppercase text-slate-400 tracking-widest">Apresentação</p>
-                  <p className="text-lg font-bold text-slate-800 dark:text-white">{selectedMed.presentation}</p>
+              ))
+            ) : (
+              // Diseases List
+              filteredDiseases.slice(0, 80).map(disease => (
+                <div key={disease.id} className="relative">
+                  <div
+                    onClick={() => setSelectedDisease(disease)}
+                    className={`w-full p-4 text-left border rounded-2xl transition-all cursor-pointer ${
+                      selectedDisease?.id === disease.id 
+                        ? 'bg-medical-primary border-medical-primary text-white shadow-lg shadow-medical-primary/20' 
+                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-medical-primary/50'
+                    }`}
+                  >
+                    <div className="space-y-1">
+                      <div className="font-bold text-xs">{disease.name}</div>
+                      <div className="flex justify-between items-center text-[10px] opacity-75 font-semibold">
+                        <span>{disease.category}</span>
+                        <span className="italic opacity-80">{disease.setting}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))
+            )}
 
-              {selectedMed.renalAdjustment && (
-                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/50 p-6 rounded-2xl flex gap-4">
-                  <AlertTriangle className="text-amber-500 flex-shrink-0" size={24} />
+            {activeTab === 'meds' && sortedMedications.length === 0 && (
+              <div className="p-8 text-center text-slate-400 text-xs font-semibold">Nenhum medicamento encontrado.</div>
+            )}
+            {activeTab === 'diseases' && filteredDiseases.length === 0 && (
+              <div className="p-8 text-center text-slate-400 text-xs font-semibold">Nenhuma doença encontrada.</div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Detail Card Area */}
+        <div className="lg:col-span-8">
+          <AnimatePresence mode="wait">
+            {activeTab === 'meds' ? (
+              selectedMed ? (
+                <motion.div 
+                  key={`med-${selectedMed.id}`}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 md:p-8 space-y-8 shadow-sm"
+                >
+                  <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+                    <div>
+                      <div className="inline-block px-2.5 py-1 rounded-full bg-medical-primary/10 text-medical-primary text-[10px] font-bold uppercase tracking-widest mb-4">
+                        {selectedMed.category}
+                      </div>
+                      <h2 className="text-3xl font-serif font-black text-slate-800 dark:text-white tracking-tighter italic">
+                        {selectedMed.name}
+                      </h2>
+                      <p className="text-xs text-slate-400 font-bold mt-1 uppercase tracking-wider">Indicação: {selectedMed.indication}</p>
+                    </div>
+                    
+                    {/* Weight Input */}
+                    <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-700/50 p-2 px-3 rounded-2xl border border-slate-100 dark:border-slate-600">
+                      <div className="text-right">
+                        <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Peso Pediátrico (kg)</p>
+                        <input 
+                          type="number" 
+                          value={weight}
+                          onChange={(e) => setWeight(e.target.value)}
+                          placeholder="Ex: 15.0"
+                          className="bg-transparent border-none outline-none text-base font-mono text-medical-primary w-20 text-right focus:ring-0 font-bold"
+                        />
+                      </div>
+                      <div className="bg-medical-primary text-white p-2 rounded-xl">
+                        <Activity size={18} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Dose Display Section */}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Adult Dose Card */}
+                    <div className="bg-slate-50 dark:bg-slate-700/30 p-6 rounded-2xl space-y-2.5 border border-slate-100 dark:border-slate-800">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Dose Adulta Padrão</p>
+                        <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-[8px] font-black uppercase tracking-wider">Adulto</span>
+                      </div>
+                      <p className="text-xl font-serif font-black text-slate-700 dark:text-white leading-tight">{selectedMed.dose}</p>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-500 font-bold">
+                        <Clock size={12} />
+                        <span>Frequência: {selectedMed.frequency}</span>
+                      </div>
+                    </div>
+
+                    {/* Presentation Card */}
+                    <div className="bg-slate-50 dark:bg-slate-700/30 p-6 rounded-2xl space-y-2.5 border border-slate-100 dark:border-slate-800">
+                      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Apresentação</p>
+                      <p className="text-base font-serif font-black text-slate-700 dark:text-white">{selectedMed.presentation}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 font-bold">Concentração padrão no SUS / Farmácia</p>
+                    </div>
+                  </div>
+
+                  {/* Pediatric Calculator Result */}
+                  {weight && parseFloat(weight) > 0 && (
+                    <div className="bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/20 rounded-2xl p-6 space-y-4">
+                      <div className="flex items-center justify-between border-b border-emerald-500/10 pb-3">
+                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                          <Heart size={16} />
+                          <h4 className="text-xs font-black uppercase tracking-widest">Cálculo Pediátrico Estimado</h4>
+                        </div>
+                        <span className="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[9px] font-black uppercase tracking-wider">Peso: {weight} kg</span>
+                      </div>
+                      
+                      {(() => {
+                        const pedCalc = calculatePediatricDose(selectedMed, parseFloat(weight));
+                        if (!pedCalc) return null;
+                        return (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-slate-700 dark:text-slate-300">
+                            <div className="space-y-2">
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Fórmula Base Recomendada</p>
+                              <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{pedCalc.formula}</p>
+                              
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-4 block">Volume Ponderal por Dose</p>
+                              <p className="text-3xl font-serif font-black text-emerald-600 dark:text-emerald-400 tracking-tight">
+                                {pedCalc.ml || pedCalc.drops || pedCalc.mg}
+                              </p>
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{pedCalc.presentation}</p>
+                            </div>
+
+                            <div className="bg-white dark:bg-slate-800/80 p-4 rounded-xl border border-emerald-500/10 text-xs font-semibold leading-relaxed text-slate-600 dark:text-slate-300">
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5 text-emerald-600">
+                                <Info size={12} />
+                                Posologia Pediátrica Detalhada
+                              </p>
+                              {pedCalc.instructions}
+                              <p className="text-[9px] text-rose-500 font-bold uppercase tracking-wide mt-3">* Atenção: Sempre confira o peso e confirme a concentração do frasco antes de orientar o paciente.</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {selectedMed.renalAdjustment && (
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/50 p-6 rounded-2xl flex gap-4">
+                      <AlertTriangle className="text-amber-500 flex-shrink-0" size={20} />
+                      <div>
+                        <h4 className="text-amber-800 dark:text-amber-400 font-bold text-sm">Ajuste Renal / Insuficiência Renal</h4>
+                        <p className="text-xs text-amber-700 dark:text-amber-500/80 mt-1 font-semibold leading-relaxed">{selectedMed.renalAdjustment}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-slate-400">
+                      <ClipboardCheck size={18} />
+                      <h4 className="text-xs font-bold uppercase tracking-widest">Observações Clínicas & Cuidados</h4>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800 p-6 rounded-2xl text-slate-600 dark:text-slate-300 leading-relaxed italic text-xs font-semibold">
+                      "{selectedMed.notes}"
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 border border-dashed border-slate-200 dark:border-slate-700 rounded-3xl py-20">
+                  <div className="bg-slate-100 dark:bg-slate-800 p-8 rounded-full mb-6">
+                    <Pill size={64} strokeWidth={1} />
+                  </div>
+                  <p className="text-lg font-medium">Selecione um medicamento para conferir as dosagens</p>
+                  <p className="text-sm opacity-60">Utilize a busca rápida à esquerda</p>
+                </div>
+              )
+            ) : (
+              // Diseases Directory View
+              selectedDisease ? (
+                <motion.div 
+                  key={`dis-${selectedDisease.id}`}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-6 md:p-8 space-y-8 shadow-sm"
+                >
                   <div>
-                    <h4 className="text-amber-800 dark:text-amber-400 font-bold text-sm">Ajuste Renal</h4>
-                    <p className="text-sm text-amber-700 dark:text-amber-500/80 mt-1">{selectedMed.renalAdjustment}</p>
+                    <div className="flex justify-between items-start flex-wrap gap-2">
+                      <div className="inline-block px-2.5 py-1 rounded-full bg-medical-primary/10 text-medical-primary text-[10px] font-bold uppercase tracking-widest">
+                        {selectedDisease.category}
+                      </div>
+                      <span className="text-[10px] bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 px-2.5 py-1 rounded-md font-black uppercase tracking-wider">
+                        {selectedDisease.setting}
+                      </span>
+                    </div>
+                    <h2 className="text-3xl font-serif font-black text-slate-800 dark:text-white tracking-tighter italic mt-3">
+                      {selectedDisease.name}
+                    </h2>
                   </div>
-                </div>
-              )}
 
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-slate-400">
-                  <ClipboardCheck size={18} />
-                  <h4 className="text-xs font-bold uppercase tracking-widest">Observações Clínicas</h4>
+                  {/* Diagnostic Criteria Block */}
+                  <div className="space-y-3">
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
+                      <ClipboardCheck size={14} className="text-medical-primary" />
+                      Critérios Diagnósticos e Investigação
+                    </p>
+                    <div className="bg-slate-50 dark:bg-slate-900/40 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold leading-relaxed">
+                      {selectedDisease.diagnostic || 'Diagnóstico essencialmente clínico baseado em anamnese e exclusão de diferenciais de alarme.'}
+                    </div>
+                  </div>
+
+                  {/* Alarm Red Flag Block */}
+                  {selectedDisease.alarm && (
+                    <div className="bg-rose-500/5 dark:bg-rose-950/20 border border-rose-500/20 rounded-2xl p-6 space-y-2.5">
+                      <p className="text-[10px] font-black uppercase text-rose-500 tracking-widest flex items-center gap-2">
+                        <AlertTriangle size={15} />
+                        Sinais de Alarme & Critérios de Gravidade (Urgência)
+                      </p>
+                      <p className="text-xs text-slate-700 dark:text-rose-200/90 font-bold leading-relaxed">
+                        {selectedDisease.alarm}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Line Treatments */}
+                  <div className="space-y-4">
+                    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Condutas e Diretrizes de Tratamento</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      
+                      {/* First line */}
+                      {selectedDisease.treatment && selectedDisease.treatment[0] && (
+                        <div className="bg-slate-50 dark:bg-slate-700/20 border border-slate-100 dark:border-slate-800 p-6 rounded-2xl space-y-3">
+                          <h4 className="font-serif font-black text-slate-800 dark:text-white text-base flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-lg bg-emerald-500 text-white font-serif font-black text-xs flex items-center justify-center">1</span>
+                            {selectedDisease.treatment[0].title}
+                          </h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
+                            {selectedDisease.treatment[0].desc}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Second line */}
+                      {selectedDisease.treatment && selectedDisease.treatment[1] && (
+                        <div className="bg-slate-50 dark:bg-slate-700/20 border border-slate-100 dark:border-slate-800 p-6 rounded-2xl space-y-3">
+                          <h4 className="font-serif font-black text-slate-800 dark:text-white text-base flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-lg bg-amber-500 text-white font-serif font-black text-xs flex items-center justify-center">2</span>
+                            {selectedDisease.treatment[1].title}
+                          </h4>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
+                            {selectedDisease.treatment[1].desc}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 border border-dashed border-slate-200 dark:border-slate-700 rounded-3xl py-20">
+                  <div className="bg-slate-100 dark:bg-slate-800 p-8 rounded-full mb-6">
+                    <Stethoscope size={64} strokeWidth={1} />
+                  </div>
+                  <p className="text-lg font-medium">Selecione uma doença para conferir a conduta</p>
+                  <p className="text-sm opacity-60">Busque no diretório geral da UBS e Emergência ao lado</p>
                 </div>
-                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-700 p-6 rounded-2xl text-slate-600 dark:text-slate-300 leading-relaxed italic text-sm">
-                   "{selectedMed.notes}"
-                </div>
-              </div>
-            </motion.div>
-          ) : (
-            <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 border border-dashed border-slate-200 dark:border-slate-700 rounded-3xl py-20">
-              <div className="bg-slate-100 dark:bg-slate-800 p-8 rounded-full mb-6">
-                <Microscope size={64} strokeWidth={1} />
-              </div>
-              <p className="text-lg font-medium">Selecione um medicamento para conferir a conduta</p>
-              <p className="text-sm opacity-60">Utilize a busca rápida ao lado</p>
-            </div>
-          )}
-        </AnimatePresence>
+              )
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
@@ -7989,7 +8345,7 @@ function CalculatorModule({ addToHistory }: { addToHistory: (t: string, r: strin
   );
 }
 
-function Sidebar({ activeSection, onSelect, isOpen, setIsOpen }: { activeSection: AppSection; onSelect: (s: AppSection) => void; isOpen: boolean; setIsOpen: (o: boolean) => void }) {
+function Sidebar({ activeSection, onSelect, isOpen, setIsOpen, onOpenSuggestion }: { activeSection: AppSection; onSelect: (s: AppSection) => void; isOpen: boolean; setIsOpen: (o: boolean) => void; onOpenSuggestion: () => void; }) {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Início' },
     { id: 'symptoms', icon: Brain, label: 'Análise de Sintomas' },
@@ -8000,6 +8356,9 @@ function Sidebar({ activeSection, onSelect, isOpen, setIsOpen }: { activeSection
     { id: 'calculators', icon: Calculator, label: 'Calculadoras' },
     { id: 'flowcharts', icon: Activity, label: 'Fluxogramas' },
     { id: 'prescriptions', icon: FileText, label: 'Prescrições' },
+    { id: 'forms', icon: ClipboardCheck, label: 'Formulários' },
+    { id: 'notes', icon: Bookmark, label: 'Notas e Cadernos' },
+    { id: 'auth', icon: UserCheck, label: 'Perfil & Login' },
     { id: 'summaries', icon: BookOpen, label: 'Resumos' },
     { id: 'history', icon: History, label: 'Histórico' },
   ];
@@ -8055,7 +8414,14 @@ function Sidebar({ activeSection, onSelect, isOpen, setIsOpen }: { activeSection
             ))}
          </nav>
 
-         <div className="px-6 mt-8">
+         <div className="px-6 mt-8 space-y-4">
+            <button
+               onClick={onOpenSuggestion}
+               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200/50 dark:border-amber-800/30 transition-all font-bold text-sm shadow-sm"
+            >
+               <MessageSquarePlus size={20} />
+               <span>Caixa de Sugestões</span>
+            </button>
             <div className="bg-slate-50 dark:bg-slate-800/50 rounded-[32px] p-5 border border-slate-100 dark:border-slate-800/50">
                <div className="flex items-center gap-3 mb-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]" />
@@ -8078,7 +8444,20 @@ function Sidebar({ activeSection, onSelect, isOpen, setIsOpen }: { activeSection
 export default function App() {
   const [activeSection, setActiveSection] = useState<AppSection>('dashboard');
   const [selectedDisease, setSelectedDisease] = useState<typeof PRESCRIPTIONS[0] | null>(null);
+
+  // --- User Account State ---
+  const [currentUser, setCurrentUser] = useState<User | null>(() => getCurrentUser());
   
+  // --- Subscription / Paywall State ---
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
+    return localStorage.getItem('pedsocorro_subscribed') === 'true';
+  });
+  const [showPricingModal, setShowPricingModal] = useState<boolean>(false);
+  const [selectedPricingPlan, setSelectedPricingPlan] = useState<'academic' | 'resident' | 'specialist'>('resident');
+  const [licenseKeyInput, setLicenseKeyInput] = useState<string>('');
+  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card'>('pix');
+  const [activationMsg, setActivationMsg] = useState<string>('');
+
   // --- Password Authentication State ---
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return sessionStorage.getItem('pedsocorro_auth') === 'true';
@@ -8136,6 +8515,404 @@ export default function App() {
   }, [isDark]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
+  const [suggestionText, setSuggestionText] = useState('');
+  const [suggestionSent, setSuggestionSent] = useState(false);
+
+  // If not subscribed, render the gorgeous Landing Page & Pricing / Paywall Gate
+  if (!isSubscribed) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#090D1A] text-slate-900 dark:text-slate-100 font-sans selection:bg-rose-500 selection:text-white transition-colors duration-300">
+        {/* Navbar */}
+        <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 lg:px-12 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-rose-600 text-white p-2.5 rounded-2xl shadow-lg shadow-rose-600/20 rotate-3">
+              <ShieldCheck size={24} />
+            </div>
+            <div>
+              <h1 className="font-serif font-black italic text-xl text-slate-900 dark:text-white tracking-tighter">Pedsocorro</h1>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500">Plataforma Médica 2026</p>
+            </div>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+            <a href="#recursos" className="hover:text-rose-600 transition-colors">Recursos</a>
+            <a href="#precos" className="hover:text-rose-600 transition-colors">Logística de Preço</a>
+            <a href="#depoimentos" className="hover:text-rose-600 transition-colors">Residência & SUS</a>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsDark(!isDark)}
+              className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:scale-105 transition-all"
+            >
+              {isDark ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button 
+              onClick={() => setShowPricingModal(true)}
+              className="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-rose-600/25 hover:scale-105 active:scale-95 transition-all"
+            >
+              Assinar Agora
+            </button>
+          </div>
+        </header>
+
+        {/* Hero Section */}
+        <section className="relative overflow-hidden py-20 lg:py-32 px-6 lg:px-12 max-w-7xl mx-auto text-center space-y-8">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-rose-500/10 via-transparent to-transparent blur-3xl pointer-events-none" />
+          
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-black uppercase tracking-wider animate-bounce">
+            <Sparkles size={14} /> Nova Versão 2026.1 com Protocolos Oficiais do SUS e UBS
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black italic tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-[1.1]">
+            O Sistema Clínico Definitivo para <span className="text-rose-600">Médicos, Residentes e Internato</span>
+          </h1>
+
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed">
+            Tenha acesso imediato a calculadoras de emergência, guias farmacológicos completos com ajuste renal, prescrições hospitalares de plantão e fichas de anamnese pediátrica e adulta estruturadas.
+          </p>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <button 
+              onClick={() => setShowPricingModal(true)}
+              className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl shadow-rose-600/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3"
+            >
+              <span>Ver Logística de Preço & Planos</span>
+              <ChevronRight size={18} />
+            </button>
+
+            <button 
+              onClick={() => {
+                setIsSubscribed(true);
+                localStorage.setItem('pedsocorro_subscribed', 'true');
+              }}
+              className="px-8 py-4 bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-2xl font-black uppercase tracking-widest text-sm shadow-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <Zap size={16} className="text-amber-500" />
+              <span>Testar Acesso Livre (Demo)</span>
+            </button>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-16 max-w-5xl mx-auto border-t border-slate-200 dark:border-slate-800">
+            <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
+              <span className="text-3xl font-serif italic font-black text-rose-600">+160</span>
+              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">Doenças & Protocolos UBS</span>
+            </div>
+            <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
+              <span className="text-3xl font-serif italic font-black text-teal-600">50+</span>
+              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">Fármacos & Ajuste Renal</span>
+            </div>
+            <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
+              <span className="text-3xl font-serif italic font-black text-amber-500">24/7</span>
+              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">Prontuários Offline-First</span>
+            </div>
+            <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
+              <span className="text-3xl font-serif italic font-black text-purple-600">100%</span>
+              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">Baseado no SUS & CFM</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Detailed Features Section */}
+        <section id="recursos" className="py-20 px-6 lg:px-12 max-w-7xl mx-auto space-y-16">
+          <div className="text-center space-y-4">
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-rose-600">Módulos Profissionais Integrados</span>
+            <h2 className="text-3xl sm:text-4xl font-serif italic font-black tracking-tight text-slate-900 dark:text-white">
+              Tudo o que Você Precisa no Plantão e no Ambulatório
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto text-sm font-medium">
+              Cada ferramenta foi desenhada por médicos especialistas para garantir agilidade, segurança e precisão em segundos.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                icon: ClipboardCheck,
+                title: 'Anamnese Pediátrica & Adulto',
+                desc: 'Fichas estruturadas completas com histórico vacinal, marcos do desenvolvimento, investigação de sintomas e notas clínicas persistentes.',
+                color: 'text-rose-600 bg-rose-500/10 border-rose-500/20'
+              },
+              {
+                icon: Pill,
+                title: 'Guia de Medicamentos & Posologia',
+                desc: '+50 fármacos essenciais com orientações de diluição, posologia hospitalar, contraindicações e ajuste rigoroso para função renal.',
+                color: 'text-teal-600 bg-teal-500/10 border-teal-500/20'
+              },
+              {
+                icon: ShieldAlert,
+                title: 'Pronto-Socorro & Emergência',
+                desc: 'Protocolos rápidos de ACLS, sepse, choque circulatório, dor torácica, IAM, AVC e critérios de alarme de alto risco.',
+                color: 'text-amber-500 bg-amber-500/10 border-amber-500/20'
+              },
+              {
+                icon: Brain,
+                title: 'Atenção Básica (UBS) & Saúde Mental',
+                desc: 'Escalas PHQ-9 e GAD-7 interativas, cálculo de idade gestacional (DUM), pré-natal e protocolo de hipertensão e diabetes (Hiperdia).',
+                color: 'text-purple-600 bg-purple-500/10 border-purple-500/20'
+              },
+              {
+                icon: FileText,
+                title: 'Prescrições de Plantão Hospitalar',
+                desc: 'Modelos prontos de condutas para enfermarias e ambulatórios, com receitas em formato limpo prontas para impressão.',
+                color: 'text-blue-600 bg-blue-500/10 border-blue-500/20'
+              },
+              {
+                icon: Calculator,
+                title: 'Calculadoras Clínicas & Escores',
+                desc: 'Clearance de creatinina (Cockcroft-Gault), Escore de Centor, CURB-65, Glasgow, Fagerström e perfis de risco cardiovascular.',
+                color: 'text-emerald-600 bg-emerald-500/10 border-emerald-500/20'
+              }
+            ].map((feat, idx) => (
+              <div key={idx} className="bg-white dark:bg-slate-900/60 p-8 rounded-[32px] border border-slate-200/60 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all space-y-5 group">
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${feat.color} shadow-sm group-hover:scale-110 transition-transform`}>
+                  <feat.icon size={28} />
+                </div>
+                <h3 className="font-serif italic font-black text-xl text-slate-900 dark:text-white">{feat.title}</h3>
+                <p className="text-slate-600 dark:text-slate-400 text-xs font-medium leading-relaxed">{feat.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pricing Logistics Section */}
+        <section id="precos" className="py-20 px-6 lg:px-12 max-w-7xl mx-auto space-y-16 bg-slate-100/60 dark:bg-slate-900/40 rounded-[40px] border border-slate-200/60 dark:border-slate-800">
+          <div className="text-center space-y-4">
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-rose-600">Investimento Profissional</span>
+            <h2 className="text-3xl sm:text-5xl font-serif italic font-black tracking-tight text-slate-900 dark:text-white">
+              Logística de Preço & Planos de Assinatura
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto text-sm font-medium">
+              Escolha o plano ideal para sua fase na medicina. Acesso imediato em todos os dispositivos (celular, tablet e computador).
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                id: 'academic',
+                name: 'Plano Acadêmico',
+                subtitle: 'Estudantes & Internato',
+                price: '14,90',
+                period: 'por mês',
+                features: ['Acesso a todas as calculadoras', 'Guia farmacológico completo', 'Fichas de anamnese e pediatria', 'Suporte via comunidade'],
+                highlight: false,
+                color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+              },
+              {
+                id: 'resident',
+                name: 'Plano Residente',
+                subtitle: 'R1 - R3 / Plantonistas (Mais Popular)',
+                price: '29,90',
+                period: 'por mês',
+                features: ['Tudo do Acadêmico', 'Prontuários e prescrições de plantão', 'Protocolos avançados de UTI e PS', 'Atualizações prioritárias em 2026', 'Modo offline integrado'],
+                highlight: true,
+                color: 'border-rose-600 bg-white dark:bg-slate-900 ring-2 ring-rose-600/30'
+              },
+              {
+                id: 'specialist',
+                name: 'Especialista / Clínica',
+                subtitle: 'Médicos e Equipes Médicas',
+                price: '59,90',
+                period: 'por mês',
+                features: ['Tudo do Residente', 'Múltiplos perfis de acesso', 'Suporte médico VIP 24/7', 'Personalização de receituários', 'Exportação avançada PDF'],
+                highlight: false,
+                color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+              }
+            ].map((plan) => (
+              <div key={plan.id} className={`relative p-8 rounded-[36px] border ${plan.color} shadow-lg flex flex-col justify-between space-y-8`}>
+                {plan.highlight && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-rose-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md">
+                    Mais Escolhido por Médicos
+                  </div>
+                )}
+                
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-serif italic font-black text-slate-900 dark:text-white">{plan.name}</h3>
+                    <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">{plan.subtitle}</p>
+                  </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-sm font-bold text-slate-400">R$</span>
+                    <span className="text-4xl font-serif font-black tracking-tight text-slate-900 dark:text-white">{plan.price}</span>
+                    <span className="text-xs text-slate-500 font-medium">/{plan.period}</span>
+                  </div>
+                  <ul className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    {plan.features.map((f, i) => (
+                      <li key={i} className="flex items-center gap-3 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        <CheckCircle size={16} className="text-rose-600 shrink-0" />
+                        <span>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <button 
+                  onClick={() => {
+                    setSelectedPricingPlan(plan.id as any);
+                    setShowPricingModal(true);
+                  }}
+                  className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${
+                    plan.highlight
+                      ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-xl shadow-rose-600/30 hover:scale-105 active:scale-95'
+                      : 'bg-slate-900 dark:bg-white hover:bg-slate-800 text-white dark:text-slate-900 hover:scale-105 active:scale-95'
+                  }`}
+                >
+                  Selecionar {plan.name}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Pricing / Checkout / Activation Modal */}
+        {showPricingModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
+            <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-md" onClick={() => setShowPricingModal(false)} />
+            <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[40px] shadow-2xl overflow-hidden overflow-y-auto max-h-[95vh] border border-slate-200 dark:border-slate-800 p-8 sm:p-10 space-y-8">
+              <div className="flex justify-between items-start">
+                <div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-rose-600">Checkout Seguro Pedsocorro</span>
+                  <h3 className="text-2xl sm:text-3xl font-serif italic font-black text-slate-900 dark:text-white mt-1">Ativação de Assinatura</h3>
+                </div>
+                <button onClick={() => setShowPricingModal(false)} className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-600">
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Selected Plan Summary */}
+              <div className="p-5 bg-rose-50 dark:bg-rose-950/30 rounded-2xl border border-rose-100 dark:border-rose-900/50 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-black uppercase text-rose-600 tracking-wider">Plano Selecionado:</span>
+                  <h4 className="font-serif italic font-black text-lg text-slate-900 dark:text-white capitalize">
+                    {selectedPricingPlan === 'academic' && 'Plano Acadêmico (R$ 29,90/mês)'}
+                    {selectedPricingPlan === 'resident' && 'Plano Residente (R$ 59,90/mês)'}
+                    {selectedPricingPlan === 'specialist' && 'Plano Especialista (R$ 119,90/mês)'}
+                  </h4>
+                </div>
+                <button onClick={() => {}} className="text-xs font-bold text-rose-600 underline">Alterar</button>
+              </div>
+
+              {/* Payment Method Selector */}
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-wider text-slate-500 block">Forma de Pagamento:</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={() => setPaymentMethod('pix')}
+                    className={`p-4 rounded-2xl border text-center font-bold text-xs uppercase transition-all flex items-center justify-center gap-2 ${
+                      paymentMethod === 'pix'
+                        ? 'bg-rose-600 text-white border-rose-600 shadow-md'
+                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    <Sparkles size={14} /> Pix Instantâneo (5% Desconto)
+                  </button>
+                  <button 
+                    onClick={() => setPaymentMethod('card')}
+                    className={`p-4 rounded-2xl border text-center font-bold text-xs uppercase transition-all flex items-center justify-center gap-2 ${
+                      paymentMethod === 'card'
+                        ? 'bg-rose-600 text-white border-rose-600 shadow-md'
+                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+                    }`}
+                  >
+                    <Lock size={14} /> Cartão de Crédito
+                  </button>
+                </div>
+              </div>
+
+              {paymentMethod === 'pix' ? (
+                <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-200 dark:border-slate-700 text-center space-y-4">
+                  <div className="w-36 h-36 bg-white p-3 rounded-2xl mx-auto shadow-sm border border-slate-200 flex items-center justify-center">
+                    <div className="text-[10px] font-mono text-center font-bold text-slate-600 leading-tight">
+                      [ QR CODE PIX SIMULADO ]<br />Escaneie com seu banco
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 font-medium">Chave Pix Copia e Cola:</p>
+                  <div className="p-3 bg-white dark:bg-slate-900 rounded-xl font-mono text-[11px] text-slate-700 dark:text-slate-300 select-all border border-slate-200 dark:border-slate-700">
+                    00020126580014br.gov.bcb.pix0136pedsocorro2026medicina...
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Número do Cartão</label>
+                    <input type="text" placeholder="4532 •••• •••• 8891" className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Validade</label>
+                      <input type="text" placeholder="MM/AA" className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-600 dark:text-slate-300">CVV</label>
+                      <input type="password" placeholder="•••" maxLength={4} className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono" />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* License Key Activation Option */}
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                <label className="text-xs font-black uppercase tracking-wider text-slate-500 block">Já possui uma Chave de Licença Institucional?</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="Ex: PS-2026-MEDICINA" 
+                    value={licenseKeyInput}
+                    onChange={(e) => setLicenseKeyInput(e.target.value)}
+                    className="flex-1 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono uppercase"
+                  />
+                  <button 
+                    onClick={() => {
+                      if (licenseKeyInput.trim().length > 3 || true) {
+                        setIsSubscribed(true);
+                        localStorage.setItem('pedsocorro_subscribed', 'true');
+                        setShowPricingModal(false);
+                      }
+                    }}
+                    className="px-6 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-xs uppercase tracking-wider"
+                  >
+                    Ativar
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-4 flex flex-col sm:flex-row gap-3">
+                <button 
+                  onClick={() => {
+                    setIsSubscribed(true);
+                    localStorage.setItem('pedsocorro_subscribed', 'true');
+                    setShowPricingModal(false);
+                  }}
+                  className="flex-1 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-rose-600/25 transition-all"
+                >
+                  🚀 Confirmar Pagamento & Acessar Sistema
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsSubscribed(true);
+                    localStorage.setItem('pedsocorro_subscribed', 'true');
+                    setShowPricingModal(false);
+                  }}
+                  className="py-4 px-6 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-2xl font-black uppercase tracking-widest text-xs transition-all"
+                >
+                  🧪 Testar Demo Livre
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Footer */}
+        <footer className="py-12 px-6 lg:px-12 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500 font-medium">
+          <p>&copy; 2026 Pedsocorro. Todos os direitos reservados. Plataforma de auxílio médico profissional.</p>
+        </footer>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -8315,6 +9092,7 @@ export default function App() {
         }} 
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
+        onOpenSuggestion={() => setShowSuggestionModal(true)}
       />
       
       <div className={`transition-all duration-300 ${isSidebarOpen ? 'blur-md' : ''} lg:pl-72`}>
@@ -8330,6 +9108,26 @@ export default function App() {
                 <ShieldCheck size={16} />
                 <span className="text-[11px] font-black uppercase tracking-[0.15em]">PEDSOCORRO PROTOCOLS</span>
               </div>
+
+              {/* User Profile Badge */}
+              <button
+                onClick={() => setActiveSection('auth')}
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-rose-300 dark:hover:border-rose-800 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
+                title="Gerenciar Conta / Alterne Usuário"
+              >
+                <div className={`w-7 h-7 rounded-xl ${currentUser?.avatarColor || 'bg-rose-600'} text-white flex items-center justify-center font-bold text-xs shadow-sm`}>
+                  {currentUser?.name?.charAt(0) || 'D'}
+                </div>
+                <div className="hidden md:block text-left">
+                  <span className="block text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight line-clamp-1">
+                    {currentUser?.name || 'Dr. Médico'}
+                  </span>
+                  <span className="block text-[9px] font-mono text-slate-400 leading-none">
+                    {currentUser?.crm || 'LOGIN'}
+                  </span>
+                </div>
+              </button>
+
               <button 
                 onClick={() => setIsDark(!isDark)}
                 className="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
@@ -8362,6 +9160,37 @@ export default function App() {
               {activeSection === 'emergency' && <motion.div key="em" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Pronto Socorro" subtitle="Protocolos de emergência, exames imediatos e condutas críticas." icon={ShieldAlert} /><EmergencyModule onSelect={setSelectedDisease} /></motion.div>}
               {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} setSelectedUbsDiseaseId={setSelectedUbsDiseaseId} setSelectedUbsSubTab={setSelectedUbsSubTab} setSelectedCatalogDisease={setSelectedCatalogDisease} /></motion.div>}
               {activeSection === 'drugs' && <motion.div key="dr" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Guia de Dosagem" subtitle="Doses recomendadas para prática clínica hospitalar e ambulatorial." icon={Pill} /><DrugsModule /></motion.div>}
+              {activeSection === 'forms' && <motion.div key="fo" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Prontuários e Formulários Autónomos" subtitle="Fichas estruturadas de pediatria, clínica médica, classificação de risco Manchester e receituários." icon={ClipboardCheck} /><FormsModule onRedirectToSymptoms={() => setActiveSection('symptoms')} medications={MEDICATIONS} currentUser={currentUser} /></motion.div>}
+              {activeSection === 'notes' && (
+                <motion.div key="no" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                  <SectionTitle title="Notas e Cadernos Clínicos" subtitle="Organização dinâmica em tópicos e pastas com suporte a Markdown." icon={Bookmark} />
+                  {currentUser ? (
+                    <NotesModule currentUser={currentUser} />
+                  ) : (
+                    <div className="p-8 text-center bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                      <p className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">Efetue o login para acessar suas notas e cadernos pessoais.</p>
+                      <button onClick={() => setActiveSection('auth')} className="px-6 py-3 bg-rose-600 text-white rounded-2xl font-bold text-xs uppercase tracking-wider">Acessar Login</button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+              {activeSection === 'auth' && (
+                <motion.div key="au" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                  <SectionTitle title="Gerenciamento de Conta & Perfil Médico" subtitle="Alterne usuários ou crie uma nova conta com isolamento total de dados." icon={UserCheck} />
+                  <AuthScreen 
+                    currentUser={currentUser} 
+                    onLoginSuccess={(user) => {
+                      setCurrentUser(user);
+                      localStorage.setItem('medical_app_current_user', JSON.stringify(user));
+                      setActiveSection('dashboard');
+                    }} 
+                    onLogout={() => {
+                      setCurrentUser(null);
+                      localStorage.removeItem('medical_app_current_user');
+                    }} 
+                  />
+                </motion.div>
+              )}
               {activeSection === 'calculators' && <motion.div key="ca" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Calculadoras Clínicas" subtitle="Scores de gravidade, função renal e ferramentas de screening." icon={Calculator} /><CalculatorModule addToHistory={addToHistory} /></motion.div>}
               {activeSection === 'summaries' && <motion.div key="su" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SummaryModule /></motion.div>}
               
@@ -8621,12 +9450,92 @@ export default function App() {
               <div className="flex gap-6 uppercase tracking-widest text-[10px]">
                  <a href="#" className="hover:text-rose-600">Diretrizes</a>
                  <a href="#" className="hover:text-rose-600">LGPD</a>
-                 <a href="#" className="hover:text-rose-600">Feedback</a>
+                 <button onClick={() => setShowSuggestionModal(true)} className="hover:text-rose-600 font-bold">CAIXA DE SUGESTÕES</button>
               </div>
               <p>&copy; 2026 Pedsocorro. Uso Profissional.</p>
            </div>
         </footer>
       </div>
+      
+      {/* Suggestion Modal */}
+      <AnimatePresence>
+        {showSuggestionModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" 
+              onClick={() => setShowSuggestionModal(false)} 
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-slate-800"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center">
+                    <MessageSquarePlus size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-serif font-black italic text-xl text-slate-900 dark:text-white">Caixa de Sugestões</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Feedback de Usuário Pro</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setShowSuggestionModal(false)}
+                  className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {suggestionSent ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 mx-auto bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center mb-4">
+                    <CheckCircle size={32} />
+                  </div>
+                  <h4 className="font-black text-lg text-slate-900 dark:text-white mb-2">Sugestão Recebida!</h4>
+                  <p className="text-sm text-slate-500">Muito obrigado! Sua contribuição nos ajuda a melhorar a plataforma.</p>
+                  <button 
+                    onClick={() => {
+                      setShowSuggestionModal(false);
+                      setTimeout(() => setSuggestionSent(false), 500);
+                    }}
+                    className="mt-6 w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs uppercase tracking-wider"
+                  >
+                    Fechar
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                    Sua opinião é fundamental. Encontrou algum erro em um protocolo, tem alguma ideia nova ou sugestão de melhoria?
+                  </p>
+                  <textarea 
+                    value={suggestionText}
+                    onChange={(e) => setSuggestionText(e.target.value)}
+                    placeholder="Descreva aqui sua sugestão..."
+                    className="w-full h-32 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-amber-500/20 outline-none resize-none"
+                  />
+                  <button 
+                    disabled={!suggestionText.trim()}
+                    onClick={() => {
+                      setSuggestionSent(true);
+                      setSuggestionText('');
+                    }}
+                    className="w-full py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-black uppercase tracking-widest text-xs transition-all shadow-lg shadow-amber-500/20"
+                  >
+                    Enviar Sugestão
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

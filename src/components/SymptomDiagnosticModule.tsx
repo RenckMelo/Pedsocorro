@@ -210,6 +210,20 @@ const DISEASE_SYMPTOM_PROFILES: Record<string, DiseaseSymptomProfile> = {
       { finding: 'Pirose + Regurgitação ácida', metric: 'Especificidade', 'value': '89%', ref: 'American Journal of Gastroenterology' }
     ]
   },
+  faringolaringite_refluxo: {
+    diseaseId: 'faringolaringite_refluxo',
+    symptoms: { dor_garganta: 5, tosse: 4, azia_queimacao: 3 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Sintomas laríngeos persistentes (tosse seca, pigarro, dor ou irritação na garganta) associados a refluxo gastroesofágico indicam refluxo faringolaríngeo (manifestação extraesofágica da DRGE).',
+    nextStepsExams: 'Avaliação clínica por Laringoscopia Indireta ou Videolaringoscopia para visualizar sinais inflamatórios na laringe posterior (edema interaritenoideo, paquidermia).',
+    guideline: 'Consenso de Refluxo Faringolaríngeo da ABORL-CCF (2021)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'Exige exclusão de laringites irritativas por fumaça/tabaco e confirmação por videolaringoscopia antes de tratamento prolongado com dose dobrada de IBP, pois o refluxo faringolaríngeo requer tratamento mais longo (3 a 6 meses) e em doses mais elevadas do que a DRGE típica.',
+    evidenceMarkers: [
+      { finding: 'Laringite posterior na videolaringoscopia', metric: 'Especificidade', value: '88%', ref: 'ABORL-CCF Consenso 2021' }
+    ]
+  },
   hipo: {
     diseaseId: 'hipo',
     symptoms: { fadiga: 4, ganho_peso: 3, constipacao: 3, bocio_palpavel: 3, edema_mmii_bilateral: 2 },
@@ -1400,6 +1414,45 @@ export default function SymptomDiagnosticModule() {
         finalProbability -= 85;
         demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
           'Diferencial de Alta Precisão: Sinais de peritonite (abdômen em tábua / silêncio abdominal) excluem Gastroenterite (GECA).';
+      }
+
+      // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: REFLUXO FARINGOLARÍNGEO vs DRGE ---
+      if (profile.diseaseId === 'faringolaringite_refluxo' || profile.diseaseId.includes('laringite_refluxo')) {
+        const hasThroatSymptoms = selectedSymptoms['dor_garganta'] || selectedSymptoms['tosse'];
+        if (selectedSymptoms['azia_queimacao'] && !hasThroatSymptoms) {
+          finalProbability -= 85;
+          demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+            'Diferencial de Alta Precisão: Sintomas de refluxo/azia sem queixas laringofaríngeas típicas (como dor de garganta, pigarro ou tosse persistente) direcionam fortemente para refluxo digestivo clássico (DRGE), tornando Faringolaringite por Refluxo altamente improvável.';
+        }
+      }
+
+      if ((profile.diseaseId.includes('faringolaringite') || profile.diseaseId.includes('laringite') || profile.diseaseId.includes('faringite')) && !profile.diseaseId.includes('drge')) {
+        const hasThroatSymptoms = selectedSymptoms['dor_garganta'] || selectedSymptoms['tosse'];
+        if (!hasThroatSymptoms && Object.keys(selectedSymptoms).length > 0) {
+          finalProbability -= 80;
+          demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+            'Diferencial de Alta Precisão: Diagnósticos faringo-laríngeos requerem manifestações locais (dor de garganta ou tosse), sendo descartados ou penalizados na ausência destas.';
+        }
+      }
+
+      // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: PIELONEFRITE vs CISTITE ---
+      if (profile.diseaseId.includes('pielonefrite') || profile.diseaseId === 'pielonefrite_complicada') {
+        const hasSystemicRenal = selectedSymptoms['febre'] || selectedSymptoms['sinal_giordano'] || selectedSymptoms['nausea_vomito'];
+        if (selectedSymptoms['dor_urinar'] && !hasSystemicRenal) {
+          finalProbability -= 75;
+          demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+            'Diferencial de Alta Precisão: Disúria isolada sem febre, náuseas ou sinal de Giordano aponta para cistite simples (ITU baixa), afastando pielonefrite.';
+        }
+      }
+
+      // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: AVC vs CEFALEIA/TONTURA ---
+      if (profile.diseaseId === 'avc' || profile.diseaseId.includes('avc_')) {
+        const hasFocalDeficits = selectedSymptoms['deficit_motor'] || selectedSymptoms['desvio_rima'] || selectedSymptoms['disartria'] || selectedSymptoms['pupilas_anisocoricas'] || selectedSymptoms['sinal_babinski'];
+        if ((selectedSymptoms['cefaleia'] || selectedSymptoms['tontura']) && !hasFocalDeficits) {
+          finalProbability -= 80;
+          demographicExplanation = (demographicExplanation ? demographicExplanation + ' | ' : '') + 
+            'Diferencial de Alta Precisão: Cefaleia ou tontura isoladas sem déficits neurológicos focais agudos tornam AVC improvável (pesquisar enxaqueca ou labirintopatia).';
+        }
       }
 
       // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: CETOACIDOSE DIABÉTICA (CAD) ---

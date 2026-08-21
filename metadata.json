@@ -2,5 +2,5 @@
   "name": "Pedsocorro",
   "description": "Protocolos de emergência pediátrica e clínica, condutas de pronto socorro e atenção básica.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
