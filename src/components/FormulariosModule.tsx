@@ -141,175 +141,175 @@ export const ANAMNESE_SECTIONS_CATALOG: AnamneseCatalogItem[] = [
   // Categoria 1: Geral & Identificação
   {
     id: 'identificacao',
-    title: 'Identificação do Paciente',
+    title: 'ID',
     category: 'Geral & Identificação',
-    defaultText: 'Paciente [Nome], [Idade] anos, sexo [Masculino/Feminino], [Estado civil], [Profissão], natural e procedente de [Localidade].'
+    defaultText: 'Paciente [Nome], [Idade] anos, sexo [Masc/Fem], [Estado civil], [Profissão], natural e procedente de [Localidade].'
   },
   {
     id: 'qp',
-    title: 'Queixa Principal (QP)',
+    title: 'QP',
     category: 'Geral & Identificação',
     defaultText: 'Sem queixas ativas no momento / Avaliação clínica de rotina.'
   },
   {
-    id: 'hma',
-    title: 'História da Moléstia Atual (HMA)',
+    id: 'hda',
+    title: 'HDA',
     category: 'Geral & Identificação',
-    defaultText: 'Paciente assintomático(a), em bom estado geral, nega picos febris, dores, alteração de apetite ou disfunções fisiológicas recentes. Nega uso prévio de medicações para o quadro atual.'
+    defaultText: 'Paciente assintomático(a), LOTE, BEG, nega febre, dores, inapetência ou alterações fisiológicas recentes. Nega medicação prévia para o quadro.'
   },
 
   // Categoria 2: História & Antecedentes
   {
     id: 'antecedentes_pessoais',
-    title: 'Antecedentes Pessoais & Comorbidades',
+    title: 'AP',
     category: 'História & Antecedentes',
-    defaultText: 'Nega comorbidades crônicas conhecidas (HAS, DM, DLP, Asma/DPOC, IRC). Nega internações hospitalares ou cirurgias prévias.'
+    defaultText: 'Nega comorbidades crônicas (HAS, DM, DLP, Asma/DPOC, IRC). Nega cirurgias ou internações prévias.'
   },
   {
     id: 'medicamentos',
-    title: 'Medicamentos em Uso Contínuo',
+    title: 'MEDS',
     category: 'História & Antecedentes',
-    defaultText: 'Nega uso contínuo de medicações de prescrição ou automedicação habitual.'
+    defaultText: 'Nega uso contínuo de medicações de prescrição (MUC) ou automedicação habitual.'
   },
   {
     id: 'alergias',
-    title: 'Alergias Alimentares e Medicamentosas',
+    title: 'ALERGIAS',
     category: 'História & Antecedentes',
-    defaultText: 'Nega alergias medicamentosas, alimentares ou a substâncias de contato conhecidas (NKDA).'
+    defaultText: 'NKDA (Nega alergias medicamentosas conhecidas). Nega alergias alimentares ou atopia grave.'
   },
   {
     id: 'antecedentes_familiares',
-    title: 'Antecedentes Familiares',
+    title: 'AF',
     category: 'História & Antecedentes',
-    defaultText: 'Nega histórico familiar de neoplasias precoces, doenças cardiovasculares precoces ou doenças genéticas/hereditárias.'
+    defaultText: 'Nega histórico familiar de neoplasias precoces, DCV prematura ou doenças genético-hereditárias.'
   },
   {
     id: 'habitos',
-    title: 'Hábitos de Vida & História Social',
+    title: 'HÁBITOS',
     category: 'História & Antecedentes',
-    defaultText: 'Nega tabagismo, etilismo ou uso de substâncias ilícitas. Pratica atividade física e relata padrão de sono reparador.'
+    defaultText: 'Nega tabagismo, etilismo ou substâncias ilícitas. Pratica atividade física regular. Sono reparador.'
   },
 
   // Categoria 3: Especialidades (Pediatria & GO)
   {
     id: 'antecedentes_pediatricos',
-    title: 'Puericultura & Antecedentes Pediátricos',
+    title: 'PUERICULTURA',
     category: 'Especialidades (Pediatria & GO)',
-    defaultText: 'Pré-natal sem intercorrências (10 consultas). Parto vaginal a termo (39 sem), peso ao nascer: 3.200g, Apgar 9/10. Testes de triagem neonatal (pezinho, orelhinha, olhinho) normais. Aleitamento materno exclusivo até os 6 meses. Desenvolvimento neuropsicomotor adequado para a idade. Cartão de vacinas atualizado conforme o PNI.'
+    defaultText: 'Pré-natal sem intercorrências (10 consultas). Parto vaginal a termo (39 sem), PN: 3.200g, Apgar 9/10. Triagem neonatal (pezinho, orelhinha, olhinho) normal. AME até 6 meses. DNPM adequado para a idade. Vacinação em dia (PNI).'
   },
   {
     id: 'antecedentes_go',
-    title: 'Antecedentes Gineco-Obstétricos (GO)',
+    title: 'GO',
     category: 'Especialidades (Pediatria & GO)',
-    defaultText: 'Menarca aos 12 anos. Ciclos menstruais regulares (28/28 dias, fluxo normal, sem dismenorreia). DUM: [data]. G0 P0 A0. Coitarca aos 18 anos. Nega corrimentos patológicos ou sangramentos anormais. Preventivo (Papanicolau) e mamografia em dia.'
+    defaultText: 'Menarca aos 12 anos. Ciclos regulares (28/28 dias, fluxo normal). DUM: [data]. G0 P0 A0. Preventivo e mamografia em dia.'
   },
 
   // Categoria 4: Revisão de Sistemas (ISDA)
   {
     id: 'isda_geral',
-    title: 'ISDA - Sintomas Gerais',
+    title: 'ISDA - Geral',
     category: 'Revisão de Sistemas (ISDA)',
-    defaultText: 'Sintomas Gerais: Nega febre, astenia, perda ponderal não intencional, sudorese noturna ou calafrios.'
+    defaultText: 'Nega febre, astenia, perda ponderal não intencional, sudorese noturna ou calafrios.'
   },
   {
     id: 'isda_cardio',
-    title: 'ISDA - Sistema Cardiovascular',
+    title: 'ISDA - Cardio',
     category: 'Revisão de Sistemas (ISDA)',
-    defaultText: 'Sistema Cardiovascular: Nega precordialgia, opressão torácica, palpitações, dispneia aos esforços, ortopneia ou edema de membros inferiores.'
+    defaultText: 'Nega precordialgia, opressão torácica, palpitações, dispneia aos esforços, ortopneia ou edema de MMs.'
   },
   {
     id: 'isda_resp',
-    title: 'ISDA - Sistema Respiratório',
+    title: 'ISDA - Resp',
     category: 'Revisão de Sistemas (ISDA)',
-    defaultText: 'Sistema Respiratório: Nega tosse seca ou produtiva, sibilância, dispneia, dor torácica ventilatório-dependente ou hemoptise.'
+    defaultText: 'Nega tosse seca ou produtiva, sibilância, dispneia, dor torácica ventilatório-dependente ou hemoptise.'
   },
   {
     id: 'isda_gastro',
-    title: 'ISDA - Sistema Gastrintestinal',
+    title: 'ISDA - GI',
     category: 'Revisão de Sistemas (ISDA)',
-    defaultText: 'Sistema Gastrintestinal: Nega náuseas, vômitos, pirose, disfagia, odinofagia, dor abdominal, diarreia ou obstipação.'
+    defaultText: 'Nega náuseas, vômitos, pirose, disfagia, odinofagia, dor abdominal, diarreia ou obstipação.'
   },
   {
     id: 'isda_genito',
-    title: 'ISDA - Sistema Geniturinário',
+    title: 'ISDA - GU',
     category: 'Revisão de Sistemas (ISDA)',
-    defaultText: 'Sistema Geniturinário: Nega disúria, polaciúria, hematúria, nictúria, urgência miccional ou corrimentos urogenitais.'
+    defaultText: 'Nega disúria, polaciúria, hematúria, nictúria, urgência miccional ou corrimentos urogenitais.'
   },
   {
     id: 'isda_neuro',
-    title: 'ISDA - Sistema Neurológico & Psíquico',
+    title: 'ISDA - Neuro',
     category: 'Revisão de Sistemas (ISDA)',
-    defaultText: 'Sistema Neurológico: Nega cefaleia, tonturas, síncope, vertigem, tics, déficits motores ou sensitivos, alteração de humor ou insônia.'
+    defaultText: 'Nega cefaleia, tonturas, síncope, vertigem, déficits motores ou sensitivos, alteração de humor ou insônia.'
   },
   {
     id: 'isda_osteo',
-    title: 'ISDA - Sistema Osteoarticular',
+    title: 'ISDA - Loco',
     category: 'Revisão de Sistemas (ISDA)',
-    defaultText: 'Sistema Locomotor: Nega artralgias, mialgias, rigidez matinal, limitação da amplitude de movimento articular ou deformidades.'
+    defaultText: 'Nega artralgias, mialgias, rigidez matinal, limitação de ADM articular ou deformidades.'
   },
 
   // Categoria 5: Exame Físico por Aparelhos
   {
     id: 'exame_fisico_geral',
-    title: 'Exame Físico Geral & Sinais Vitais',
+    title: 'EF - Geral & SV',
     category: 'Exame Físico por Aparelhos',
-    defaultText: 'Bom estado geral (BEG), consciente, orientado no tempo e espaço (LOTE), acianótico, anictérico, corado, hidratado, eupnéico em ar ambiente. Sinais Vitais: PA: 120/80 mmHg | FC: 75 bpm | FR: 16 irpm | SpO2: 98% em AA | Temp: 36,5 °C | Glicemia: 92 mg/dL.'
+    defaultText: 'BEG, LOTE, acianótico, anictérico, corado, hidratado, eupnéico em AA. SV: PA: 120/80 mmHg | FC: 75 bpm | FR: 16 irpm | SpO2: 98% em AA | T: 36,5 °C | HGT: 92 mg/dL.'
   },
   {
     id: 'exame_cabeca_pescoco',
-    title: 'Exame Físico - Cabeça, Pescoço & Otorrino/Oftalmo',
+    title: 'EF - Cabeça/Pescoço',
     category: 'Exame Físico por Aparelhos',
-    defaultText: 'Cranio normocefálico, sem lesões. Pupilas isocóricas e fotorreativas. Otoscopia: membranas timpânicas íntegras e translúcidas. Orofaringe sem hiperemia ou exsudatos. Pescoço sem adenomegalias palpáveis ou turgência jugular.'
+    defaultText: 'Crânio normocefálico, sem lesões. Pupilas isocóricas e fotorreativas (PIRFL). Otoscopia: MTs íntegras. Orofaringe sem hiperemia. Pescoço sem adenomegalias ou turgência jugular.'
   },
   {
     id: 'exame_cardio',
-    title: 'Exame Físico - Aparelho Cardiovascular',
+    title: 'EF - Cardio',
     category: 'Exame Físico por Aparelhos',
-    defaultText: 'Ausculta cardíaca: Ritmo cardíaco regular em 2 tempos (RCR 2T), bulhas normofonéticas (BRNF), sem sopros. Pulsos periféricos radiais, pediosos e femorais presentes, amplos e simétricos. Tempo de enchimento capilar (TEC) < 2 segundos.'
+    defaultText: 'AC: RCR 2T, BRNF, sem sopros. Pulsos periféricos radiais, pediosos e femorais presentes, amplos e simétricos. TEC < 2s.'
   },
   {
     id: 'exame_resp',
-    title: 'Exame Físico - Aparelho Respiratório',
+    title: 'EF - Resp',
     category: 'Exame Físico por Aparelhos',
-    defaultText: 'Ausculta pulmonar: Murmúrio vesicular universalmente audível (MVUA) e simétrico, sem ruídos adventícios (sem estertores, sibilos ou roncos). Expansibilidade torácica preservada bilateralmente.'
+    defaultText: 'AP: MVUA sem ruídos adventícios (sem estertores, sibilos ou roncos). Expansibilidade torácica preservada bilateralmente.'
   },
   {
     id: 'exame_abdomen',
-    title: 'Exame Físico - Abdômen',
+    title: 'EF - Abdômen',
     category: 'Exame Físico por Aparelhos',
-    defaultText: 'Abdômen plano, simétrico, flácido, indolor à palpação superficial e profunda. Ruídos hidroaéreos (RHA) presentes e normoativos. Ausência de massas palpáveis ou visceromegalias. Sinais de Blumberg, Murphy e Giordano negativos.'
+    defaultText: 'ABD: Plano, simétrico, flácido, indolor à palpação superficial e profunda. RHA normoativos. Ausência de visceromegalias ou massas. Blumberg, Murphy e Giordano negativos.'
   },
   {
     id: 'exame_locomotor',
-    title: 'Exame Físico - Locomotor & Extremidades',
+    title: 'EF - Extremidades',
     category: 'Exame Físico por Aparelhos',
-    defaultText: 'Extremidades bem perfundidas e aquecidas, sem edemas ou empastamento de panturrilhas. Amplitude de movimento articular preservada em todos os eixos. Força muscular 5/5 bilateralmente.'
+    defaultText: 'EXT: Bem perfundidas, aquecidas, sem edema ou empastamento de panturrilhas (Homans negativo). ADM preservada. Força 5/5.'
   },
   {
     id: 'exame_neuro_psiq',
-    title: 'Exame Físico - Neurológico & Psiquiátrico',
+    title: 'EF - Neuro',
     category: 'Exame Físico por Aparelhos',
-    defaultText: 'Glasgow 15/15. Pares cranianos sem alterações aparentes. Sensibilidade e motricidade preservadas nos 4 membros. Sem sinais de irritação meningorradicular (Lasegue, Brudzinski e Kernig negativos). Afeto e humor sintonizados e eutímicos.'
+    defaultText: 'Glasgow 15/15. Pares cranianos sem alterações. Motricidade e sensibilidade preservadas nos 4 membros. Sem sinais meningorradiculares (Lasegue, Brudzinski e Kernig negativos). Eutímico.'
   },
   {
     id: 'exame_dermato',
-    title: 'Exame Físico - Dermatológico',
+    title: 'EF - Pele',
     category: 'Exame Físico por Aparelhos',
-    defaultText: 'Pele e anexos íntegros, normocorados, turgor e elasticidade preservados. Ausência de lesões elementares, erupções cutâneas, petéquias ou estigmas de sangramento.'
+    defaultText: 'Pele e anexos íntegros, normocorados, turgor e elasticidade preservados. Ausência de exantema, petéquias ou estigmas de sangramento.'
   },
 
   // Categoria 6: Diagnóstico & Conduta
   {
     id: 'hipoteses_diagnosticas',
-    title: 'Hipóteses Diagnósticas (HD)',
+    title: 'HD',
     category: 'Diagnóstico & Conduta',
     defaultText: '1. Avaliação clínica e preventiva de rotina.\n2. Hipótese secundária a esclarecer.'
   },
   {
     id: 'conduta_plano',
-    title: 'Conduta & Plano Terapêutico',
+    title: 'CD',
     category: 'Diagnóstico & Conduta',
-    defaultText: '1. Orientações gerais de estilo de vida, alimentação saudável e prevenção de agravos.\n2. Solicitação de exames complementares de rotina se necessário.\n3. Prescrição e receitas entregues ao paciente.\n4. Retorno agendado conforme necessidade / Sinais de alerta devidamente orientados.'
+    defaultText: '1. Orientações gerais de estilo de vida, nutrição e prevenção de agravos.\n2. Solicitação de exames complementares de rotina se necessário.\n3. Prescrição entregue ao paciente.\n4. Retorno s/n / Orientados sinais de alarme.'
   }
 ];
 
@@ -321,7 +321,7 @@ export const ANAMNESE_PRESETS = [
     sectionIds: [
       'identificacao',
       'qp',
-      'hma',
+      'hda',
       'antecedentes_pessoais',
       'medicamentos',
       'alergias',
@@ -340,7 +340,7 @@ export const ANAMNESE_PRESETS = [
     sectionIds: [
       'identificacao',
       'qp',
-      'hma',
+      'hda',
       'antecedentes_pediatricos',
       'alergias',
       'exame_fisico_geral',
@@ -359,7 +359,7 @@ export const ANAMNESE_PRESETS = [
     sectionIds: [
       'identificacao',
       'qp',
-      'hma',
+      'hda',
       'antecedentes_go',
       'antecedentes_pessoais',
       'alergias',
@@ -376,7 +376,7 @@ export const ANAMNESE_PRESETS = [
     sectionIds: [
       'identificacao',
       'qp',
-      'hma',
+      'hda',
       'isda_cardio',
       'antecedentes_pessoais',
       'medicamentos',
@@ -397,7 +397,7 @@ export const ANAMNESE_PRESETS = [
     sectionIds: [
       'identificacao',
       'qp',
-      'hma',
+      'hda',
       'isda_neuro',
       'antecedentes_pessoais',
       'medicamentos',
@@ -414,7 +414,7 @@ export const ANAMNESE_PRESETS = [
     sectionIds: [
       'identificacao',
       'qp',
-      'hma',
+      'hda',
       'isda_osteo',
       'exame_fisico_geral',
       'exame_locomotor',
@@ -429,7 +429,7 @@ export const ANAMNESE_PRESETS = [
     sectionIds: [
       'identificacao',
       'qp',
-      'hma',
+      'hda',
       'antecedentes_pessoais',
       'medicamentos',
       'alergias',
@@ -448,7 +448,7 @@ export const ANAMNESE_PRESETS = [
     sectionIds: [
       'identificacao',
       'qp',
-      'hma',
+      'hda',
       'exame_fisico_geral',
       'exame_cabeca_pescoco',
       'hipoteses_diagnosticas',
@@ -808,7 +808,7 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
   const copyToClipboard = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    triggerNotification('Prontuário copiado com sucesso para a área de transferência!');
+    triggerNotification('Anamnese copiada com sucesso para a área de transferência!');
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -906,19 +906,21 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
   };
 
   const generateClinicalText = (type: SavedForm['type']): string => {
-    const formattedDate = new Date().toLocaleString('pt-BR');
-    let text = `=== REGISTRO DE ANAMNESE ESTRUTURADA E EXAME CLÍNICO ===\n`;
-    text += `Data/Hora: ${formattedDate}\n`;
-    text += `Paciente: ${patientName || 'Não Identificado'}\n`;
-    text += `Idade: ${patientAge || 'N/I'}  |  Sexo: ${patientSex}  |  Peso: ${patientWeight ? patientWeight + ' kg' : 'N/I'}\n`;
+    const formattedDate = new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+    let text = `==================================================\n`;
+    text += `                 ANAMNESE CLÍNICA                 \n`;
+    text += `==================================================\n`;
+    text += `PACIENTE: ${patientName || 'Não Identificado'}\n`;
+    text += `IDADE: ${patientAge || 'N/I'} | SEXO: ${patientSex} | PESO: ${patientWeight ? patientWeight + ' kg' : 'N/I'}\n`;
+    text += `DATA/HORA: ${formattedDate}\n`;
     text += `--------------------------------------------------\n\n`;
 
     if (type === 'modular' || type === 'pediatric' || type === 'adult') {
       if (activeSections.length === 0) {
         text += `(Nenhuma seção de anamnese selecionada)\n`;
       } else {
-        activeSections.forEach((sec, idx) => {
-          text += `[${idx + 1}. ${sec.title.toUpperCase()}]\n`;
+        activeSections.forEach((sec) => {
+          text += `${sec.title.trim().toUpperCase()}:\n`;
           text += `${sec.text.trim()}\n\n`;
         });
       }
@@ -926,45 +928,51 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
     else if (type === 'disease') {
       const d = UBS_CATALOG_DISEASES.find(disease => disease.id === selectedDiseaseId);
       if (d) {
-        text += `[GUIA DE CONSULTA DE DOENÇAS]\n`;
-        text += `Suspeita Diagnóstica: ${d.name} (${d.category})\n`;
-        text += `----------------------------------------\n`;
-        text += `[CRITÉRIOS DIAGNÓSTICOS / TESTES NECESSÁRIOS]\n`;
-        text += `${d.diagnostic}\n\n`;
-        text += `[SINAIS DE ALERTA]\n`;
-        text += `${d.alarm}\n\n`;
-        text += `[TRATAMENTO DE PRIMEIRA LINHA]\n`;
-        text += `${d.treatment[0]?.title || 'Não especificado'}: ${d.treatment[0]?.desc || 'Não especificado'}\n\n`;
+        text += `DIRETRIZ CLÍNICA: ${d.name.toUpperCase()}\n`;
+        text += `CATEGORIA: ${d.category}\n`;
+        text += `--------------------------------------------------\n`;
+        text += `CRITÉRIOS DIAGNÓSTICOS:\n${d.diagnostic}\n\n`;
+        text += `SINAIS DE ALERTA:\n${d.alarm}\n\n`;
+        text += `TRATAMENTO 1ª LINHA:\n${d.treatment[0]?.title || 'Padrão'}: ${d.treatment[0]?.desc || 'Apoio clínico'}\n\n`;
         if (d.treatment[1]) {
-          text += `[TRATAMENTO DE SEGUNDA LINHA]\n`;
-          text += `${d.treatment[1]?.title || 'Não especificado'}: ${d.treatment[1]?.desc || 'Não especificado'}\n\n`;
+          text += `TRATAMENTO 2ª LINHA:\n${d.treatment[1]?.title || 'Alternativo'}: ${d.treatment[1]?.desc || 'Opção secundária'}\n\n`;
         }
       } else {
-        text += `[GUIA DE CONSULTA DE DOENÇAS]\nNenhuma doença selecionada para consulta.`;
+        text += `Nenhuma suspeita diagnóstica selecionada.`;
       }
     } 
     else if (type === 'prescription') {
-      text += `[RECEITUÁRIO AMBULATORIAL / DE ALTA]\n`;
+      text += `RECEITUÁRIO CLÍNICO\n`;
+      text += `--------------------------------------------------\n`;
       if (prescriptionItems.length === 0) {
-        text += `(Nenhum medicamento adicionado à prescrição)\n`;
+        text += `(Nenhum medicamento na prescrição)\n`;
       } else {
         prescriptionItems.forEach((item, idx) => {
-          text += `----------------------------------------\n`;
           text += `${idx + 1}. ${item.name.toUpperCase()} (${item.presentation})\n`;
-          text += `   - POSOLOGIA: ${item.dose} -- ${item.frequency}\n`;
-          text += `   - DURAÇÃO: ${item.duration}\n`;
+          text += `   POSOLOGIA: ${item.dose} -- ${item.frequency}\n`;
+          text += `   DURAÇÃO: ${item.duration}\n`;
           if (item.instructions) {
-            text += `   - ORIENTAÇÕES: ${item.instructions}\n`;
+            text += `   ORIENTAÇÕES: ${item.instructions}\n`;
           }
           text += `\n`;
         });
-        text += `----------------------------------------\n`;
       }
-      text += `\nOrientações Gerais ao Paciente:\n- Repouso adequado e hidratação oral abundante.\n- Retornar ao Pronto Atendimento imediatamente em caso de sinais de alarme: febre persistente refratária, falta de ar, sonolência excessiva, vômitos incoercíveis ou piora súbita.`;
-     }
+      text += `ORIENTAÇÕES GERAIS:\n- Repouso adequado, dieta leve e hidratação oral abundante.\n- Retornar ao P.A. imediatamente em caso de sinais de alarme.\n`;
+    } 
+    else if (type === 'triage') {
+      text += `TRIAGEM & CLASSIFICAÇÃO DE RISCO (MANCHESTER)\n`;
+      text += `--------------------------------------------------\n`;
+      text += `QUEIXA PRINCIPAL: ${triageData.complaint || 'N/I'}\n`;
+      text += `SINAIS VITAIS: PA: ${triageData.pa || 'N/I'} mmHg | FC: ${triageData.fc || 'N/I'} bpm | FR: ${triageData.fr || 'N/I'} irpm | SpO2: ${triageData.sat || 'N/I'}% | T: ${triageData.temp || 'N/I'}°C | Dor: ${triageData.painScale}/10\n`;
+      text += `NÍVEL DE RISCO: ${triageData.riskLevel.toUpperCase()} -- ${triageData.recommendedArea}\n`;
+      if (triageData.triageNotes) {
+        text += `NOTAS DA TRIAGEM: ${triageData.triageNotes}\n`;
+      }
+    }
 
-    text += `\n\n========================================\n`;
-    text += `Documento gerado por Pedsocorro Core (Prontuário Autônomo Local)`;
+    text += `--------------------------------------------------\n`;
+    text += `🔒 Sigilo Médico em conformidade com a LGPD (Lei nº 13.709/2018) & CFM\n`;
+    text += `==================================================`;
     return text;
   };
 
@@ -993,7 +1001,7 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
     const updated = [newForm, ...savedForms];
     setSavedForms(updated);
     localStorage.setItem('pedsocorro_saved_forms', JSON.stringify(updated));
-    triggerNotification('Ficha clínica salva no histórico local com sucesso!');
+    triggerNotification('Anamnese salva no histórico local com sucesso!');
     
     // Reset inputs
     setPatientName('');
@@ -1115,21 +1123,6 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
                 {activeFormType === 'disease' && 'Critérios diagnósticos e diretrizes terapêuticas da UBS/SUS'}
               </p>
             </div>
-
-            {activeFormType === 'modular' && (
-              <button
-                type="button"
-                onClick={() => {
-                  const text = generateClinicalText('modular');
-                  navigator.clipboard.writeText(text);
-                  triggerNotification('Anamnese estruturada copiada com sucesso!');
-                }}
-                className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer flex-shrink-0"
-              >
-                <Copy size={16} />
-                <span>Copiar Anamnese Estruturada</span>
-              </button>
-            )}
           </div>
 
 
@@ -1433,30 +1426,6 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
                       ))}
                     </div>
                   )}
-                </div>
-
-                {/* Final Copy & Save Controls */}
-                <div className="pt-4 border-t border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const text = generateClinicalText('modular');
-                      navigator.clipboard.writeText(text);
-                      triggerNotification('Anamnese estruturada copiada para a área de transferência!');
-                    }}
-                    className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-600/20 transition-all cursor-pointer"
-                  >
-                    <Copy size={16} />
-                    <span>Copiar Anamnese Estruturada</span>
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-medical-primary hover:bg-medical-primary/90 text-white font-bold text-xs flex items-center justify-center gap-2.5 shadow-lg shadow-medical-primary/20 transition-all cursor-pointer"
-                  >
-                    <FileText size={16} />
-                    <span>Salvar no Prontuário Local</span>
-                  </button>
                 </div>
 
               </div>
@@ -2373,18 +2342,19 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
                   }
                   const formatted = generateClinicalText(activeFormType);
                   navigator.clipboard.writeText(formatted);
-                  triggerNotification('Prontuário copiado com sucesso para a área de transferência!');
+                  triggerNotification('Anamnese copiada com sucesso para a área de transferência!');
                 }}
                 className="px-5 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center gap-2 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 transition-all border border-emerald-200 dark:border-emerald-900/30 cursor-pointer"
               >
                 <Copy size={13} />
-                Copiar Prontuário Atual
+                Copiar Anamnese Formatada
               </button>
               <button 
                 type="submit"
-                className="px-6 py-3 rounded-xl bg-medical-primary text-white font-bold text-xs shadow-lg shadow-medical-primary/20 hover:bg-medical-primary/90 transition-all cursor-pointer"
+                className="px-6 py-3 rounded-xl bg-medical-primary text-white font-bold text-xs shadow-lg shadow-medical-primary/20 hover:bg-medical-primary/90 transition-all cursor-pointer flex items-center gap-2"
               >
-                Salvar Atendimento Local
+                <FileText size={14} />
+                Salvar Anamnese
               </button>
             </div>
           </div>
@@ -2397,9 +2367,9 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
           <div className="border-b border-slate-100 dark:border-slate-700 pb-4">
             <h3 className="font-serif font-black text-xl text-slate-800 dark:text-white tracking-tight flex items-center gap-2">
               <Clock size={18} />
-              Histórico de Fichas
+              Histórico de Anamneses
             </h3>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Atendimentos mantidos no cache local</p>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Consultas salvas no dispositivo (LGPD Seguras)</p>
           </div>
 
           {/* Quick Search */}
@@ -2418,7 +2388,7 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
           <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1 custom-scrollbar">
             {filteredForms.length === 0 ? (
               <div className="py-12 text-center text-slate-400 font-medium text-xs">
-                {searchQuery ? 'Nenhum prontuário coincide com a pesquisa.' : 'Nenhum prontuário salvo neste dispositivo.'}
+                {searchQuery ? 'Nenhuma anamnese coincide com a pesquisa.' : 'Nenhuma anamnese salva neste dispositivo.'}
               </div>
             ) : (
               filteredForms.map(form => (
@@ -2449,7 +2419,7 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
                     <button 
                       onClick={(e) => { e.stopPropagation(); copyToClipboard(form.formattedText, form.id); }}
                       className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-medical-primary hover:bg-slate-50 transition-colors"
-                      title="Copiar Prontuário"
+                      title="Copiar Anamnese"
                     >
                       <Copy size={12} />
                     </button>
@@ -2478,7 +2448,7 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-serif font-black text-lg text-slate-800 dark:text-white tracking-tight">Detalhes do Prontuário</h4>
+                  <h4 className="font-serif font-black text-lg text-slate-800 dark:text-white tracking-tight">Detalhes da Anamnese</h4>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{viewingForm.patientName}</p>
                 </div>
                 <button 
@@ -2502,7 +2472,7 @@ export default function FormsModule({ onRedirectToSymptoms, medications, current
                   className="flex-1 py-3 bg-medical-primary text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md shadow-medical-primary/10 hover:bg-medical-primary/95 transition-all cursor-pointer"
                 >
                   <Copy size={13} />
-                  Copiar Prontuário Completo
+                  Copiar Anamnese Completa
                 </button>
                 <button 
                   onClick={() => deleteForm(viewingForm.id)}

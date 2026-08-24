@@ -105,603 +105,1306 @@ export interface Medication {
   presentation: string;
   renalAdjustment?: string;
   notes: string;
-  category: 'Analgésico' | 'Antibiótico' | 'Cardiovascular' | 'Respiratório' | 'Gastro' | 'Emergência' | 'Endocrino' | 'Endocrinologia' | 'Corticoide' | 'Neurologia' | 'Psiquiatria' | 'Cardiologia' | 'Antifúngico' | 'Rheuma';
+  category: string;
 }
+
+export const normalizeText = (str: string): string => {
+  if (!str) return '';
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+};
 
 // --- Data ---
 export const MEDICATIONS: Medication[] = [
+  // --- ANALGÉSICOS & ANTI-INFLAMATÓRIOS ---
   {
-    id: '1',
-    name: 'Amoxicilina + Clavulanato',
-    indication: 'Infecções bacterianas',
-    dose: '500/125mg a 875/125mg',
-    frequency: '8/8h ou 12/12h',
-    presentation: '500/125mg, 875/125mg (Comprimidos)',
-    renalAdjustment: 'ClCr < 30ml/min: evitar formulação 875mg.',
-    category: 'Antibiótico',
-    notes: 'Tomar preferencialmente no início das refeições.'
-  },
-  {
-    id: '2',
-    name: 'Amiodarona',
-    indication: 'Arritmias ventriculares e supraventriculares',
-    dose: 'Ataque: 150-300mg IV. Manutenção: 200mg-400mg/dia VO.',
-    frequency: 'Variável',
-    presentation: '150mg/3mL (Ampola), 200mg (Comprimido)',
-    category: 'Cardiovascular',
-    notes: 'Monitorar intervalo QT e função tireoidiana no uso crônico.'
-  },
-  {
-    id: '3',
-    name: 'Ceftriaxona',
-    indication: 'Pneumonia, Meningite, ITU Complicada',
-    dose: '1g a 2g',
-    frequency: '12/12h ou 24/24h',
-    presentation: '1g (Frasco-ampola)',
-    category: 'Antibiótico',
-    notes: 'Pode ser administrada IM ou IV. Diluir corretamente.'
-  },
-  {
-    id: '51',
-    name: 'Fluoxetina',
-    indication: 'Depressão, Transtorno do Pânico, TOC',
-    dose: '20mg a 60mg VO',
-    frequency: 'Manhã',
-    presentation: '20mg (Cápsula)',
-    category: 'Psiquiatria',
-    notes: 'ISRS. Pode causar náuseas e insônia no início.'
-  },
-  {
-    id: '52',
-    name: 'Sertralina',
-    indication: 'Depressão, Ansiedade, TEPT',
-    dose: '25mg a 200mg VO',
-    frequency: 'Manhã ou Noite',
-    presentation: '25mg, 50mg, 100mg',
-    category: 'Psiquiatria',
-    notes: 'Opção segura em idosos e cardiopatas.'
-  },
-  {
-    id: '53',
-    name: 'Quetiapina',
-    indication: 'Esquizofrenia, Bipolaridade, Insônia (Off-label)',
-    dose: '25mg a 800mg VO',
-    frequency: 'Noite',
-    presentation: '25mg, 100mg, 200mg',
-    category: 'Psiquiatria',
-    notes: 'Antipsicótico atípico. Cuidado com síndrome metabólica.'
-  },
-  {
-    id: '55',
-    name: 'Metotrexato',
-    indication: 'Artrite Reumatoide, Psoríase, Neoplasias',
-    dose: '7.5mg a 25mg VO/IM',
-    frequency: 'SEMANAL',
-    presentation: '2.5mg (Comp), 50mg/mL (Ampola)',
-    category: 'Rheuma',
-    notes: 'NUNCA usar diariamente para AR. Repor Ácido Fólico.'
-  },
-  {
-    id: '56',
-    name: 'Propofol',
-    indication: 'Indução e Manutenção de Anestesia, Sedação em UTI',
-    dose: '1 a 2 mg/kg (Indução) / 5 a 50 mcg/kg/min (Manutenção)',
-    frequency: 'Contínua',
-    presentation: '10mg/mL (Frasco-ampola)',
-    category: 'Emergência',
-    notes: 'Risco de Síndrome da Infusão do Propofol (acidose, rabdomiólise). Lipídico.'
-  },
-  {
-    id: '57',
-    name: 'Noradrenalina',
-    indication: 'Choque Séptico, Cardiogênico ou Neurogênico (Vasopressor)',
-    dose: '0.05 a 2 mcg/kg/min',
-    frequency: 'Contínua',
-    presentation: '1mg/mL (Ampola 4mL)',
-    category: 'Emergência',
-    notes: 'Diluir preferencialmente em SG 5%. Acesso venoso central obrigatório.'
-  },
-  {
-    id: '58',
-    name: 'Dobutamina',
-    indication: 'Choque Cardiogênico, IC Descompensada (Inotrópico)',
-    dose: '2 a 20 mcg/kg/min',
-    frequency: 'Contínua',
-    presentation: '12.5mg/mL (Ampola 20mL)',
-    category: 'Emergência',
-    notes: 'Pode causar taquicardia e arritmias. Monitorar debito cardíaco.'
-  },
-  {
-    id: '59',
-    name: 'Succinilcolina',
-    indication: 'Sequência Rápida de Intubação (SRI)',
-    dose: '1 a 1.5 mg/kg IV',
-    frequency: 'Dose única',
-    presentation: '100mg (Frasco-ampola)',
-    category: 'Emergência',
-    notes: 'Bloqueador despolarizante. Contraindicações: Hipercalemia, Grandes Queimados (após 48h), Trauma Craniano.'
-  },
-  {
-    id: '60',
-    name: 'Adenosina',
-    indication: 'Taquicardia Supraventricular Paroxística (Reentrada)',
-    dose: '6mg (1ª dose) e 12mg (2ª dose) IV Rápido',
-    frequency: 'Bolus Rápido (Flush)',
-    presentation: '3mg/mL (Ampola 2mL)',
-    category: 'Emergência',
-    notes: 'Informa ao paciente sensação de morte iminente. Curta meia-vida.'
-  },
-  {
-    id: '4',
-    name: 'Enoxaparina',
-    indication: 'Profilaxia e tratamento de TEV / SCA',
-    dose: 'Profilaxia: 40mg. Tratamento: 1mg/kg.',
-    frequency: '24/24h (Prof) ou 12/12h (Trat)',
-    presentation: '20mg, 40mg, 60mg, 80mg (Seringas preenchidas)',
-    renalAdjustment: 'Ajustar dose em ClCr < 30mL/min (0.5mg/kg 12/12h ou 1mg/kg 24/24h).',
-    category: 'Cardiovascular',
-    notes: 'Administração SC profunda na região abdominal.'
-  },
-  {
-    id: '5',
-    name: 'Furosemida',
-    indication: 'Edema agudo de pulmão, Insuficiência Cardíaca',
-    dose: '20mg a 40mg IV ou VO',
-    frequency: 'Variável (conforme balanço hídrico)',
-    presentation: '20mg/2mL (Ampola), 40mg (Comprimido)',
-    category: 'Cardiovascular',
-    notes: 'Monitorar potássio e função renal.'
-  },
-  {
-    id: '6',
-    name: 'Metoprolol (Succinato)',
-    indication: 'HAS, Insuficiência Cardíaca, Angina',
-    dose: '25mg a 200mg',
-    frequency: '24/24h',
-    presentation: '25mg, 50mg, 100mg (Liberação controlada)',
-    category: 'Cardiovascular',
-    notes: 'Não suspender abruptamente.'
-  },
-  {
-    id: '7',
-    name: 'Pip/Tazo (Piperacilina + Tazobactam)',
-    indication: 'Infecções hospitalares, sepse',
-    dose: '4.5g (standard inf. 30min ou estendida 3-4h)',
-    frequency: '6/6h ou 8/8h',
-    presentation: '4.5g (Frasco-ampola)',
-    renalAdjustment: 'Obrigatório ajuste conforme clearance.',
-    category: 'Antibiótico',
-    notes: 'Considerar infusão estendida para melhorar desfecho em graves.'
-  },
-  {
-    id: '8',
-    name: 'Noradrenalina',
-    indication: 'Choque circulatório (Vasopressor)',
-    dose: '0.05 a 0.5 mcg/kg/min (titular)',
-    frequency: 'Contínua',
-    presentation: '4mg/4mL (Ampola)',
-    category: 'Emergência',
-    notes: 'Administrar obrigatoriamente via Acesso Venoso Central. Monitorar PAM.'
-  },
-  {
-    id: '9',
-    name: 'Morfina',
-    indication: 'Dor intensa, IAM, Edema Pulmonar',
-    dose: '2mg a 4mg IV (titular)',
-    frequency: 'Até 5/5 min (agudo)',
-    presentation: '10mg/mL (Ampola)',
+    id: 'm1',
+    name: 'Dipirona Sódica',
+    indication: 'Dor aguda, febre alta, cólicas',
+    dose: '500mg a 1g (Adulto) / 10-15 mg/kg (Pediatria)',
+    frequency: '6/6h ou 4/4h (Máx 4g/dia)',
+    presentation: '500mg (Comp), 500mg/mL (Gotas - 1g=40gotas), 1g/2mL (Ampola EV/IM)',
+    renalAdjustment: 'Não requer ajuste em dose única. Reduzir em DRC severa.',
     category: 'Analgésico',
-    notes: 'Riscos: Depressão respiratória e hipotensão.'
+    notes: 'Injetar EV lentamente para evitar hipotensão. Contraindicado se agranulocitose prévia ou alergia a pirazolonas.'
   },
   {
-    id: '10',
-    name: 'Omeprazol',
-    indication: 'Profilaxia de úlcera de estresse, DRGE',
-    dose: '20mg a 40mg',
-    frequency: '24/24h',
-    presentation: '40mg (Frasco-ampola), 20mg (Cápsula)',
-    category: 'Gastro',
-    notes: 'Administrar em jejum.'
+    id: 'm2',
+    name: 'Paracetamol',
+    indication: 'Dor leve a moderada, febre (Seguro em Dengue e Gestantes)',
+    dose: '500mg a 1000mg (Adulto) / 10-15 mg/kg (Pediatria)',
+    frequency: '6/6h ou 4/4h (Máx 4g/dia)',
+    presentation: '500mg, 750mg (Comp), 200mg/mL (Gotas - 10mg/gota), 32mg/mL (Xarope)',
+    renalAdjustment: 'ClCr < 10 mL/min: estender intervalo para 8/8h.',
+    category: 'Analgésico',
+    notes: 'Analgésico de escolha na Dengue e Zika. Risco de hepatotoxidade grave em doses > 4g/dia ou hepatopatia prévia.'
   },
   {
-    id: '11',
-    name: 'Ceftriaxona',
-    indication: 'Pneumonia, ITU, Sepse, Meningite',
-    dose: '1g a 2g IV/IM',
+    id: 'm3',
+    name: 'Ibuprofeno',
+    indication: 'Dor, febre, inflamação musculoesquelética, dismenorreia',
+    dose: '300mg a 600mg (Adulto) / 5-10 mg/kg (Pediatria)',
+    frequency: '6/6h ou 8/8h (Máx 2400mg/dia)',
+    presentation: '300mg, 600mg (Comp), 50mg/mL (Gotas - 2.5mg/gota), 100mg/5mL (Suspensão)',
+    renalAdjustment: 'Evitar uso em ClCr < 30 mL/min ou Injúria Renal Aguda.',
+    category: 'Analgésico',
+    notes: 'AINE não seletivo. Tomar após refeições. Contraindicado na suspeita de Dengue e em úlcera péptica ativa.'
+  },
+  {
+    id: 'm4',
+    name: 'Cetoprofeno',
+    indication: 'Dor osteomuscular intensa, cólica renal, gota, pós-operatório',
+    dose: '100mg VO / 100mg EV em 100mL SF0.9% em 20 min',
+    frequency: '12/12h (Máx 300mg/dia)',
+    presentation: '50mg, 100mg (Caps), 100mg IV (Pó para diluição), 2.5% Gel',
+    renalAdjustment: 'Contraindicado em insuficiência renal grave.',
+    category: 'Analgésico',
+    notes: 'Excelente AINE para dor traumática e Renal. Evitar infusão EV rápida em bolus.'
+  },
+  {
+    id: 'm5',
+    name: 'Diclofenaco Sódico / Potássico',
+    indication: 'Inflamação aguda, lombalgia, artralgia, dor pós-traumática',
+    dose: '50mg a 75mg IM/VO',
+    frequency: '8/8h ou 12/12h (Máx 150mg/dia)',
+    presentation: '50mg (Comp), 75mg/3mL (Ampola IM profunda)',
+    renalAdjustment: 'Evitar em ClCr < 30 mL/min.',
+    category: 'Analgésico',
+    notes: 'Ampola exclusivamente IM profunda no glúteo. Risco gastrointestinal e de piora da função renal.'
+  },
+  {
+    id: 'm6',
+    name: 'Nimesulida',
+    indication: 'Processos inflamatórios agudos, IVAS, otalgia, odontalgia',
+    dose: '100mg VO / 50mg/mL (Gotas pediátricas 1 gta/kg)',
+    frequency: '12/12h por no máximo 5 a 7 dias',
+    presentation: '100mg (Comp), 50mg/mL (Gotas)',
+    renalAdjustment: 'Evitar em doença renal grave.',
+    category: 'Analgésico',
+    notes: 'Risco de hepatotoxicidade idiosincrásica. Utilizar a menor dose pelo menor tempo possível.'
+  },
+  {
+    id: 'm7',
+    name: 'Meloxicam',
+    indication: 'Osteoartrite, artrite reumatóide, espondilite anquilosante',
+    dose: '7.5mg a 15mg VO',
+    frequency: '24/24h (Dose única diária)',
+    presentation: '7.5mg, 15mg (Comprimidos)',
+    renalAdjustment: 'Reduzir dose em insuficiência renal grave.',
+    category: 'Analgésico',
+    notes: 'AINE preferencialmente COX-2 com boa tolerabilidade gástrica e posologia confortável de 1x/dia.'
+  },
+  {
+    id: 'm8',
+    name: 'Celecoxibe',
+    indication: 'Dor crônica articular, osteoartrite, gota aguda (Paciente com risco gástrico)',
+    dose: '100mg a 200mg VO',
     frequency: '12/12h ou 24/24h',
-    presentation: '1g (Frasco-ampola)',
-    category: 'Antibiótico',
-    notes: 'Atinge boa concentração no líquor. Dose de 2g 12/12h para Meningite.'
+    presentation: '100mg, 200mg (Cápsulas)',
+    renalAdjustment: 'Não recomendado em insuficiência renal grave.',
+    category: 'Analgésico',
+    notes: 'Inibidor seletivo da COX-2. Mínimo risco gástrico. Usar com cautela em pacientes com alto risco cardiovascular.'
   },
   {
-    id: '12',
-    name: 'Amoxicilina + Clavulanato',
-    indication: 'Infecções respiratórias, Sinusite, Mordeduras',
-    dose: '500mg/125mg ou 875mg/125mg',
-    frequency: '8/8h ou 12/12h',
-    presentation: 'Comprimidos, Suspensão',
-    category: 'Antibiótico',
-    notes: 'Tomar no início das refeições para reduzir efeitos gastrointestinais.'
-  },
-  {
-    id: '13',
-    name: 'Furosemida',
-    indication: 'Edema, Insuficiência Cardíaca, Crise Hipertensiva',
-    dose: '20mg a 40mg (pode ser maior)',
-    frequency: 'EV ou VO',
-    presentation: '20mg (Ampola), 40mg (Comprimido)',
-    category: 'Cardiovascular',
-    notes: 'Monitorar Potássio e função renal.'
-  },
-  {
-    id: '14',
-    name: 'Amiodarona',
-    indication: 'Taquiarritmias (FV, TV, Fibrilação Atrial)',
-    dose: 'Ataque: 150-300mg / Manut: 900mg/24h',
-    frequency: 'EV (Bomba de Infusão)',
-    presentation: '150mg/3mL (Ampola)',
-    category: 'Emergência',
-    notes: 'Diluir apenas em Soro Glicosado (SG5%).'
-  },
-  {
-    id: '15',
-    name: 'Enoxaparina',
-    indication: 'Profilaxia e tratamento de TVP/TEP, SCA',
-    dose: '1mg/kg (Tratamento) ou 40mg (Profilaxia)',
-    frequency: '12/12h (Tratamento) ou 24/24h (Profilaxia)',
-    presentation: '20mg, 40mg, 60mg, 80mg (Seringa)',
-    category: 'Cardiovascular',
-    notes: 'Ajustar dose para ClCr < 30 mL/min.'
-  },
-  {
-    id: '16',
-    name: 'Insulina Regular',
-    indication: 'Diabetes Mellitus, Hipercalemia, Emergências Glicêmicas',
-    dose: '0.1 UI/kg/h (Bomba) ou conforme escala',
-    frequency: 'Variável',
-    presentation: '100 UI/mL (Frasco)',
-    category: 'Endocrino',
-    notes: 'Início de ação rápido (30 min). Cuidado com hipoglicemia.'
-  },
-  {
-    id: '17',
-    name: 'Metformina',
-    indication: 'DM2, SOP',
-    dose: '500mg a 2550mg/dia',
-    frequency: '8/8h ou 12/12h',
-    presentation: '500mg, 850mg, 1g',
-    category: 'Endocrino',
-    notes: 'Suspender 48h antes de exames com contraste iodado.'
-  },
-  {
-    id: '18',
-    name: 'Losartana',
-    indication: 'Hipertensão, IC, Nefropatia Diabética',
-    dose: '25mg a 100mg/dia',
-    frequency: '12/12h ou 24/24h',
-    presentation: '25mg, 50mg, 100mg',
-    category: 'Cardiovascular',
-    notes: 'Risco de hipercalemia. Contraindicado na gestação.'
-  },
-  {
-    id: '19',
-    name: 'Anlodipino',
-    indication: 'Hipertensão, Angina Estável',
-    dose: '2.5mg a 10mg/dia',
-    frequency: '24/24h',
-    presentation: '5mg, 10mg',
-    category: 'Cardiovascular',
-    notes: 'Pode causar edema maleolar.'
-  },
-  {
-    id: '20',
-    name: 'Clopidogrel',
-    indication: 'SCA, Pós-Angioplastia, AVC Isquêmico',
-    dose: '75mg (Manutenção) / 300-600mg (Ataque)',
-    frequency: '24/24h',
-    presentation: '75mg',
-    category: 'Cardiovascular',
-    notes: 'Antiagregante plaquetário.'
-  },
-  {
-    id: '21',
-    name: 'Fentanil',
-    indication: 'Sedação, Analgesia em UTI',
-    dose: '1 a 5 mcg/kg (Ataque) / 0.5-2 mcg/kg/h',
-    frequency: 'Contínua',
-    presentation: '50 mcg/mL (Frasco-ampola)',
-    category: 'Emergência',
-    notes: 'Risco de tórax rígido em infusão rápida.'
-  },
-  {
-    id: '22',
-    name: 'Midazolam',
-    indication: 'Sedação, Estado de Mal Epiléptico',
-    dose: '0.05 a 0.2 mg/kg',
-    frequency: 'EV',
-    presentation: '5mg/mL (Ampola)',
-    category: 'Emergência',
-    notes: 'Benzodiazepínico de curta ação.'
-  },
-  {
-    id: '23',
-    name: 'Hidrocortisona',
-    indication: 'Choque Séptico Refratário, Crise Adrenal, Exacerbação de Asma',
-    dose: '100mg a 500mg IV',
-    frequency: '8/8h ou 12/12h',
-    presentation: '100mg, 500mg (Frasco-ampola)',
-    category: 'Corticoide',
-    notes: 'Mineralocorticoide potente.'
-  },
-  {
-    id: '24',
-    name: 'Aspirina (AAS)',
-    indication: 'SCA, Prevenção Secundária de AVC/IAM',
-    dose: '100mg a 300mg',
-    frequency: '24/24h',
-    presentation: '100mg (Comprimido)',
-    category: 'Cardiovascular',
-    notes: 'Mastigar no IAM para absorção rápida.'
-  },
-  {
-    id: '25',
-    name: 'Sinvastatina',
-    indication: 'Dislipidemia, Prevenção Cardiovascular',
-    dose: '20mg a 40mg',
-    frequency: 'Noite',
-    presentation: '20mg, 40mg',
-    category: 'Cardiovascular',
-    notes: 'Risco de miopatia/rabdomiólise se associado a certos fármacos.'
-  },
-  {
-    id: '26',
-    name: 'Diazepam',
-    indication: 'Crise Convulsiva, Ansiedade Aguda, Abstinência Alcoólica',
-    dose: '5mg a 10mg EV lento (2-5mg/min)',
-    frequency: 'Se necessário',
-    presentation: '10mg/2mL (Ampola), 5mg/10mg (Comprimido)',
-    category: 'Neurologia',
-    notes: 'Risco de depressão respiratória. Evitar em idosos (Cuidado de Beers).'
-  },
-  {
-    id: '27',
-    name: 'Haloperidol',
-    indication: 'Delirium, Agitação Psicomotora, Esquizofrênia',
-    dose: '1mg a 5mg IM/EV',
-    frequency: '12/12h ou SOS',
-    presentation: '5mg/mL (Ampola)',
-    category: 'Psiquiatria',
-    notes: 'Pode prolongar intervalo QTc. Risco de Síndrome Extrapiramidal.'
-  },
-  {
-    id: '28',
-    name: 'Vancomicina',
-    indication: 'Infecções por MRSA, Endocardite, Sepse',
-    dose: '15-20 mg/kg (Ataque 25-30mg/kg em graves)',
-    frequency: '8/8h ou 12/12h',
-    presentation: '500mg, 1g (Frasco-ampola)',
-    category: 'Antibiótico',
-    notes: 'Monitorar vancocinemia e função renal. Risco de "Síndrome do Homem Vermelho" se infusão rápida.'
-  },
-  {
-    id: '29',
-    name: 'Meropenem',
-    indication: 'Infecções Graves multirresistentes, Neutropenia Febril',
-    dose: '1g a 2g IV',
-    frequency: '8/8h',
-    presentation: '500mg, 1g (Frasco-ampola)',
-    category: 'Antibiótico',
-    notes: 'Carbapenêmico. Considerar infusão estendida (3h).'
-  },
-  {
-    id: '30',
-    name: 'Rivaroxabana',
-    indication: 'FA (Prevenção AVC), Tratamento TVP/TEP',
-    dose: '15mg a 20mg VO',
-    frequency: '24/24h (ou 12/12h na fase aguda TVP)',
-    presentation: '10mg, 15mg, 20mg',
-    category: 'Cardiovascular',
-    notes: 'DOAC (Anticoagulante Oral Direto). Não requer monitorização de RNI.'
-  },
-  {
-    id: '31',
-    name: 'Atropina',
-    indication: 'Bradicardia Sinusal Sintomática, Intoxicação por Organofosforados',
-    dose: '1mg IV (Bradicardia) / Até 2-5mg (Intoxicação)',
-    frequency: '3-5 min (Max 3mg em bradicardia)',
-    presentation: '0.25mg/mL, 0.50mg/mL (Ampola)',
-    category: 'Emergência',
-    notes: 'Anticolinérgico. Cuidado em glaucoma.'
-  },
-  {
-    id: '32',
-    name: 'Amiodarona',
-    indication: 'Arritmias Ventriculares, FA (Controle de Ritmo)',
-    dose: '150mg a 300mg (Ataque) / 900mg/24h (Manutenção)',
-    frequency: 'EV / VO',
-    presentation: '150mg/3mL (Ampola)',
-    category: 'Cardiologia',
-    notes: 'Diluir apenas em Soro Glicosado (SG 5%).'
-  },
-  {
-    id: '33',
-    name: 'Lactulona',
-    indication: 'Constipação, Encefalopatia Hepática',
-    dose: '15mL a 30mL VO',
-    frequency: 'Até 6/6h (na encefalopatia)',
-    presentation: 'Xarope 667mg/mL',
-    category: 'Gastro',
-    notes: 'Alvo: 2-3 evacuações pastosas/dia.'
-  },
-  {
-    id: '34',
-    name: 'Ceftriaxona',
-    indication: 'Sepse, Meningite, Pneumonia, ITU Grave',
-    dose: '1g a 2g IV',
-    frequency: '12/12h ou 24/24h',
-    presentation: '500mg, 1g (Frasco-ampola)',
-    category: 'Antibiótico',
-    notes: 'Cefalosporina de 3ª geração. Amplo espectro.'
-  },
-  {
-    id: '35',
-    name: 'Clindamicina',
-    indication: 'Infeccções por Anaeróbios, Pele e Partes Moles',
-    dose: '600mg IV ou 300-450mg VO',
-    frequency: '6/6h ou 8/8h',
-    presentation: '150mg/mL (Ampola), 300mg (Cápsula)',
-    category: 'Antibiótico',
-    notes: 'Risco de colite pseudomembranosa (C. difficile).'
-  },
-  {
-    id: '36',
-    name: 'Piperacilina + Tazobactam',
-    indication: 'Infecções Hospitalares, Neutropenia Febril',
-    dose: '4.5g IV',
-    frequency: '6/6h ou 8/8h',
-    presentation: '4.5g (Frasco-ampola)',
-    category: 'Antibiótico',
-    notes: 'Excelente cobertura para Pseudômonas.'
-  },
-  {
-    id: '37',
-    name: 'Levofloxacino',
-    indication: 'Pneumonia, ITU Complicada, Sinusite',
-    dose: '500mg a 750mg VO/IV',
-    frequency: '24/24h',
-    presentation: '500mg, 750mg',
-    category: 'Antibiótico',
-    notes: 'Quinolona respiratória. Risco de ruptura de tendão.'
-  },
-  {
-    id: '38',
-    name: 'Fluconazol',
-    indication: 'Candidíase (Vaginal, Oral, Esofágica), Criptococose',
-    dose: '150mg dose única (Vaginal) ou 200-400mg/dia',
-    frequency: 'Variável',
-    presentation: '100mg, 150mg (Cápsula), 2mg/mL (Bolsa IV)',
-    category: 'Antifúngico',
-    notes: 'Muitas interações medicamentosas (Inibidor CYP).'
-  },
-  {
-    id: '39',
-    name: 'Ciprofloxacino',
-    indication: 'ITU, Diarreia Infecciosa, Prostatite',
-    dose: '500mg VO ou 400mg IV',
-    frequency: '12/12h',
-    presentation: '500mg (Comprimido), 2mg/mL (Bolsa IV)',
-    category: 'Antibiótico',
-    notes: 'Evitar em idosos se possível (risco de Delirium).'
-  },
-  {
-    id: '40',
-    name: 'Azitromicina',
-    indication: 'Pneumonia, ISTs, Coqueluche',
-    dose: '500mg VO/IV',
-    frequency: '24/24h (3 a 5 dias)',
-    presentation: '500mg',
-    category: 'Antibiótico',
-    notes: 'Excelente para germes atípicos.'
-  },
-  {
-    id: '41',
-    name: 'Metronidazol',
-    indication: 'Tricomoníase, Vaginose, Infecções Anaeróbias',
-    dose: '400mg a 500mg VO/IV',
-    frequency: '8/8h ou 12/12h',
-    presentation: '250mg, 400mg (Comprimido), 5mg/mL (Bolsa IV)',
-    category: 'Antibiótico',
-    notes: 'Efeito Dissulfiram (não ingerir álcool).'
-  },
-  {
-    id: '42',
-    name: 'Sulfametoxazol + Trimetoprima',
-    indication: 'Pneumocistose, ITU, Nocardiose',
-    dose: '800/160mg (1 cp forte) VO',
-    frequency: '12/12h',
-    presentation: '400/80mg, 800/160mg',
-    category: 'Antibiótico',
-    notes: 'Risco de hipercalemia e Steven-Johnson.'
-  },
-  {
-    id: '43',
-    name: 'Atenolol',
-    indication: 'Hipertensão, Angina estável, Pós-IAM',
-    dose: '25mg a 100mg VO',
-    frequency: '24/24h',
-    presentation: '25mg, 50mg, 100mg',
-    category: 'Cardiovascular',
-    notes: 'Beta-bloqueador cardiosseletivo (B1).'
-  },
-  {
-    id: '44',
-    name: 'Espironolactona',
-    indication: 'IC (Frequência reduzida), Ascite em Cirrose, Hipertensão',
-    dose: '25mg a 100mg VO',
-    frequency: '24/24h',
-    presentation: '25mg, 100mg',
-    category: 'Cardiovascular',
-    notes: 'Poupador de Potássio. Risco de ginecomastia.'
-  },
-  {
-    id: '45',
-    name: 'Digoxina',
-    indication: 'IC Grave, Fibrilação Atrial (Controle FC)',
-    dose: '0.125mg a 0.25mg VO',
-    frequency: '24/24h',
-    presentation: '0.25mg',
-    category: 'Cardiologia',
-    notes: 'Cuidado com intoxicação digitálica (especialmente se hipocalemia).'
-  },
-  {
-    id: '46',
-    name: 'Enalapril',
-    indication: 'Hipertensão, IC, Nefropatia',
-    dose: '5mg a 40mg/dia',
-    frequency: '12/12h ou 24/24h',
-    presentation: '5mg, 10mg, 20mg',
-    category: 'Cardiologia',
-    notes: 'Pode causar tosse seca (substituir por BRA se necessário).'
-  },
-  {
-    id: '47',
-    name: 'Glibenclamida',
-    indication: 'Diabetes Mellitus tipo 2',
-    dose: '2.5mg a 20mg VO',
-    frequency: 'Antes das refeições',
-    presentation: '5mg',
-    category: 'Endocrinologia',
-    notes: 'Sulfonilureia. Alto risco de hipoglicemia em idosos.'
-  },
-  {
-    id: '48',
-    name: 'Empagliflozina',
-    indication: 'DM2, IC, Doença Renal Crônica',
-    dose: '10mg a 25mg VO',
-    frequency: '24/24h',
-    presentation: '10mg, 25mg',
-    category: 'Endocrinologia',
-    notes: 'iSGLT2. Benefício cardiovascular e renal comprovado.'
-  },
-  {
-    id: '49',
-    name: 'Pregabalina',
-    indication: 'Dor Neuropática, Fibromialgia, Ansiedade',
-    dose: '75mg a 600mg/dia',
-    frequency: '8/8h ou 12/12h',
-    presentation: '75mg, 150mg',
-    category: 'Neurologia',
-    notes: 'Ajustar para função renal. Pode causar edema e sonolência.'
-  },
-  {
-    id: '50',
+    id: 'm9',
     name: 'Tramadol',
-    indication: 'Dor moderada a intensa',
-    dose: '50mg a 100mg VO/IV',
-    frequency: '6/6h ou 8/8h',
-    presentation: '50mg, 100mg',
+    indication: 'Dor moderada a intensa refratária a AINEs, dor pós-operatória',
+    dose: '50mg a 100mg VO / 50-100mg EV diluído em 100mL SF em 20min',
+    frequency: '6/6h ou 8/8h (Máx 400mg/dia)',
+    presentation: '50mg (Caps), 100mg/mL (Gotas - 2.5mg/gota), 50mg/mL, 100mg/2mL (Ampolas EV/IM)',
+    renalAdjustment: 'ClCr < 30 mL/min: estender intervalo para 12/12h (Máx 200mg/dia).',
     category: 'Analgésico',
-    notes: 'Opioide fraco. Risco de Síndrome Serotoninérgica se associado a ISRS.'
+    notes: 'Opioide fraco + inibidor de recaptação de serotonina/noradrenalina. Pode causar náusea, tontura e convulsão em doses altas.'
+  },
+  {
+    id: 'm10',
+    name: 'Codeína (Paracetamol + Codeína)',
+    indication: 'Dor moderada, tosse seca refratária',
+    dose: '30mg de Codeína + 500mg Paracetamol VO',
+    frequency: '6/6h ou 4/4h conforme necessidade',
+    presentation: '30mg (Comp), 30mg/500mg (Tylex / Paco)',
+    renalAdjustment: 'ClCr 10-50 mL/min: administrar 75% da dose.',
+    category: 'Analgésico',
+    notes: 'Opioide fraco convertido em morfina no fígado (CYP2D6). Pode causar constipação intestinal marcante e sonolência.'
+  },
+  {
+    id: 'm11',
+    name: 'Morfina',
+    indication: 'Dor severa aguda (IAM, Trauma, Queimaduras, Dor Oncológica)',
+    dose: '2mg a 5mg EV fracionado de 5/5min (Adulto) / 0.05-0.1 mg/kg',
+    frequency: '4/4h ou contínuo em bomba de infusão',
+    presentation: '10mg/mL (Ampola EV/SC), 10mg, 30mg (Dimorf Comp VO), 10mg/mL Solução Oral',
+    renalAdjustment: 'Acúmulo de metabólitos ativos (M6G/M3G) em DRC; reduzir dose e aumentar intervalo.',
+    category: 'Emergência',
+    notes: 'Opioide forte padrão-ouro. Ter Naloxona disponível no leito em caso de depressão respiratória ou miose puntiforme.'
+  },
+  {
+    id: 'm12',
+    name: 'Fentanil',
+    indication: 'Analgesia e sedação profunda em UTI, intubação (RSI), analgesia cirúrgica',
+    dose: '1 a 5 mcg/kg EV (Ataque) / 0.5 a 3 mcg/kg/h (Manutenção em BCI)',
+    frequency: 'Infusão contínua ou bolus criterioso',
+    presentation: '50 mcg/mL (Frascos-ampola de 2mL, 5mL, 10mL)',
+    renalAdjustment: 'Seguro em insuficiência renal (sem metabólitos ativos tóxicos).',
+    category: 'Emergência',
+    notes: 'Opioide sintético 100x mais potente que a morfina. Risco de "Tórax Rígido" se injetado em bolus EV muito rápido.'
+  },
+  {
+    id: 'm13',
+    name: 'Ciclobenzaprina',
+    indication: 'Espasmo muscular esquelético agudo, lombalgia, cervicalgia, fibromialgia',
+    dose: '5mg a 10mg VO ao deitar',
+    frequency: '8/8h ou noites (Máx 30mg/dia por 2 semanas)',
+    presentation: '5mg, 10mg (Miosan / Mirtax)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Analgésico',
+    notes: 'Relaxante muscular de ação central estruturalmente similar aos tricíclicos. Causa boca seca, sonolência e retenção urinária.'
+  },
+  {
+    id: 'm14',
+    name: 'Dorflex (Orfenadrina + Dipirona + Cafeína)',
+    indication: 'Cefaleia tensional, contratura muscular, dorsalgia',
+    dose: '1 a 2 comprimidos VO ou 30 a 60 gotas',
+    frequency: '6/6h ou 8/8h',
+    presentation: 'Comprimidos e Gotas orais',
+    renalAdjustment: 'Usar com cautela em insuficiência renal.',
+    category: 'Analgésico',
+    notes: 'Combinação analgésica com relaxante muscular. Cuidado com dependência secundária a cafeína e abuso crônico.'
+  },
+
+  // --- ANTIBIÓTICOS E ANTIMICROBIANOS ---
+  {
+    id: 'm15',
+    name: 'Amoxicilina',
+    indication: 'Otite Média Aguda, Sinusite, Amigdalite, Pneumonia Comunitária Leve',
+    dose: '500mg VO de 8/8h ou 875mg de 12/12h (Pediatria: 50 a 90 mg/kg/dia)',
+    frequency: '8/8h ou 12/12h por 7 a 10 dias',
+    presentation: '500mg, 875mg (Comp), 250mg/5mL, 400mg/5mL (Suspensão Oral)',
+    renalAdjustment: 'ClCr 10-30 mL/min: máximo 500mg de 12/12h.',
+    category: 'Antibiótico',
+    notes: 'Penicilina de amplo espectro. Dose alta (90 mg/kg/dia) indicada em áreas com pneumococo resistente.'
+  },
+  {
+    id: 'm16',
+    name: 'Amoxicilina + Clavulanato',
+    indication: 'Infecções por germes produtores de beta-lactamase (Sinusite refratária, Mordedura animal, Bronquiectasias, Pielonefrite)',
+    dose: '500/125mg 8/8h ou 875/125mg 12/12h (Pediatria: 45 a 90 mg/kg/dia de amox)',
+    frequency: '8/8h ou 12/12h por 7 a 14 dias',
+    presentation: '500/125mg, 875/125mg (Comp), 250+62.5mg/5mL, 400+57mg/5mL (Suspensão)',
+    renalAdjustment: 'ClCr < 30 mL/min: contraindicado uso da apresentação 875/125mg.',
+    category: 'Antibiótico',
+    notes: 'Tomar no início das refeições para diminuir diarreia e náusea. Risco de hepatite colestática.'
+  },
+  {
+    id: 'm17',
+    name: 'Cefalexina',
+    indication: 'Infecções de pele (Erisipela, Impetigo), ITU não complicada, Profilaxia cirúrgica',
+    dose: '500mg VO de 6/6h (Pediatria: 25 a 50 mg/kg/dia dividido de 6/6h)',
+    frequency: '6/6h por 7 a 10 dias',
+    presentation: '500mg (Comp/Caps), 250mg/5mL (Suspensão Oral)',
+    renalAdjustment: 'ClCr < 10 mL/min: administrar 250mg a 500mg a cada 12-24h.',
+    category: 'Antibiótico',
+    notes: 'Cefalosporina de 1ª geração. Excelente para Staphylococcus aureus sensível e Streptococcus pyogenes.'
+  },
+  {
+    id: 'm18',
+    name: 'Ceftriaxona',
+    indication: 'Pneumonia Grave, Sepse, Meningite, Pielonefrite, Gonorreia, Febre Tifoide',
+    dose: '1g a 2g EV/IM 1x ao dia (Meningite: 2g EV de 12/12h; Gonorreia: 500mg IM dose única)',
+    frequency: '24/24h ou 12/12h',
+    presentation: '500mg, 1g, 2g (Frasco-ampola IV/IM)',
+    renalAdjustment: 'Sem necessidade de ajuste se função hepática preservada.',
+    category: 'Antibiótico',
+    notes: 'Cefalosporina de 3ª geração. Não reconstituir com soluções contendo cálcio (ex: Ringer Lactato) em recém-nascidos.'
+  },
+  {
+    id: 'm19',
+    name: 'Cefepima',
+    indication: 'Infecção hospitalar grave, Neutropenia Febril, Pseudomonas aeruginosa',
+    dose: '1g a 2g EV de 8/8h ou 12/12h',
+    frequency: '8/8h em infecções graves',
+    presentation: '1g, 2g (Frasco-ampola IV)',
+    renalAdjustment: 'ClCr < 50 mL/min: reduzir dose/frequência para evitar neurotoxicidade (encefalopatia/mioclonias).',
+    category: 'Antibiótico',
+    notes: 'Cefalosporina de 4ª geração com ampla cobertura antipseudomonas e contra enterobactérias.'
+  },
+  {
+    id: 'm20',
+    name: 'Azitromicina',
+    indication: 'Pneumonia atípica (Mycoplasma/Chlamydia), DST (Clamídia/Uretrite), Coqueluche, Diarreia por Campylobacter',
+    dose: '500mg VO 1x ao dia por 3 a 5 dias (Uretrite por Clamídia: 1g VO dose única)',
+    frequency: '24/24h (Pediatria: 10 mg/kg/dia 1x/dia por 3-5 dias)',
+    presentation: '500mg (Comp), 200mg/5mL (Suspensão Oral), 500mg IV',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Antibiótico',
+    notes: 'Macrolídeo de meia-vida longa (68h). Pode prolongar o intervalo QT no ECG.'
+  },
+  {
+    id: 'm21',
+    name: 'Ciprofloxacino',
+    indication: 'Infecção Urinária Complicada, Prostatite, Diarreia Bacteriana, Infecção Intra-abdominal',
+    dose: '500mg VO 12/12h ou 400mg EV 12/12h',
+    frequency: '12/12h por 7 a 14 dias',
+    presentation: '500mg (Comp), 2mg/mL (Bolsa de 100mL/200mL para Infusão EV)',
+    renalAdjustment: 'ClCr < 30 mL/min: 250mg-500mg de 18/18h ou 24/24h.',
+    category: 'Antibiótico',
+    notes: 'Fluoroquinolona. Alerta do FDA para risco de tendinite/ruptura do tendão de Aquiles, neurotoxicidade e aneurisma de aorta.'
+  },
+  {
+    id: 'm22',
+    name: 'Levofloxacino',
+    indication: 'Pneumonia Comunitária Grave, Sinusite Bacteriana Aguda, Pielonefrite',
+    dose: '500mg a 750mg VO/EV 1x ao dia',
+    frequency: '24/24h por 5 a 14 dias',
+    presentation: '500mg, 750mg (Comp e Bolsas EV)',
+    renalAdjustment: 'ClCr < 50 mL/min: ajustar dose e frequência.',
+    category: 'Antibiótico',
+    notes: 'Quinolona respiratória com excelente cobertura contra Streptococcus pneumoniae e germes atípicos.'
+  },
+  {
+    id: 'm23',
+    name: 'Doxiciclina',
+    indication: 'Febre Maculosa, Leptospirose, Clamídia, Acne Vulgar, Doença de Lyme, Pneumonia Atípica',
+    dose: '100mg VO de 12/12h',
+    frequency: '12/12h por 7 a 14 dias',
+    presentation: '100mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste em insuficiência renal.',
+    category: 'Antibiótico',
+    notes: 'Tetraciclina. Tomar com copo cheio de água e evitar deitar-se em seguida (esofagite). Evitar em gestantes e crianças < 8 anos.'
+  },
+  {
+    id: 'm24',
+    name: 'Sulfametoxazol + Trimetoprima (Bactrim)',
+    indication: 'Pneumocistose (PJP), ITU, Nocardiose, Isosporíase, Exacerbação de DPOC',
+    dose: '800/160mg (1 comp Forte) VO de 12/12h (Tratamento PJP: 15-20 mg/kg/dia de TMP)',
+    frequency: '12/12h ou 8/8h',
+    presentation: '400/80mg, 800/160mg (Comp), 200+40mg/5mL (Suspensão), Ampola EV',
+    renalAdjustment: 'ClCr 15-30 mL/min: metade da dose. ClCr < 15: evitar.',
+    category: 'Antibiótico',
+    notes: 'Inibição sequencial do fólico. Risco de hipercalemia, mielossupressão e Síndrome de Stevens-Johnson.'
+  },
+  {
+    id: 'm25',
+    name: 'Nitrofurantoína',
+    indication: 'Cistite Aguda não complicada em mulheres, Profilaxia de ITU de repetição',
+    dose: '100mg VO de 6/6h (Tratamento 5 dias) / 100mg à noite (Profilaxia)',
+    frequency: '6/6h por 5 dias ou 1x/noite',
+    presentation: '100mg (Cápsulas)',
+    renalAdjustment: 'Contraindicado em ClCr < 30 mL/min (ineficaz na via urinária e risco de toxicidade).',
+    category: 'Antibiótico',
+    notes: 'Atua exclusivamente no trato urinário inferior. Excelente opção poupadora de quinolonas.'
+  },
+  {
+    id: 'm26',
+    name: 'Fosfomicina Trometamol',
+    indication: 'Cistite Aguda não complicada em mulheres e gestantes',
+    dose: '3g VO em envelope dissolvido em meio copo de água',
+    frequency: 'DOSE ÚNICA (em jejum ou ao deitar)',
+    presentation: '3g (Sachê envelope)',
+    renalAdjustment: 'Sem necessidade de ajuste.',
+    category: 'Antibiótico',
+    notes: 'Mantenha alta concentração urinária por até 36-48h. Altíssima comodidade posológica.'
+  },
+  {
+    id: 'm27',
+    name: 'Metronidazol',
+    indication: 'Tricomoníase, Vaginose Bacteriana, Giardíase, Amebíase, Infecção por Anaeróbios',
+    dose: '250mg a 500mg VO de 8/8h ou 2g VO dose única (Tricomoníase) / 500mg EV 8/8h',
+    frequency: '8/8h por 7 dias ou dose única',
+    presentation: '250mg, 400mg (Comp), 5mg/mL (Bolsa de 100mL EV), Gel vaginal 0.75%',
+    renalAdjustment: 'ClCr < 10 mL/min: administrar 50% da dose.',
+    category: 'Antibiótico',
+    notes: 'Efeito Dissulfiram (Reação tipo Antabuse) - PROIBIDO consumo de bebidas alcoólicas durante e até 48h após o término.'
+  },
+  {
+    id: 'm28',
+    name: 'Clindamicina',
+    indication: 'Infecções de Pele/Partes Moles, Abscesso Pulmonar, Osteomielite por Staphylococcus/Anaeróbios',
+    dose: '300mg a 450mg VO 6/6h ou 600mg a 900mg EV de 8/8h',
+    frequency: '6/6h a 8/8h',
+    presentation: '300mg (Caps), 150mg/mL (Ampola de 4mL e 6mL EV/IM)',
+    renalAdjustment: 'Sem necessidade de ajuste renal.',
+    category: 'Antibiótico',
+    notes: 'Lincosamida com excelente penetração óssea e tecidual. Principal causa de Colite Pseudomembranosa por Clostridioides difficile.'
+  },
+  {
+    id: 'm29',
+    name: 'Vancomicina',
+    indication: 'Infecções graves por MRSA (Staphylococcus aureus resistente à metacilina), Endocardite, Colite por C. difficile (VO)',
+    dose: '15 a 20 mg/kg EV de 8/8h ou 12/12h (Alvo de Vancocinemia de vale: 15-20 mcg/mL)',
+    frequency: '8/8h ou 12/12h em infusão lenta de 60min',
+    presentation: '500mg, 1g (Frasco-ampola p/ diluição EV)',
+    renalAdjustment: 'Ajuste estrito guiado por dosagem de vancocinemia serum e ClCr.',
+    category: 'Antibiótico',
+    notes: 'Glicopeptídeo. Infusão rápida causa "Síndrome do Homem Vermelho" (liberação de histamina). Monitorar função renal.'
+  },
+  {
+    id: 'm30',
+    name: 'Meropenem',
+    indication: 'Infecções intra-abdominais graves, Sepse fúngica/bacteriana, Neutropenia febril, Germes ESBL+',
+    dose: '1g a 2g EV de 8/8h (Meningite: 2g de 8/8h em infusão estendida de 3 horas)',
+    frequency: '8/8h',
+    presentation: '500mg, 1g (Frasco-ampola IV)',
+    renalAdjustment: 'ClCr 26-50: 1g de 12/12h; ClCr 10-25: 500mg de 12/12h; ClCr < 10: 500mg de 24/24h.',
+    category: 'Antibiótico',
+    notes: 'Carbapenêmico de ultralargo espectro. Menor risco convulsivante que o imipenem.'
+  },
+  {
+    id: 'm31',
+    name: 'Piperacilina + Tazobactam (Tazocin)',
+    indication: 'Infecção hospitalar, Pneumonia associada à ventilação, Sepse abdominal, Pseudomonas',
+    dose: '4.5g EV de 6/6h (ou infusão estendida de 3h a 4h)',
+    frequency: '6/6h ou 8/8h',
+    presentation: '4.5g (Frasco-ampola IV)',
+    renalAdjustment: 'Ajustar dose conforme ClCr (ex: ClCr 20-40: 3.375g 6/6h).',
+    category: 'Antibiótico',
+    notes: 'Penicilina antipseudomonas + inibidor de beta-lactamase. Pode causar trombocitopenia e nefrite intersticial.'
+  },
+
+  // --- ANTIVIRAIS & ANTIFÚNGICOS ---
+  {
+    id: 'm32',
+    name: 'Aciclovir',
+    indication: 'Herpes Simplex (Labial/Genital), Herpes Zoster, Encefalite Herpética',
+    dose: '200mg VO 5x/dia (Herpes Simplex) / 800mg VO 5x/dia (Zoster) / 10mg/kg EV 8/8h (Encefalite)',
+    frequency: '5x ao dia (a cada 4h acordado) por 7 a 10 dias',
+    presentation: '200mg, 400mg (Comp), 250mg (Frasco-ampola IV), Creme dermatológico 5%',
+    renalAdjustment: 'ClCr < 10 mL/min: ajustar dose para 200mg de 12/12h.',
+    category: 'Antiviral',
+    notes: 'Manter excelente hidratação venosa/oral durante uso de aciclovir EV para evitar cristalúria e insuficiência renal aguda.'
+  },
+  {
+    id: 'm33',
+    name: 'Oseltamivir (Tamiflu)',
+    indication: 'Tratamento e profilaxia de Influenza A e B (H1N1/H3N2) em pacientes de risco ou SRAG',
+    dose: '75mg VO de 12/12h por 5 dias (Pediatria: dose por faixa de peso de 30mg a 75mg)',
+    frequency: '12/12h por 5 dias consecutivos',
+    presentation: '30mg, 45mg, 75mg (Cápsulas) / Pó para suspensão oral',
+    renalAdjustment: 'ClCr 30-60: 30mg 12/12h; ClCr 10-30: 30mg 24/24h.',
+    category: 'Antiviral',
+    notes: 'Idealmente iniciar nas primeiras 48h do início dos sintomas gripais, mas deve ser mantido mesmo após se houver gravidade.'
+  },
+  {
+    id: 'm34',
+    name: 'Fluconazol',
+    indication: 'Candidíase Vulvovaginal, Candidíase Oral/Esofágica, Criptococose',
+    dose: '150mg VO dose única (Vaginal) ou 200mg-400mg VO/EV 1x ao dia (Sistêmico)',
+    frequency: 'Dose única ou 24/24h por 7 a 14 dias',
+    presentation: '150mg (Caps), 2mg/mL (Bolsa de 100mL EV)',
+    renalAdjustment: 'ClCr < 50 mL/min: administrar 50% da dose de manutenção.',
+    category: 'Antifúngico',
+    notes: 'Triazólico. Potente inibidor da CYP3A4 e CYP2C9 (atentar para interações com anticoagulantes e hipoglicemiantes).'
+  },
+  {
+    id: 'm35',
+    name: 'Nistatina',
+    indication: 'Candidíase Oral (Sapo), Candidíase Vaginal',
+    dose: '100.000 UI/mL Bochechar e engolir 5mL de 6/6h / 1 aplicador vaginal à noite por 14 dias',
+    frequency: '6/6h (Oral) ou 24/24h (Vaginal)',
+    presentation: 'Suspensão Oral 100.000 UI/mL (50mL), Creme Vaginal 25.000 UI/g',
+    renalAdjustment: 'Não absorvido sistemicamente; sem ajuste.',
+    category: 'Antifúngico',
+    notes: 'Agente antifúngico polienico de ação estritamente tópica/luminal.'
+  },
+
+  // --- ANTIPARASITÁRIOS ---
+  {
+    id: 'm36',
+    name: 'Albendazol',
+    indication: 'Ascaridíase, Ancilostomíase, Enterobíase, Giardíase, Neurocisticercose',
+    dose: '400mg VO mastigável (Dose única na maioria das verminoses; 400mg/dia 5 dias na Giardíase)',
+    frequency: 'Dose única ou 1x/dia por 3-5 dias',
+    presentation: '400mg (Comp Mastigável), 40mg/mL (Suspensão Oral de 10mL)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Antiparasitário',
+    notes: 'Contraindicado no 1º trimestre da gestação. Administrar preferencialmente com refeição gordurosa na neurocisticercose.'
+  },
+  {
+    id: 'm37',
+    name: 'Ivermectina',
+    indication: 'Escabiose (Sarna), Pediculose (Piolho), Estrongiloidíase, Oncocercose',
+    dose: '200 mcg/kg VO em dose única em jejum (Ex: 60kg = 2 comprimidos de 6mg)',
+    frequency: 'Dose única (Repetir após 14 dias na escabiose grave)',
+    presentation: '6mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Antiparasitário',
+    notes: 'Tomar com água em jejum (1 hora antes da refeição). Contraindicado em crianças < 15kg ou < 5 anos.'
+  },
+  {
+    id: 'm38',
+    name: 'Nitazoxanida (Annita)',
+    indication: 'Gastroenterite por Giardia lamblia, Cryptosporidium, Helmintíases mistas',
+    dose: '500mg VO de 12/12h por 3 dias (Pediatria: 7.5 mg/kg de 12/12h)',
+    frequency: '12/12h por 3 dias consecutivos',
+    presentation: '500mg (Comp), 20mg/mL (Pó para suspensão oral)',
+    renalAdjustment: 'Usar com cautela em insuficiência renal grave.',
+    category: 'Antiparasitário',
+    notes: 'Tomar junto com alimentos. Pode alterar a cor da urina e esperma para amarelo esverdeado intenso.'
+  },
+
+  // --- CARDIOVASCULAR & ANTI-HIPERTENSIVOS ---
+  {
+    id: 'm39',
+    name: 'Captopril',
+    indication: 'Hipertensão Arterial, Crise Hipertensiva (Urgência), Insuficiência Cardíaca, Pós-IAM',
+    dose: '25mg a 50mg VO/Sublingual',
+    frequency: '8/8h ou Sublingual na Urgência Hipertensiva',
+    presentation: '12.5mg, 25mg, 50mg (Comprimidos)',
+    renalAdjustment: 'ClCr < 50 mL/min: reduzir dose em 25-50%.',
+    category: 'Cardiovascular',
+    notes: 'IECA de curta duração. Monitorar Potássio e Creatinina. Contraindicado absoluto na gestação.'
+  },
+  {
+    id: 'm40',
+    name: 'Enalapril',
+    indication: 'Hipertensão Arterial Sistêmica, Insuficiência Cardíaca com Fração de Ejeção Reduzida, Nefropatia Diabética',
+    dose: '5mg a 40mg VO ao dia',
+    frequency: '12/12h ou 24/24h',
+    presentation: '5mg, 10mg, 20mg (Comprimidos)',
+    renalAdjustment: 'ClCr < 30 mL/min: iniciar com 2.5mg ao dia e titular devagar.',
+    category: 'Cardiovascular',
+    notes: 'IECA de longa ação. Causa tosse seca por acúmulo de bradicinina em até 10-15% dos pacientes (trocar por BRA).'
+  },
+  {
+    id: 'm41',
+    name: 'Losartana Potássica',
+    indication: 'Hipertensão Arterial, Intolerância ao IECA (Tosse), Proteção Renal no DM2, IC',
+    dose: '25mg a 100mg VO ao dia',
+    frequency: '12/12h ou 24/24h',
+    presentation: '25mg, 50mg, 100mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste inicial, mas monitorar hipercalemia se ClCr < 30.',
+    category: 'Cardiovascular',
+    notes: 'Bloqueador dos Receptores de Angiotensina II (BRA). Excelente tolerabilidade profilática.'
+  },
+  {
+    id: 'm42',
+    name: 'Sacubitril + Valsartana (Entresto)',
+    indication: 'Insuficiência Cardíaca Sintomática com Fração de Ejeção Reduzida (ICFER ≤ 40%)',
+    dose: '24/26mg a 97/103mg VO',
+    frequency: '12/12h',
+    presentation: '24/26mg, 49/51mg, 97/103mg (Comprimidos)',
+    renalAdjustment: 'Reduzir dose inicial em eTFG < 30 mL/min.',
+    category: 'Cardiovascular',
+    notes: 'Inibidor da Neprilisina + BRA. Exige janela de "Washout" de 36 horas após parar o IECA antes de iniciar.'
+  },
+  {
+    id: 'm43',
+    name: 'Atenolol',
+    indication: 'Hipertensão, Angina de Peito, Controle de Frequência na Fibrilação Atrial, Pós-IAM',
+    dose: '25mg a 100mg VO ao dia',
+    frequency: '24/24h',
+    presentation: '25mg, 50mg, 100mg (Comprimidos)',
+    renalAdjustment: 'ClCr 15-35: máx 50mg/dia. ClCr < 15: máx 25mg/dia.',
+    category: 'Cardiovascular',
+    notes: 'Beta-bloqueador beta-1 cardiosseletivo hidrofílico. Pode piorar broncoespasmo em asmáticos não controlados.'
+  },
+  {
+    id: 'm44',
+    name: 'Carvedilol',
+    indication: 'Insuficiência Cardíaca com Fator de Ejeção Reduzido, Pós-IAM, Hipertensão Arterial',
+    dose: '3.125mg a 25mg VO (Titulação progressiva a cada 2 semanas)',
+    frequency: '12/12h junto às refeições',
+    presentation: '3.125mg, 6.25mg, 12.5mg, 25mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Cardiovascular',
+    notes: 'Beta-bloqueador não seletivo com ação alfa-1 bloqueadora vasodilatadora. Reduz mortalidade na IC.'
+  },
+  {
+    id: 'm45',
+    name: 'Metoprolol (Succinato / Tartarato)',
+    indication: 'Angina, ICFER (Succinato), Arritmias Supraventriculares, Hipertensão',
+    dose: '25mg a 200mg VO ao dia',
+    frequency: '24/24h (Succinato de liberação prolongada) ou 12/12h (Tartarato)',
+    presentation: '25mg, 50mg, 100mg (Comprimidos Seloken)',
+    renalAdjustment: 'Não requer ajuste em insuficiência renal.',
+    category: 'Cardiovascular',
+    notes: 'Beta-1 seletivo. O Succinato de Metoprolol é uma das 3 opções de beta-bloqueadores aprovados para IC.'
+  },
+  {
+    id: 'm46',
+    name: 'Anlodipino',
+    indication: 'Hipertensão Arterial Sistêmica, Angina Estável e Vasospástica (Prinzmetal)',
+    dose: '2.5mg a 10mg VO ao dia',
+    frequency: '24/24h',
+    presentation: '2.5mg, 5mg, 10mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Cardiovascular',
+    notes: 'Bloqueador de Canais de Cálcio Dihidropiridínico. Causa vasodilatação periférica com edema maleolar assintomático.'
+  },
+  {
+    id: 'm47',
+    name: 'Nifedipino (Adalat / Retard / OROS)',
+    indication: 'Hipertensão na Gestação (Emergência/Crise), Tocólise no Trabalho de Parto Prematuro',
+    dose: '10mg a 20mg VO na Crise / 30mg a 60mg OROS ao dia',
+    frequency: '8/8h ou 24/24h (Formulações de liberação lenta)',
+    presentation: '10mg, 20mg Retard, 30mg, 60mg OROS',
+    renalAdjustment: 'Sem necessidade de ajuste.',
+    category: 'Cardiovascular',
+    notes: 'NUNCA administrar nifedipino de curta ação sublingual para urgência hipertensiva em coronariopatas (risco de roubo coronariano e AVC).'
+  },
+  {
+    id: 'm48',
+    name: 'Hidroclorotiazida',
+    indication: 'Hipertensão Arterial (Monoterapia ou Associação), Edema leve',
+    dose: '12.5mg a 25mg VO pela manhã',
+    frequency: '24/24h (Manhã)',
+    presentation: '12.5mg, 25mg (Comprimidos)',
+    renalAdjustment: 'Ineficaz como diurético isolado se eTFG < 30 mL/min (substituir por diurético de alça).',
+    category: 'Cardiovascular',
+    notes: 'Diurético Tiazídico. Monitorar DVE: hipocalemia, hiponatremia, hiperuricemia (pode desencadear crise de Gota) e hiperglicemia.'
+  },
+  {
+    id: 'm49',
+    name: 'Furosemida (Lasix)',
+    indication: 'Insuficiência Cardíaca Descompensada (Perfil B/C), Edema Agudo de Pulmão, Cirrose com Ascite, DRC',
+    dose: '20mg a 80mg VO / 20mg a 100mg EV em bolus ou infusão contínua',
+    frequency: '12/12h ou 24/24h ou SOS na hipervolemia',
+    presentation: '40mg (Comp), 20mg/2mL (Ampola EV/IM)',
+    renalAdjustment: 'Exige doses maiores em DRC avançada para atingir o local de ação na alça de Henle.',
+    category: 'Cardiovascular',
+    notes: 'Diurético de Alça potente. Monitorar rigorosamente potássio, magnésio e pressão arterial. Ototoxicidade em infusão EV rápida.'
+  },
+  {
+    id: 'm50',
+    name: 'Espironolactona',
+    indication: 'Insuficiência Cardíaca (ICFER), Ascite por Hipertensão Portal em Cirrose, Hipertensão Refratária',
+    dose: '25mg a 50mg VO ao dia (IC) / 100mg a 400mg VO/dia (Cirrose)',
+    frequency: '24/24h (Pela manhã)',
+    presentation: '25mg, 50mg, 100mg (Comprimidos)',
+    renalAdjustment: 'Contraindicado se K+ > 5.0 mEq/L ou ClCr < 30 mL/min.',
+    category: 'Cardiovascular',
+    notes: 'Diurético Poupador de Potássio / Antagonista da Aldosterona. Causa ginecomastia dolorosa e mastodinia em homens.'
+  },
+  {
+    id: 'm51',
+    name: 'Hidralazina',
+    indication: 'Hipertensão na Gestação, Crise Hipertensiva, Associação na IC em negros ou com contraindicação a IECA',
+    dose: '25mg a 50mg VO de 8/8h ou 5mg a 20mg EV lento a cada 20min',
+    frequency: '8/8h VO ou SOS na emergência',
+    presentation: '25mg, 50mg (Comp), 20mg/mL (Ampola EV)',
+    renalAdjustment: 'ClCr < 10 mL/min: estender intervalo para 8-16h.',
+    category: 'Cardiovascular',
+    notes: 'Vasodilatador arterial direto. Pode induzir taquicardia reflexa e síndrome Lupus-Like em metabolizadores lentos.'
+  },
+  {
+    id: 'm52',
+    name: 'Metildopa',
+    indication: 'Hipertensão Arterial na Gestação (Pré-Eclâmpsia / Hipertensão Crônica)',
+    dose: '250mg a 500mg VO',
+    frequency: '8/8h ou 12/12h (Máx 2g/dia)',
+    presentation: '250mg, 500mg (Comprimidos)',
+    renalAdjustment: 'ClCr < 50 mL/min: estender intervalo para 8-12h.',
+    category: 'Cardiovascular',
+    notes: 'Agonista Alfa-2 Adrenérgico Central. Anti-hipertensivo mais estudado e seguro na gestação. Pode causar sonolência e Teste de Coombs direto positivo.'
+  },
+  {
+    id: 'm53',
+    name: 'Nitroprussiato de Sódio (Nipride)',
+    indication: 'Emergência Hipertensiva com Lesão de Órgão-Alvo (EAP, Dissecção de Aorta, Encefalopatia Hipertensiva)',
+    dose: '0.25 a 10 mcg/kg/min em Infusão EV Contínua em BCI',
+    frequency: 'Infusão contínua em ambiente de UTI/Sala Vermelha',
+    presentation: '50mg (Frasco-ampola fotossensível)',
+    renalAdjustment: 'Risco aumentado de intoxicação por tiocianato/cianeto em uso > 48h ou DRC.',
+    category: 'Emergência',
+    notes: 'Vasodilatador misto (arterial e venoso) ultra-rápido. Exige equipamento fotoprotetor e monitorização pressórica PAI.'
+  },
+  {
+    id: 'm54',
+    name: 'Nitroglicerina (Tridil)',
+    indication: 'Síndrome Coronariana Aguda (IAM / Angina Instável), Edema Agudo de Pulmão',
+    dose: '5 a 200 mcg/min em Infusão EV Contínua',
+    frequency: 'Titulação contínua conforme dor e PA',
+    presentation: '50mg/10mL (Ampola para diluição EV)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Emergência',
+    notes: 'Vasodilatador predominantemente venoso. Contraindicado em infarto de VD, hipotensão (PAS < 90) ou uso recente de sildenafila/tadalafila (últimas 24-48h).'
+  },
+  {
+    id: 'm55',
+    name: 'Isossorbida (Isordil / Monocordil)',
+    indication: 'Angina Pectoris, Insuficiência Cardíaca, Dor Torácica Isquêmica',
+    dose: '5mg Sublingual (Isordil) / 10mg a 40mg VO',
+    frequency: 'SOS na dor SL ou de 8/8h a 12/12h VO',
+    presentation: '5mg Sublingual, 10mg, 20mg, 40mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Cardiovascular',
+    notes: 'Promover período de tolerância ("Janela sem nitrato" de 8-12h à noite) para evitar perda de eficácia antanginosa.'
+  },
+  {
+    id: 'm56',
+    name: 'Amiodarona',
+    indication: 'Fibrilação Atrial (Cardioversão/Controle), Taquicardia Ventricular Sustentada, PCR em TV/FV sem pulso',
+    dose: '300mg EV em bolus na PCR / Ataque: 150mg EV em 10min / Manutenção: 200mg/dia VO',
+    frequency: 'Variável conforme protocolo',
+    presentation: '150mg/3mL (Ampola EV), 200mg (Comprimido VO)',
+    renalAdjustment: 'Não requer ajuste em insuficiência renal.',
+    category: 'Cardiovascular',
+    notes: 'Antiarrítmico Classe III. Diluir apenas em Soro Glicosado 5%. No uso crônico monitorar TSH, T4L, RX de tórax (fibrose pulmonar) e Córnea.'
+  },
+  {
+    id: 'm57',
+    name: 'Adenosina',
+    indication: 'Reversão de Taquicardia Paroxística Supraventricular (TPSV) de complexo estreito',
+    dose: '6mg EV Bolus Rápido seguido de Flush de 20mL SF0.9% (Se sem resposta, 12mg EV)',
+    frequency: 'Bolus ultra-rápido em veia antecubital proximal',
+    presentation: '6mg/2mL (Ampola IV)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Emergência',
+    notes: 'Meia-vida < 10 segundos. Informar ao paciente sensação iminente de opressão torácica/morte. Contraindicada em Asma grave e Bloqueio AV de 2º/3º grau.'
+  },
+  {
+    id: 'm58',
+    name: 'Atropina',
+    indication: 'Bradicardia Sinusal Sintomática, Intoxicação por Organofosforados / Carbamatos',
+    dose: '1mg EV a cada 3-5min (Máx 3mg em Bradicardia) / 2mg a 5mg EV a cada 10min na Intoxicação',
+    frequency: 'SOS conforme protocolo de ressuscitação',
+    presentation: '0.25mg/mL, 0.5mg/mL (Ampolas de 1mL)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Emergência',
+    notes: 'Anticolinérgico. Doses < 0.5mg podem causar bradicardia paradoxal central.'
+  },
+  {
+    id: 'm59',
+    name: 'Digoxina',
+    indication: 'Insuficiência Cardíaca Sintomática com Fibrilação Atrial e Frequência Elevada',
+    dose: '0.125mg a 0.25mg VO ao dia',
+    frequency: '24/24h',
+    presentation: '0.25mg (Comprimidos)',
+    renalAdjustment: 'ClCr < 50 mL/min: reduzir dose para 0.125mg em dias alternados.',
+    category: 'Cardiovascular',
+    notes: 'Inotrópico digitalis de estreita margem terapêutica. Sinais de intoxicação: xantopsia (visão amarelada), náuseas, arritmias e bloqueios.'
+  },
+  {
+    id: 'm60',
+    name: 'Enoxaparina (Clexane)',
+    indication: 'Tratamento de TVP / TEP, Síndrome Coronariana Aguda (IAM/Angina), Profilaxia de TROMBOSE em internados',
+    dose: '1 mg/kg SC de 12/12h (Tratamento) / 40mg SC 1x/dia (Profilaxia de UTI/Enfermaria)',
+    frequency: '12/12h ou 24/24h Via Subcutânea',
+    presentation: '20mg, 40mg, 60mg, 80mg, 100mg (Seringas Pré-preenchidas)',
+    renalAdjustment: 'ClCr < 30 mL/min: ajustar dose de tratamento para 1 mg/kg SC 1x ao dia (24/24h).',
+    category: 'Cardiovascular',
+    notes: 'Heparina de Baixo Peso Molecular (HBPM). Não requer monitorização de TTPA de rotina.'
+  },
+  {
+    id: 'm61',
+    name: 'Rivaroxabana',
+    indication: 'Fibrilação Atrial Não Valvar (Prevenção de AVC), Tratamento e Prevenção de TVP / TEP',
+    dose: '15mg a 20mg VO 1x ao dia (Fase Aguda TVP: 15mg 12/12h por 21 dias)',
+    frequency: '24/24h (Junto com a refeição principal)',
+    presentation: '10mg, 15mg, 20mg (Comprimidos)',
+    renalAdjustment: 'eTFG 15-50 mL/min: dose de 15mg 1x/dia. eTFG < 15: evitar.',
+    category: 'Cardiovascular',
+    notes: 'DOAC (Anticoagulante Oral Direto Inibidor do Fator Xa). Não requer RNI.'
+  },
+  {
+    id: 'm62',
+    name: 'Aspirina (AAS)',
+    indication: 'Prevenção Secundária de Eventos Cardiovasculares (IAM, AVC, DAP), Fase Aguda do IAM',
+    dose: '100mg VO ao dia (Prevenção) / 200mg a 300mg Mastigado na Fase Aguda do IAM',
+    frequency: '24/24h após refeição',
+    presentation: '100mg (Comprimidos)',
+    renalAdjustment: 'Usar com cautela em DRC estágio 4/5.',
+    category: 'Cardiovascular',
+    notes: 'Antiagregante plaquetário inibidor irreversível da COX-1. Mastigar no IAM agudo para absorção estomacal imediata.'
+  },
+  {
+    id: 'm63',
+    name: 'Clopidogrel',
+    indication: 'Síndrome Coronariana Aguda, Angioplastia com Stent, Pós-AVCi, Arteriopatia Periférica',
+    dose: '75mg VO ao dia (Ataque no IAM: 300mg a 600mg VO)',
+    frequency: '24/24h',
+    presentation: '75mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Cardiovascular',
+    notes: 'Inibidor do receptor P2Y12 de ADP. Dupla antiagregação (AAS + Clopidogrel) é padrão após Stent coronariano.'
+  },
+  {
+    id: 'm64',
+    name: 'Atorvastatina',
+    indication: 'Dislipidemia, Prevenção Primária e Secundária de Eventos Cardiovasculares, Síndrome Coronariana Aguda',
+    dose: '10mg a 80mg VO ao dia (Alta intensidade: 40mg-80mg)',
+    frequency: '24/24h (Qualquer horário do dia)',
+    presentation: '10mg, 20mg, 40mg, 80mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste em insuficiência renal.',
+    category: 'Cardiovascular',
+    notes: 'Estatina de alta potência. Meia-vida longa. Monitorar TGP/TGO e CPK se mialgia intensa.'
+  },
+  {
+    id: 'm65',
+    name: 'Sinvastatina',
+    indication: 'Hipercolesterolemia, Prevenção de Doença Coronariana',
+    dose: '20mg a 40mg VO à noite',
+    frequency: '24/24h (À NOITE)',
+    presentation: '10mg, 20mg, 40mg (Comprimidos)',
+    renalAdjustment: 'ClCr < 10 mL/min: iniciar com 10mg ao dia.',
+    category: 'Cardiovascular',
+    notes: 'Tomar à noite devido ao pico de síntese hepática de colesterol nas primeiras horas da madrugada. Não ultrapassar 20mg se associado a amiodarona ou anlodipino.'
+  },
+
+  // --- RESPIRATÓRIO & ALERGIA ---
+  {
+    id: 'm66',
+    name: 'Salbutamol (Aerolin)',
+    indication: 'Crise de Asma, Broncoespasmo Agudo, Exacerbação de DPOC',
+    dose: '2 a 10 jatos (200-1000mcg) via Espaçador a cada 20min na 1ª hora / Nebulização: 2.5 a 5mg (10-20 gotas)',
+    frequency: 'SOS ou a cada 20min na crise aguda',
+    presentation: '100mcg/dose (Spray Aerossol com Espaçador), 5mg/mL (Solução para Nebulização), Xarope 2mg/5mL',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Respiratório',
+    notes: 'Beta-2 Agonista de Curta Ação (SABA). Pode causar taquicardia, tremores de extremidade e hipocalemia.'
+  },
+  {
+    id: 'm67',
+    name: 'Ipratrópio (Atrovent)',
+    indication: 'Broncoespasmo na Crise de Asma Grave e Exacerbação de DPOC',
+    dose: '20 a 40 gotas (0.25 - 0.5mg) em 3-5mL SF 0.9% via Nebulização',
+    frequency: '8/8h ou a cada 20min junto com o Salbutamol na 1ª hora da crise',
+    presentation: '0.25mg/mL (Solução para Inalação Frasco Gotas)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Respiratório',
+    notes: 'Anticolinérgico de curta ação (SAMA). Promove broncodilatação por bloqueio muscarínico.'
+  },
+  {
+    id: 'm68',
+    name: 'Budesonida',
+    indication: 'Manutenção e controle da Asma Persistente, Rinite Alérgica, Laringite Pediátrica',
+    dose: '200mcg a 800mcg/dia via inalatória / Nebulização: 0.25mg a 1mg de 12/12h',
+    frequency: '12/12h ou 24/24h',
+    presentation: '200mcg/dose (Inalador Pó/Spray), 0.25mg/mL, 0.5mg/mL (Flaconetes de Suspensão p/ Nebulização), Spray Nasal 32/50mcg',
+    renalAdjustment: 'Sem necessidade de ajuste.',
+    category: 'Respiratório',
+    notes: 'Corticosteroide Inalatório (CI). Orientar lavar a boca / escovar os dentes após uso para prevenir Candidíase Oral (Sapo).'
+  },
+  {
+    id: 'm69',
+    name: 'Budesonida + Formoterol (Alenia / Symbicort)',
+    indication: 'Tratamento de manutenção e resgate da Asma Moderada/Grave (Estratégia MART - GINA) e DPOC',
+    dose: '6/100mcg, 6/200mcg, 12/400mcg 1 a 2 inalações de 12/12h',
+    frequency: '12/12h e SOS no resgate dos sintomas',
+    presentation: 'Inalador em pó cápsulas ou Spray pressurizado',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Respiratório',
+    notes: 'Combinação CI + LABA de início rápido de ação. Padrão ouro no GINA 2024 tanto para manutenção quanto para alívio imediato.'
+  },
+  {
+    id: 'm70',
+    name: 'Montelucaste de Sódio',
+    indication: 'Asma Alérgica, Rinite Alérgica, Broncoespasmo induzido pelo exercício',
+    dose: '4mg (6m-5anos), 5mg (6-14anos), 10mg (Adolescente/Adulto) VO à noite',
+    frequency: '24/24h (À NOITE)',
+    presentation: '4mg, 5mg (Comp Mastigável/Sachê), 10mg (Comprimido Revestido)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Respiratório',
+    notes: 'Antagonista do Receptor de Leucotrienos. Alerta de segurança para alterações do sono, pesadelos e sintomas psiquiátricos.'
+  },
+  {
+    id: 'm71',
+    name: 'Loratadina / Desloratadina',
+    indication: 'Rinite Alérgica, Urticária Aguda e Crônica, Dermatite Atópica, Conjuntivite Alérgica',
+    dose: '10mg VO 1x ao dia (Loratadina) / 5mg VO 1x ao dia (Desloratadina)',
+    frequency: '24/24h',
+    presentation: '10mg (Comp), 1mg/mL (Xarope Loratadina) / 5mg (Comp), 0.5mg/mL (Xarope Desloratadina)',
+    renalAdjustment: 'ClCr < 30 mL/min: administrar em dias alternados.',
+    category: 'Respiratório',
+    notes: 'Antihistamínico de 2ª geração H1 não sedante (mínima penetração no SNC).'
+  },
+  {
+    id: 'm72',
+    name: 'Prometazina (Fenergan)',
+    indication: 'Reação Alérgica Aguda, Urticária Severa, Anafilaxia (Adjuvante), Cinetose, Agitação Psicomotora',
+    dose: '25mg VO / 25mg a 50mg IM profunda',
+    frequency: '8/8h ou SOS na reação aguda',
+    presentation: '25mg (Comp), 50mg/2mL (Ampola IM)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Emergência',
+    notes: 'Antihistamínico H1 de 1ª geração com forte ação sedativa e anticolinérgica. NUNCA administrar via EV (risco de necrose tecidual e gangrena).'
+  },
+  {
+    id: 'm73',
+    name: 'Acetilcisteína (Fluimucil)',
+    indication: 'Mucolítico em afecções respiratórias com hipersecretividade, Antídoto para Intoxicação por Paracetamol',
+    dose: '200mg a 600mg VO ao dia / Intoxicação Paracetamol: Protocolo EV de 150 mg/kg em 21h',
+    frequency: '8/8h ou 24/24h (Envelope 600mg)',
+    presentation: '100mg, 200mg, 600mg (Envelopes e Comp Efervescente), 100mg/mL (Ampola EV/Inalação)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Respiratório',
+    notes: 'Restaura a glutationa hepática na intoxicação por paracetamol. Atua como doador de grupos sulfidrila.'
+  },
+
+  // --- GASTROINTESTINAL ---
+  {
+    id: 'm74',
+    name: 'Omeprazol',
+    indication: 'Gastrite, Úlcera Péptica, DRGE, Erradicação do H. pylori, Profilaxia de Úlcera de Estresse em UTI',
+    dose: '20mg a 40mg VO em jejum pela manhã / 40mg EV 1x ao dia',
+    frequency: '24/24h (30min antes do café da manhã)',
+    presentation: '20mg, 40mg (Cápsulas), 40mg (Frasco-ampola IV)',
+    renalAdjustment: 'Sem necessidade de ajuste renal.',
+    category: 'Gastro',
+    notes: 'Inibidor da Bomba de Prótons (IBP). O uso crônico pode reduzir absorção de Vitamina B12, Magnésio e Cálcio.'
+  },
+  {
+    id: 'm75',
+    name: 'Pantoprazol',
+    indication: 'DRGE Grave, Úlcera Péptica, Hemorragia Digestiva Alta (HDA por úlcera peptica)',
+    dose: '40mg VO ao dia / HDA: Bolus de 80mg EV + Infusão contínua de 8mg/h por 72h',
+    frequency: '24/24h ou Infusão contínua na HDA',
+    presentation: '20mg, 40mg (Comp), 40mg (Frasco-ampola IV)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Gastro',
+    notes: 'IBP com menor potencial de interação enzimática CYP2C19 do que o omeprazol (mais seguro em uso conjunto de clopidogrel).'
+  },
+  {
+    id: 'm76',
+    name: 'Ondansetrona (Vonau / Vonau Flash)',
+    indication: 'Prevenção e tratamento de Náuseas e Vômitos (Pós-operatório, Quimioterapia, Gastroenterite Pediátrica/Adulto)',
+    dose: '4mg a 8mg VO/SL/EV (Pediatria: 0.15 mg/kg por dose)',
+    frequency: '8/8h conforme necessidade',
+    presentation: '4mg, 8mg (Comp Dissoluçao Oral SL), 4mg/2mL (Ampola EV/IM)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Gastro',
+    notes: 'Antagonista seletivo dos receptores 5-HT3 de Serotonina. Excelente tolerabilidade sem sintomas extrapiramidais. Pode prolongar QTc em doses altas.'
+  },
+  {
+    id: 'm77',
+    name: 'Metoclopramida (Plasil)',
+    indication: 'Náuseas, Vômitos, Gastroparesia Diabética, Refluxo Gastroesofágico',
+    dose: '10mg VO/EV/IM (Pediatria: 0.1 mg/kg por dose)',
+    frequency: '8/8h (Tomar 30min antes das refeições)',
+    presentation: '10mg (Comp), 4mg/mL (Gotas - 21gotas=10mg), 10mg/2mL (Ampola EV/IM)',
+    renalAdjustment: 'ClCr < 40 mL/min: administrar 50% da dose.',
+    category: 'Gastro',
+    notes: 'Antagonista Dopaminérgico D2 procinético. Risco de Reações Extrapiramidais (Acatisia, Discinesia tardia, Distonia aguda) tratáveis com Biperideno ou Prometazina.'
+  },
+  {
+    id: 'm78',
+    name: 'Bromoprida',
+    indication: 'Náuseas, vômitos, distúrbios de motilidade gastrintestinal',
+    dose: '10mg VO/EV/IM (Pediatria: 0.5 a 1 mg/kg/dia)',
+    frequency: '8/8h',
+    presentation: '10mg (Caps), 4mg/mL (Gotas), 10mg/2mL (Ampola EV/IM)',
+    renalAdjustment: 'ClCr < 50 mL/min: reduzir dose em 50%.',
+    category: 'Gastro',
+    notes: 'Procinético similar à metoclopramida, com incidência ligeiramente menor de efeitos extrapiramidais.'
+  },
+  {
+    id: 'm79',
+    name: 'Escopolamina / Hioscina (Buscopan / Buscopan Composto)',
+    indication: 'Cólicas abdominais, espasmos do trato gastrointestinal e geniturinário, cólica biliar e renal',
+    dose: '10mg a 20mg VO/EV/IM',
+    frequency: '6/6h ou 8/8h SOS',
+    presentation: '10mg (Comp), 10mg/mL (Gotas), 20mg/mL (Ampola EV/IM)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Gastro',
+    notes: 'Antiespasmódico anticolinérgico. O Buscopan Composto contém Dipirona associada.'
+  },
+  {
+    id: 'm80',
+    name: 'Lactulona',
+    indication: 'Constipação Intestinal Crônica, Prevenção e Tratamento de Encefalopatia Hepática em Cirróticos',
+    dose: '15mL a 30mL VO/dia (Constipação) / 30mL a 45mL a cada 2h na Encefalopatia Hepática até obter 2-3 evacuações pastosas/dia',
+    frequency: '12/12h ou 8/8h',
+    presentation: 'Xarope 667mg/mL (Frasco de 120mL)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Gastro',
+    notes: 'Laxativo osmótico não absorvível. Reduz a absorção intestinal de amônia na insuficiência hepática.'
+  },
+  {
+    id: 'm81',
+    name: 'Sais de Reidratação Oral (SRO OMS)',
+    indication: 'Prevenção e Tratamento da Desidratação por Diarreia Aguda e Vômitos (Planos A e B da OMS)',
+    dose: 'Oferecer à vontade após cada evacuação diarreica (Pediatria: 50-100 mL/kg em 4 horas no Plano B)',
+    frequency: 'Contínua/Após cada evacuação líquida',
+    presentation: 'Envelopes contendo pó para diluição em exatamente 1 litro de água filtrada/fervida',
+    renalAdjustment: 'Usar com monitorização eletrolítica em insuficiência renal.',
+    category: 'Gastro',
+    notes: 'Solução de osmolaridade reduzida contendo Sódio, Potássio, Cloreto, Citrato e Glicose. Pilar fundamental do manejo da diarreia.'
+  },
+
+  // --- ENDOCRINOLOGIA & METABOLISMO ---
+  {
+    id: 'm82',
+    name: 'Metformina (Glucophage / Glifage XR)',
+    indication: 'Diabetes Mellitus Tipo 2 (1ª linha), Síndrome dos Ovários Policísticos (SOP), Pré-diabetes',
+    dose: '500mg a 2550mg VO ao dia com ou após as refeições',
+    frequency: '12/12h ou 24/24h (Formulações XR à noite)',
+    presentation: '500mg, 850mg, 1000mg (Comprimidos Simples e XR)',
+    renalAdjustment: 'eTFG 30-45: máx 1000mg/dia. eTFG < 30 mL/min: CONTRAINDICADO (Risco de Acidose Láctica).',
+    category: 'Endocrinologia',
+    notes: 'Biguanida. Sensibilizador de insulina. Promove discreta perda de peso e não causa hipoglicemia em monoterapia.'
+  },
+  {
+    id: 'm83',
+    name: 'Glibenclamida',
+    indication: 'Diabetes Mellitus Tipo 2',
+    dose: '2.5mg a 20mg VO ao dia (Antes do café da manhã)',
+    frequency: '24/24h ou 12/12h antes das refeições principais',
+    presentation: '5mg (Comprimidos)',
+    renalAdjustment: 'Contraindicado em eTFG < 60 mL/min (Alto risco de hipoglicemia grave prolongada).',
+    category: 'Endocrinologia',
+    notes: 'Sulfonilureia de 2ª geração. Estimula secreção pancreática de insulina. EVITAR EM IDOSOS (Critérios de Beers).'
+  },
+  {
+    id: 'm84',
+    name: 'Empagliflozina / Dapagliflozina',
+    indication: 'DM2, Insuficiência Cardíaca (ICFER/ICFEP), Doença Renal Crônica (DRC)',
+    dose: '10mg VO 1x ao dia (Dapagliflozina 10mg / Empagliflozina 10mg ou 25mg)',
+    frequency: '24/24h (Manhã)',
+    presentation: '10mg, 25mg (Comprimidos)',
+    renalAdjustment: 'Continuar se já em uso até eTFG 20 mL/min para proteção renal/cardíaca.',
+    category: 'Endocrinologia',
+    notes: 'Inibidores da SGLT-2. Promovem glicosúria e natriurese. Reduzem internações por IC e progressão da DRC. Risco de micose genital e CAD euglicêmica.'
+  },
+  {
+    id: 'm85',
+    name: 'Insulina NPH (Humana)',
+    indication: 'Diabetes Mellitus Tipo 1 e Tipo 2 (Basal)',
+    dose: 'Dose inicial total de 0.2 a 0.5 UI/kg/dia (Dividida em 2/3 de manhã e 1/3 ao deitar SC)',
+    frequency: '12/12h ou ao deitar Subcutânea',
+    presentation: '100 UI/mL (Frasco de 10mL ou Caneta de 3mL)',
+    renalAdjustment: 'Reduzir dose em eTFG < 50 devido a menor clearance de insulina.',
+    category: 'Endocrinologia',
+    notes: 'Insulina humana de ação intermediária. Início de ação em 1-2h, pico em 4-10h, duração 12-18h. Homogeneizar por inversão suave antes de aplicar.'
+  },
+  {
+    id: 'm86',
+    name: 'Insulina Regular (Humana)',
+    indication: 'Cetoacidose Diabética (CAD), Estado Hiperosmolar, Hipercalemia Aguda, Correção de glicemia pós-prandial (Bolus)',
+    dose: '0.1 UI/kg/h em bomba na CAD / Escala de correção de glicemia capilar SC',
+    frequency: '30min antes das refeições ou Infusão EV na emergência',
+    presentation: '100 UI/mL (Frasco de 10mL ou Caneta)',
+    renalAdjustment: 'Reduzir dose conforme eTFG.',
+    category: 'Endocrinologia',
+    notes: 'Insulina de ação rápida. Início em 30min, pico em 2-3h, duração 6-8h. Única insulina administrada por via Endovenosa na emergência.'
+  },
+  {
+    id: 'm87',
+    name: 'Levotiroxina Sódica (Puran T4)',
+    indication: 'Hipotireoidismo Primário, Secundário, Pós-Tiroidectomia, Bócio',
+    dose: '1.6 mcg/kg/dia em jovens (Em idosos/cardiopatas: iniciar com 25-50 mcg/dia)',
+    frequency: '24/24h em JEJUM Rigoroso (Aguardar 30-60min antes do café)',
+    presentation: '12.5, 25, 50, 75, 88, 100, 112, 125, 150, 200 mcg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Endocrinologia',
+    notes: 'Hormônio tireoidiano T4. Reavaliar TSH após 6 a 8 semanas da alteração de dose. Interação com cálcio e ferro.'
+  },
+
+  // --- CORTICOIDES ---
+  {
+    id: 'm88',
+    name: 'Prednisona',
+    indication: 'Exacerbação de Asma/DPOC, Anafilaxia, Doenças Autoimunes (Lúpus, AR), Paralisia de Bell, Reação Alérgica',
+    dose: '5mg a 60mg VO ao dia (Imunossupressão: 1 mg/kg/dia)',
+    frequency: '24/24h (Pela manhã com o café da manhã)',
+    presentation: '5mg, 20mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Corticoide',
+    notes: 'Pró-fármaco convertido em prednisolona no fígado. Uso > 14 dias exige desmame gradual para evitar insuficiência adrenal secundária.'
+  },
+  {
+    id: 'm89',
+    name: 'Prednisolona',
+    indication: 'Uso pediátrico em Crise de Asma, Laringite, Doenças Alérgicas e Inflamatórias',
+    dose: '1 a 2 mg/kg/dia VO (Máx 40mg/dia)',
+    frequency: '24/24h pela manhã por 3 a 5 dias',
+    presentation: 'Solução Oral 3mg/mL (Prelone / Pediapred), 20mg (Comp)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Corticoide',
+    notes: 'Forma ativa da prednisona. Excelente aceitação e absorção pediátrica.'
+  },
+  {
+    id: 'm90',
+    name: 'Dexametasona (Decadron)',
+    indication: 'Croup/Laringite Aguda Pediátrica, Edema Cerebral, Covid-19 grave, Anafilaxia, Teste de Supressão',
+    dose: '0.15 a 0.6 mg/kg VO/IM/EV (Croup: 0.6 mg/kg dose única - Máx 16mg)',
+    frequency: 'Dose única ou 24/24h',
+    presentation: '4mg (Comp), 4mg/mL (Ampola EV/IM), Elixir 0.1mg/mL',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Corticoide',
+    notes: 'Glicocorticoide sintético de altíssima potência (25x mais potente que a hidrocortisona) e sem atividade mineralocorticoide.'
+  },
+  {
+    id: 'm91',
+    name: 'Hidrocortisona (Solu-Cortef)',
+    indication: 'Choque Séptico Refratário a Vasopressores, Crise Adrenal Aguda, Broncoespasmo Agudo Grave',
+    dose: '100mg a 500mg EV em bolus / Choque Séptico: 200mg/dia (50mg EV de 6/6h)',
+    frequency: '6/6h ou 8/8h ou Infusão contínua',
+    presentation: '100mg, 500mg (Frasco-ampola IV/IM)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Corticoide',
+    notes: 'Corticosteroide bioidêntico com retenção de sódio e atividade mineralocorticoide significativa.'
+  },
+
+  // --- NEUROLOGIA & PSIQUIATRIA ---
+  {
+    id: 'm92',
+    name: 'Fluoxetina',
+    indication: 'Transtorno Depressivo Maior, Bulimia Nervosa, TOC, Transtorno do Pânico',
+    dose: '20mg a 60mg VO ao dia',
+    frequency: '24/24h (Pela manhã)',
+    presentation: '20mg (Cápsulas), 20mg/mL (Gotas)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Psiquiatria',
+    notes: 'ISRS. Meia-vida longa (com metabólito norfluoxetina de até 7-14 dias). Pode causar agitação inicial e perda ponderal.'
+  },
+  {
+    id: 'm93',
+    name: 'Sertralina',
+    indication: 'Depressão, Transtorno de Ansiedade Generalizada, TEPT, Fobia Social, TOC',
+    dose: '25mg a 200mg VO ao dia',
+    frequency: '24/24h (Pela manhã ou noite)',
+    presentation: '25mg, 50mg, 100mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Psiquiatria',
+    notes: 'ISRS com perfil de segurança cardiovascular consagrado em pós-IAM e idosos.'
+  },
+  {
+    id: 'm94',
+    name: 'Escitalopram',
+    indication: 'Transtorno do Pânico, TAG, Depressão Maior, Fobia Social',
+    dose: '10mg a 20mg VO ao dia (Idosos: iniciar com 5mg/dia)',
+    frequency: '24/24h',
+    presentation: '10mg, 15mg, 20mg (Comp), 20mg/mL (Gotas)',
+    renalAdjustment: 'Não requer ajuste se eTFG > 20 mL/min.',
+    category: 'Psiquiatria',
+    notes: 'ISRS mais seletivo. Baixíssimo potencial de interação via citocromo P450. Excelente tolerância.'
+  },
+  {
+    id: 'm95',
+    name: 'Clonazepam (Rivotril)',
+    indication: 'Transtorno do Pânico, Ansiedade Paroxística Aguda, Acatisia, Crise Convulsiva',
+    dose: '0.5mg a 2mg VO ao dia / 0.5mg a 2mg (Gotas: 2.5mg/mL - 1gota = 0.1mg)',
+    frequency: '12/12h ou à noite',
+    presentation: '0.5mg, 2mg (Comp), 2.5mg/mL (Gotas Frasco de 20mL)',
+    renalAdjustment: 'Usar com cautela em DRC grave.',
+    category: 'Psiquiatria',
+    notes: 'Benzodiazepínico de alta potência e longa duração. Risco de dependência física, sedação, amnésia e quedas em idosos.'
+  },
+  {
+    id: 'm96',
+    name: 'Diazepam',
+    indication: 'Crise Convulsiva Aguda / Status Epilepticus, Abstinência Alcoólica (CIWA), Espasmo Muscular Grave',
+    dose: '5mg a 10mg VO / 10mg EV Lento sem diluir (2 a 5mg/min) / Via Retal em crianças',
+    frequency: 'SOS ou 8/8h',
+    presentation: '5mg, 10mg (Comp), 10mg/2mL (Ampola EV/IM)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Neurologia',
+    notes: 'Benzodiazepínico. No Status Epilepticus: 10mg EV lento (pode repetir em 5min). Risco de depressão respiratória.'
+  },
+  {
+    id: 'm97',
+    name: 'Midazolam (Dormonid)',
+    indication: 'Sedação Pré-Anestésica, Indução Sequencial Rápida de Intubação, Crise Convulsiva Refratária',
+    dose: '15mg VO ao deitar / 0.05 a 0.2 mg/kg EV no bolus de intubação',
+    frequency: 'SOS ou Infusão Contínua em BCI na UTI',
+    presentation: '15mg (Comp), 5mg/5mL, 15mg/3mL, 50mg/10mL (Ampolas EV/IM)',
+    renalAdjustment: 'Acúmulo de metabólitos em uso prolongado em DRC.',
+    category: 'Emergência',
+    notes: 'Benzodiazepínico de ação ultracurta. Ter Flumazenil disponível em caso de superdosagem.'
+  },
+  {
+    id: 'm98',
+    name: 'Haloperidol (Haldol)',
+    indication: 'Agitação Psicomotora, Delirium no idoso, Surto Psicótico Agudo, Esquizofrenia, Síndrome de Tourette',
+    dose: '1mg a 5mg IM/EV ou VO (Máx 20mg/dia)',
+    frequency: '12/12h ou a cada 30min SOS na agitação grave',
+    presentation: '1mg, 5mg (Comp), 2mg/mL (Gotas), 5mg/mL (Ampola IM/EV)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Psiquiatria',
+    notes: 'Antipsicótico Típico de Alta Potência (Inibidor D2). Monitorar intervalo QTc (risco de Torsades de Pointes no uso EV) e Síndrome Neuroléptica Maligna.'
+  },
+  {
+    id: 'm99',
+    name: 'Risperidona',
+    indication: 'Esquizofrenia, Transtorno Bipolar (Mania Aguda), Irritabilidade no Autismo, Delirium',
+    dose: '1mg a 6mg VO ao dia',
+    frequency: '24/24h ou 12/12h',
+    presentation: '1mg, 2mg, 3mg (Comp), 1mg/mL (Solução Oral)',
+    renalAdjustment: 'Iniciar com 0.5mg de 12/12h e titular com cautela se eTFG < 30.',
+    category: 'Psiquiatria',
+    notes: 'Antipsicótico Atípico. Causa hiperprolactinemia (galactorreia, amenorreia) e ganho ponderal.'
+  },
+  {
+    id: 'm100',
+    name: 'Quetiapina',
+    indication: 'Esquizofrenia, Transtorno Bipolar, Depressão Refratária (Adjuvante), Insônia em idosos',
+    dose: '25mg a 800mg VO ao dia',
+    frequency: '24/24h (À NOITE)',
+    presentation: '25mg, 100mg, 200mg, 300mg (Comprimidos Simples e XRO)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Psiquiatria',
+    notes: 'Antipsicótico Atípico de baixíssimo risco de sintomas extrapiramidais (ideal para Doença de Parkinson com psicose). Fortemente sedativo.'
+  },
+  {
+    id: 'm101',
+    name: 'Carbonato de Lítio (Carbolitium)',
+    indication: 'Transtorno Afetivo Bipolar (Manutenção e Mania Aguda), Prevenção de Suicídio',
+    dose: '300mg a 1200mg VO ao dia (Litemia alvo: 0.6 a 1.2 mEq/L)',
+    frequency: '12/12h ou 24/24h com alimentos',
+    presentation: '300mg, 450mg CR (Comprimidos)',
+    renalAdjustment: 'Excretado estritamente pelos rins. Exige ajuste minucioso e dosagem periódica da Litemia.',
+    category: 'Psiquiatria',
+    notes: 'Estabilizador de humor padrão-ouro. Estreita margem terapêutica. Monitorar Litemia, TSH e Função Renal (Creatinina).'
+  },
+  {
+    id: 'm102',
+    name: 'Ácido Valpróico / Valproato de Sódio (Depakene / Torval / Depakote)',
+    indication: 'Epilepsia (Crises Focais e Generalizadas), Transtorno Bipolar, Profilaxia da Enxaqueca',
+    dose: '15 a 60 mg/kg/dia VO (Ex: 250mg a 1500mg/dia)',
+    frequency: '12/12h ou 8/8h',
+    presentation: '250mg, 500mg (Comp), 250mg/5mL (Xarope), 50mg/mL (Gotas)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Neurologia',
+    notes: 'Anticonvulsivante de amplo espectro. Teratogênico grave (Espinha bífida / Defeito de tubo neural) - CONTRAINDICADO em mulheres em idade fértil sem contracepção eficaz.'
+  },
+  {
+    id: 'm103',
+    name: 'Carbamazepina (Tegretol)',
+    indication: 'Epilepsia (Crises Focais e Tônico-Clônicas), Neuralgia do Trigêmeo, Mania Bipolar',
+    dose: '200mg a 1200mg VO ao dia',
+    frequency: '12/12h ou 8/8h',
+    presentation: '200mg, 400mg (Comp Simples e CR), 20mg/mL (Suspensão Oral)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Neurologia',
+    notes: 'Inibidor de canal de sódio. Auto-indutor enzimático potente (CYP3A4). Risco de hiponatremia (SIADH) e farmacodermia grave.'
+  },
+
+  // --- EMERGÊNCIA & VASOATIVAS ---
+  {
+    id: 'm104',
+    name: 'Adrenalina / Epinefrina',
+    indication: 'Parada Cardiorrespiratória (PCR), Choque Anafilático, Laringite Pediátrica Grave (Nebulização)',
+    dose: 'PCR: 1mg EV a cada 3-5min / Anafilaxia: 0.3 a 0.5mg IM na face anterolateral da coxa / Nebulização: 3 a 5mL puro',
+    frequency: 'SOS conforme protocolo de emergência',
+    presentation: '1mg/mL (Ampola de 1mL 1:1000)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Emergência',
+    notes: 'Inotrópico, cronotrópico e vasopressor potente (alfa e beta agonista). Na anafilaxia a via IM no vasto lateral é prioritária.'
+  },
+  {
+    id: 'm105',
+    name: 'Noradrenalina',
+    indication: 'Choque Séptico, Choque Vasoplégico, Choque Cardiogênico (Primeira escolha de Vasopressor)',
+    dose: '0.05 a 2 mcg/kg/min em Infusão EV Contínua em BCI por Acesso Venoso Central',
+    frequency: 'Infusão contínua guiada por PAM (Alvo PAM ≥ 65 mmHg)',
+    presentation: '1mg/mL (Ampola de 4mL = 4mg)',
+    renalAdjustment: 'Não requer ajuste renal.',
+    category: 'Emergência',
+    notes: 'Vasopressor alfa-1 potente com efeito beta-1 discreto. Exige infusão em Veia Central para prevenir necrose por extravasamento periférico.'
+  },
+  {
+    id: 'm106',
+    name: 'Dobutamina',
+    indication: 'Choque Cardiogênico, Insuficiência Cardíaca Agudizada com Baixo Débito (Perfil C)',
+    dose: '2.5 a 20 mcg/kg/min em Infusão EV Contínua em BCI',
+    frequency: 'Infusão contínua guiada por perfusão e diurese',
+    presentation: '12.5mg/mL (Ampola de 20mL = 250mg)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Emergência',
+    notes: 'Inotrópico positivo beta-1 seletivo. Reduz RVP. Pode precipitar taquiarritmias e hipotensão se hipovolemia não corrigida.'
+  },
+  {
+    id: 'm107',
+    name: 'Ácido Tranexâmico (Transamin)',
+    indication: 'Hemorragia Aguda Grave, Trauma (Protocolo CRASH-2), Hipermenorreia, Hemoptise',
+    dose: '1g EV em 10min nas primeiras 3h do trauma / 250mg a 500mg VO de 8/8h',
+    frequency: '8/8h ou dose de ataque EV no trauma',
+    presentation: '250mg (Comp), 250mg/5mL, 500mg/5mL (Ampola EV)',
+    renalAdjustment: 'ClCr < 50 mL/min: reduzir dose/frequência.',
+    category: 'Emergência',
+    notes: 'Antifibrinolítico inibidor do plasminogênio. Administrar precocemente no trauma grave (máximo até 3 horas do evento).'
+  },
+
+  // --- GINECOLOGIA, OBSTETRÍCIA & DIVERSOS ---
+  {
+    id: 'm108',
+    name: 'Oxitocina',
+    indication: 'Indução do Parto, Prevenção e Tratamento da Atonia Uterina / Hemorragia Pós-Parto',
+    dose: '10 UI IM após a saída do ombro anterior / 20-40 UI em 500mL SF0.9% EV em infusão rápida na hemorragia',
+    frequency: 'Infusão contínua ou IM imediato pós-parto',
+    presentation: '5 UI/mL, 10 UI/mL (Ampolas de 1mL)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Ginecologia',
+    notes: 'Promove contração do miométrio. Prevenção universal da atonia uterina no 3º período do parto.'
+  },
+  {
+    id: 'm109',
+    name: 'Sulfato de Magnésio',
+    indication: 'Prevenção e Tratamento de Eclâmpsia em Gestantes (Protocolo de Zuspan/Sibai), Broncoespasmo Agudo Grave',
+    dose: 'Ataque: 4g a 6g EV em 20min / Manutenção: 1g a 2g/h em BCI por 24 horas',
+    frequency: 'Infusão contínua por 24h pós-parto ou crise',
+    presentation: '10% e 50% (Ampolas de 10mL)',
+    renalAdjustment: 'Monitorar reflexo patelar, diurese (>25mL/h) e FR (>16/min). Ter Gluconato de Cálcio a 10% no leito em caso de intoxicação.',
+    category: 'Emergência',
+    notes: 'Neuroproteção fetal e anticonvulsivante na DAH. Desaparecimento do reflexo patelar é o 1º sinal de hipermagnesemia.'
+  },
+  {
+    id: 'm110',
+    name: 'Sulfato Ferroso',
+    indication: 'Tratamento e Prevenção da Anemia Ferropriva, Suplementação na Gestação e Lactação',
+    dose: '120mg a 200mg de Ferro Elemental/dia VO (Adulto) / 3 a 6 mg/kg/dia (Pediatria)',
+    frequency: '24/24h ou 12/12h 1 hora antes das refeições com Suco Cítrico (Vit C)',
+    presentation: '40mg de Ferro Elemental (Comp), 25mg/mL Gotas (1mL = 5 gotas de 5mg)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Hematologia',
+    notes: 'Escurece as fezes para cor preta (tranquilizar paciente). Pode causar epigastralgia, náusea e constipação.'
+  },
+  {
+    id: 'm111',
+    name: 'Ácido Fólico',
+    indication: 'Prevenção de Defeitos do Tubo Neural (Espinha Bífida) na Gestação, Anemia Megaloblástica',
+    dose: '0.4mg a 5mg VO ao dia (Iniciar idealmente 3 meses antes da concepção)',
+    frequency: '24/24h',
+    presentation: '1mg, 5mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Ginecologia',
+    notes: 'Dose de 5mg/dia indicada para gestantes de alto risco (uso de anticonvulsivantes ou gestação prévia com DTN).'
+  },
+  {
+    id: 'm112',
+    name: 'Tamsulosina (Secotex)',
+    indication: 'Hiperplasia Prostática Benigna (HPB), Terapia Expulsiva Renal para Cálculo em Ureter Distal',
+    dose: '0.4mg VO 1x ao dia após o café da manhã',
+    frequency: '24/24h',
+    presentation: '0.4mg (Cápsulas de Liberação Prolongada)',
+    renalAdjustment: 'Não requer ajuste em DRC leve/moderada.',
+    category: 'Urologia',
+    notes: 'Bloqueador Alfa-1A Adrenérgico seletivo prostático. Promove relaxamento do colo vesical. Pode causar tontura ortostática e ejaculação retrógrada.'
+  },
+  {
+    id: 'm113',
+    name: 'Finasterida',
+    indication: 'Hiperplasia Prostática Benigna (Redução do volume prostático), Alopecia Androgenética',
+    dose: '5mg VO ao dia (HPB) / 1mg VO ao dia (Alopecia)',
+    frequency: '24/24h',
+    presentation: '1mg, 5mg (Comprimidos)',
+    renalAdjustment: 'Não requer ajuste.',
+    category: 'Urologia',
+    notes: 'Inibidor da 5-alfa-redutase. Reduz os níveis de PSA pela metade (multiplicar o valor do teste laboratorial por 2 para interpretação correta).'
+  },
+  {
+    id: 'm114',
+    name: 'Permetrina 5%',
+    indication: 'Tratamento de Escabiose (Sarna) e Pediculose (Piolho)',
+    dose: 'Aplicar do pescoço aos pés à noite, deixar agir por 8 a 14 horas e lavar. Repetir após 7 dias.',
+    frequency: 'Aplicação única à noite (Repetir em 7 dias)',
+    presentation: 'Loção Dermatológica 5% (Frasco de 60mL), Cream Shampoo 1%',
+    renalAdjustment: 'Não absorvido sistemicamente.',
+    category: 'Dermatologia',
+    notes: 'Tratar obrigatoriamente TODOS os comunicantes do domicílio simultaneamente. Lavar roupas de cama em água quente.'
+  },
+  {
+    id: 'm115',
+    name: 'Neomicina + Bacitracina (Nebacetin)',
+    indication: 'Infecções bacterianas superficiais de pele, feridas operatórias pequenas, queimaduras leves',
+    dose: 'Aplicar fina camada sobre a lesão de 2 a 3x ao dia',
+    frequency: '8/8h ou 12/12h por 5 a 7 dias',
+    presentation: 'Pomada Dermatológica (Tubo de 15g e 50g)',
+    renalAdjustment: 'Uso tópico seguro em lesões não extensas.',
+    category: 'Dermatologia',
+    notes: 'Combinação tópica de aminoglicosídeo e polipeptídeo. Evitar uso em grandes superfícies abertas devido risco de ototoxicidade/nefrotoxicidade.'
   }
 ];
 
@@ -6864,7 +7567,7 @@ function Dashboard({
                     <p className="text-[10px] text-slate-400 dark:text-slate-550 mt-2 line-clamp-2 leading-relaxed">{p.guidelines || 'Ficha clínica de internação e terapia farmacológica rápida.'}</p>
                   </div>
                   <div className="text-[10px] text-slate-400 mt-4 font-bold uppercase tracking-widest flex items-center gap-1 font-sans">
-                    Ver Prontuário Rápido <ChevronRight size={10} />
+                    Ver Anamnese Rápida <ChevronRight size={10} />
                   </div>
                 </button>
               ))}
@@ -8453,7 +9156,7 @@ export default function App() {
     return localStorage.getItem('pedsocorro_subscribed') === 'true';
   });
   const [showPricingModal, setShowPricingModal] = useState<boolean>(false);
-  const [selectedPricingPlan, setSelectedPricingPlan] = useState<'academic' | 'resident' | 'specialist'>('resident');
+  const [selectedPricingPlan, setSelectedPricingPlan] = useState<string>('mensal');
   const [licenseKeyInput, setLicenseKeyInput] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card'>('pix');
   const [activationMsg, setActivationMsg] = useState<string>('');
@@ -8634,7 +9337,7 @@ export default function App() {
             </div>
             <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
               <span className="text-3xl font-serif italic font-black text-amber-500">24/7</span>
-              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">Prontuários Offline-First</span>
+              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">Anamnese Offline-First</span>
             </div>
             <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
               <span className="text-3xl font-serif italic font-black text-purple-600">100%</span>
@@ -8720,44 +9423,45 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
-                id: 'academic',
-                name: 'Plano Mensal Básico',
-                subtitle: 'Estudantes & Internato',
+                id: 'mensal',
+                name: 'Plano Mensal',
+                subtitle: 'Assinatura Flexível sem Fidelidade',
                 price: '10,00',
-                period: 'por mês',
-                features: ['Acesso a todas as calculadoras', 'Guia farmacológico completo', 'Fichas de anamnese e pediatria', 'Notas clínicas com atalhos'],
+                period: 'mês',
+                features: ['Acesso total a todas as calculadoras', 'Guia farmacológico completo e doses', 'Anamneses clínicas com atalhos', 'Suporte a plantões e rotina'],
                 highlight: false,
+                badge: 'Flexível',
                 color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
               },
               {
-                id: 'resident',
-                name: 'Plano Mensal Pro',
-                subtitle: 'Médicos, Residentes & Plantonistas (Mais Escolhido)',
-                price: '10,00',
-                period: 'por mês',
-                features: ['Acesso Ilimitado Completo', 'Prontuários e prescrições de plantão', 'Protocolos avançados de UTI e PS', 'Atualizações prioritárias em 2026', 'Modo offline e atalhos de notas'],
+                id: 'semestral',
+                name: 'Plano Semestral (Promo)',
+                subtitle: 'A cada 6 meses (R$ 48,00)',
+                price: '8,00',
+                period: 'mês (R$ 48,00/semestre)',
+                features: ['Tudo do Plano Mensal', '20% de Economia semestral', 'Garante tabela promocional', 'Suporte com atualizações continuadas'],
+                highlight: false,
+                badge: '20% OFF',
+                color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
+              },
+              {
+                id: 'anual',
+                name: 'Plano Anual (Super Promo)',
+                subtitle: 'Pagamento Único de R$ 84,00/ano (Mais Vendido)',
+                price: '7,00',
+                period: 'mês (R$ 84,00/ano)',
+                features: ['Acesso Ilimitado Completo por 12 Meses', 'Maior Economia (30% OFF)', 'Anamneses, Doses & Guia Clínico', 'Suporte Médico VIP Prioritário 2026'],
                 highlight: true,
+                badge: '30% OFF • Mais Vantajoso',
                 color: 'border-rose-600 bg-white dark:bg-slate-900 ring-2 ring-rose-600/30'
-              },
-              {
-                id: 'specialist',
-                name: 'Plano Anual Especialista',
-                subtitle: 'Acesso Anual com Suporte VIP',
-                price: '10,00',
-                period: 'por mês (R$ 120,00/ano)',
-                features: ['Tudo do Plano Pro', 'Múltiplos perfis de acesso', 'Suporte médico VIP 24/7', 'Personalização de receituários', 'Exportação avançada PDF'],
-                highlight: false,
-                color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
               }
             ].map((plan) => (
               <div key={plan.id} className={`relative p-8 rounded-[36px] border ${plan.color} shadow-lg flex flex-col justify-between space-y-8`}>
-                {plan.highlight && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-rose-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md">
-                    Mais Escolhido por Médicos
-                  </div>
-                )}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-rose-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md">
+                  {plan.badge}
+                </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-4 pt-2">
                   <div>
                     <h3 className="text-xl font-serif italic font-black text-slate-900 dark:text-white">{plan.name}</h3>
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">{plan.subtitle}</p>
@@ -8782,13 +9486,13 @@ export default function App() {
                     setSelectedPricingPlan(plan.id as any);
                     setShowPricingModal(true);
                   }}
-                  className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all ${
+                  className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all cursor-pointer ${
                     plan.highlight
                       ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-xl shadow-rose-600/30 hover:scale-105 active:scale-95'
                       : 'bg-slate-900 dark:bg-white hover:bg-slate-800 text-white dark:text-slate-900 hover:scale-105 active:scale-95'
                   }`}
                 >
-                  Selecionar {plan.name}
+                  Assinar {plan.name}
                 </button>
               </div>
             ))}
@@ -8815,9 +9519,10 @@ export default function App() {
                 <div>
                   <span className="text-[10px] font-black uppercase text-rose-600 tracking-wider">Plano Selecionado:</span>
                   <h4 className="font-serif italic font-black text-lg text-slate-900 dark:text-white capitalize">
-                    {selectedPricingPlan === 'academic' && 'Plano Mensal Básico (R$ 10,00/mês)'}
-                    {selectedPricingPlan === 'resident' && 'Plano Mensal Pro (R$ 10,00/mês)'}
-                    {selectedPricingPlan === 'specialist' && 'Plano Anual Especialista (R$ 10,00/mês)'}
+                    {selectedPricingPlan === 'mensal' && 'Plano Mensal (R$ 10,00/mês)'}
+                    {selectedPricingPlan === 'semestral' && 'Plano Semestral Promo (R$ 48,00/semestre -- R$ 8,00/mês)'}
+                    {selectedPricingPlan === 'anual' && 'Plano Anual Super Promo (R$ 84,00/ano -- R$ 7,00/mês)'}
+                    {selectedPricingPlan !== 'mensal' && selectedPricingPlan !== 'semestral' && selectedPricingPlan !== 'anual' && 'Plano Promocional Pedsocorro (R$ 10,00/mês)'}
                   </h4>
                 </div>
                 <button onClick={() => {}} className="text-xs font-bold text-rose-600 underline">Alterar</button>
@@ -9188,7 +9893,7 @@ export default function App() {
               {activeSection === 'emergency' && <motion.div key="em" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Pronto Socorro" subtitle="Protocolos de emergência, exames imediatos e condutas críticas." icon={ShieldAlert} /><EmergencyModule onSelect={setSelectedDisease} /></motion.div>}
               {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} setSelectedUbsDiseaseId={setSelectedUbsDiseaseId} setSelectedUbsSubTab={setSelectedUbsSubTab} setSelectedCatalogDisease={setSelectedCatalogDisease} /></motion.div>}
               {activeSection === 'drugs' && <motion.div key="dr" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Guia de Dosagem" subtitle="Doses recomendadas para prática clínica hospitalar e ambulatorial." icon={Pill} /><DrugsModule /></motion.div>}
-              {activeSection === 'forms' && <motion.div key="fo" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Prontuários e Formulários Autónomos" subtitle="Fichas estruturadas de pediatria, clínica médica, classificação de risco Manchester e receituários." icon={ClipboardCheck} /><FormsModule onRedirectToSymptoms={() => setActiveSection('symptoms')} medications={MEDICATIONS} currentUser={currentUser} /></motion.div>}
+              {activeSection === 'forms' && <motion.div key="fo" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Anamnese e Formulários Autônomos" subtitle="Fichas estruturadas de pediatria, clínica médica, classificação de risco Manchester e receituários." icon={ClipboardCheck} /><FormsModule onRedirectToSymptoms={() => setActiveSection('symptoms')} medications={MEDICATIONS} currentUser={currentUser} /></motion.div>}
               {activeSection === 'notes' && (
                 <motion.div key="no" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                   <SectionTitle title="Notas e Cadernos Clínicos" subtitle="Organização dinâmica em tópicos e pastas com suporte a Markdown." icon={Bookmark} />

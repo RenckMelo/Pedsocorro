@@ -1878,7 +1878,7 @@ Observação: Este relatório é um instrumento de apoio à decisão clínica e 
                 className="flex items-center gap-1.5 text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-350 hover:bg-slate-200 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 transition-all"
               >
                 {copiedReport ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
-                <span>{copiedReport ? 'Copiado!' : 'Copiar Prontuário'}</span>
+                <span>{copiedReport ? 'Copiado!' : 'Copiar Anamnese'}</span>
               </button>
             </div>
 
