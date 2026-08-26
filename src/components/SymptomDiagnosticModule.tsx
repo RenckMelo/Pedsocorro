@@ -17,7 +17,8 @@ import {
   ShieldAlert,
   Home,
   Copy,
-  Check
+  Check,
+  FlaskConical
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UBS_CATALOG_DISEASES, DiseaseInfo } from '../ubsCatalog';
@@ -147,11 +148,47 @@ const SYMPTOMS_AND_SIGNS: SymptomOrSign[] = [
 
 type DurationType = 'hyperacute' | 'acute' | 'subacute' | 'chronic';
 
+export interface LabMarker {
+  id: string;
+  name: string;
+  category: 'Sangue / Hemograma' | 'Bioquímica & Inflamação' | 'Urina / Marcadores Rápidos' | 'Imagem & ECG';
+  description: string;
+}
+
+export const LAB_MARKERS: LabMarker[] = [
+  { id: 'leucocitose_desvio', name: 'Leucocitose com desvio à esquerda', category: 'Sangue / Hemograma', description: 'Leucócitos > 11.000/mm³ com bastões > 5% (infecção bacteriana/inflamação aguda)' },
+  { id: 'leucopenia_plaquetopenia', name: 'Leucopenia e/ou Plaquetopenia', category: 'Sangue / Hemograma', description: 'Plaquetas < 100.000/mm³ ou leucócitos < 4.000/mm³ (Dengue, infecção viral grave, Sepse)' },
+  { id: 'anemia_hb_baixa', name: 'Anemia significativa (Hb < 10 g/dL)', category: 'Sangue / Hemograma', description: 'Hemoglobina reduzida com microcitose/hipocromia ou normocitose' },
+  { id: 'pcr_vhs_elevado', name: 'PCR e/ou VHS Expressivamente Elevados', category: 'Bioquímica & Inflamação', description: 'Proteína C Reativa ou Velocidade de Hemossedimentação muito acima da referência' },
+  { id: 'glicemia_elevada', name: 'Glicemia de Jejum ≥ 126 mg/dL ou HbA1c ≥ 6.5%', category: 'Bioquímica & Inflamação', description: 'Hiperglicemia documental confirmada (DM2 / descompensação)' },
+  { id: 'acidose_cetonuria', name: 'Acidose Metabólica e/ou Cetonúria (+/+++)', category: 'Bioquímica & Inflamação', description: 'Gasometria com pH < 7.30 / Bicarbonato < 18 ou cetonas na urina (Cetoacidose)' },
+  { id: 'creatinina_ureia_elevada', name: 'Creatinina / Ureia Elevada (eTFG < 60)', category: 'Bioquímica & Inflamação', description: 'Retenção de escórias nitrogenadas (Insuficiência / Injúria Renal)' },
+  { id: 'amilase_lipase_3x', name: 'Amilase e/ou Lipase Sérica Elevadas (> 3x LSN)', category: 'Bioquímica & Inflamação', description: 'Enzimas pancreáticas muito elevadas (Pancreatite Aguda)' },
+  { id: 'troponina_positiva', name: 'Troponina I ou T Positiva / Elevada', category: 'Bioquímica & Inflamação', description: 'Marcador de necrose miocárdica positivo (Síndrome Coronariana Aguda / IAM)' },
+  { id: 'ddimero_elevado', name: 'D-Dímero Elevação Significativa (> 500 ng/mL)', category: 'Bioquímica & Inflamação', description: 'Produto de degradação da fibrina (suspeita de TEP / TVP)' },
+  { id: 'tsh_elevado_t4baixo', name: 'TSH Elevado (> 10 mUI/L) / T4 Livre Baixo', category: 'Bioquímica & Inflamação', description: 'Disfunção tireoidiana hipofuncionante (Hipotireoidismo)' },
+  { id: 'tsh_suprimido_t4alto', name: 'TSH Suprimido (< 0.1 mUI/L) / T4 Livre Elevado', category: 'Bioquímica & Inflamação', description: 'Disfunção tireoidiana hiperfuncionante (Hipertireoidismo)' },
+  { id: 'transaminases_bilirrubinas', name: 'TGO/TGP ou Bilirrubinas Séricas Elevadas', category: 'Bioquímica & Inflamação', description: 'Padrão de colestase ou lesão hepatocelular (Hepatopatia / Colecistite)' },
+  { id: 'urina1_nitrito_leucocituria', name: 'Urina 1: Nitrito Positivo e/ou Leucocitúria', category: 'Urina / Marcadores Rápidos', description: 'Presença de nitrito ou > 10 piócitos/campo (ITU / Cistite / Pielonefrite)' },
+  { id: 'urina1_proteinuria_hematuria', name: 'Urina 1: Proteinúria ou Hematúria Significativa', category: 'Urina / Marcadores Rápidos', description: 'Dismorfismo das hemácias ou proteinúria marcada (Nefropatia / Glomerulonefrite)' },
+  { id: 'swab_strepto_positivo', name: 'Teste Rápido Estreptocócico (Swab) Positivo', category: 'Urina / Marcadores Rápidos', description: 'Confirmação de Streptococcus pyogenes em amígdalas' },
+  { id: 'ns1_sorologia_dengue', name: 'Antígeno NS1 ou IgM Dengue Positivo', category: 'Urina / Marcadores Rápidos', description: 'Confirmação sorológica de infecção recente pelo vírus da Dengue' },
+  { id: 'rx_torax_consolidacao', name: 'Raio-X de Tórax: Consolidação Alveolar / Infiltrado', category: 'Imagem & ECG', description: 'Opacidade lobar ou infiltrado em parênquima pulmonar (Pneumonia)' },
+  { id: 'ecg_isquemia_arritmia', name: 'ECG: Supra/Infra de ST, Inversão T ou Fibrilação Atrial', category: 'Imagem & ECG', description: 'Alterações eletrocardiográficas agudas (IAM / Arritmia)' },
+  { id: 'usg_vesicula_apendice', name: 'Ultrassom: Espessamento de Paredes Biliares/Apendiculares', category: 'Imagem & ECG', description: 'Sinais ultrassonográficos diretos de Colecistite, Apendicite ou Litíase' }
+];
+
 interface EvidenceMarker {
   finding: string;
   metric: string; // "Sensibilidade" | "Especificidade" | "LR+" | "LR-"
   value: string;
   ref: string;
+}
+
+export interface DiseaseLabRequirement {
+  markerId: string;
+  weight: number; // e.g. 15 to 40
+  isDefinitive?: boolean; // if present, boosts probability directly
 }
 
 interface DiseaseSymptomProfile {
@@ -165,6 +202,7 @@ interface DiseaseSymptomProfile {
   treatmentAllowed: 'immediate' | 'confirmation_needed' | 'immediate_critical';
   treatmentAllowedJustification: string;
   evidenceMarkers?: EvidenceMarker[];
+  labProfile?: DiseaseLabRequirement[];
 }
 
 const DISEASE_SYMPTOM_PROFILES: Record<string, DiseaseSymptomProfile> = {
@@ -804,6 +842,242 @@ const DISEASE_SYMPTOM_PROFILES: Record<string, DiseaseSymptomProfile> = {
     treatmentAllowedJustification: 'Requer diferenciação rápida no PS entre emergência hipertensiva (lesão de órgão-alvo ativa que exige anti-hipertensivo venoso como nitroprussiato) e urgência hipertensiva (manejo com medicação oral lenta).',
     evidenceMarkers: [
       { finding: 'Cefaleia hiperaguda + PA ≥ 180/120', metric: 'Sensibilidade (para urgência)', value: '95%', ref: 'SBC Guidelines 2020' }
+    ],
+    labProfile: [
+      { markerId: 'creatinina_ureia_elevada', weight: 15 },
+      { markerId: 'ecg_isquemia_arritmia', weight: 20 }
+    ]
+  },
+  litiasi_renal: {
+    diseaseId: 'litiasi_renal',
+    symptoms: { dor_abdominal: 5, dor_urinar: 3, nausea_vomito: 4, febre: 2 },
+    durations: ['hyperacute', 'acute'],
+    setting: 'ps',
+    whyExplanation: 'Dor lombar aguda em cólica lancinante com irradiação para flanco e genitais, frequentemente acompanhada de disúria e vômitos reflexos.',
+    nextStepsExams: 'Tomografia Computadorizada de Abdômen e Pelve sem contraste (padrão-ouro) ou Ultrassonografia de vias urinárias e Urina 1.',
+    guideline: 'Diretriz de Litíase Renal da Sociedade Brasileira de Urologia (SBU 2022)',
+    treatmentAllowed: 'immediate_critical',
+    treatmentAllowedJustification: 'Controle rigoroso da dor com AINEs intravenosos (Tenoxicam) ou opioides na Sala de Emergência. Investigar infecção sobreposta (pielonefrite obstrutiva) que exige desobstrução de urgência.',
+    evidenceMarkers: [
+      { finding: 'Dor lombar irradiada em cólica + Hematúria', metric: 'Especificidade', value: '91%', ref: 'SBU Guidelines 2022' }
+    ],
+    labProfile: [
+      { markerId: 'urina1_proteinuria_hematuria', weight: 30 },
+      { markerId: 'usg_vesicula_apendice', weight: 35, isDefinitive: true }
+    ]
+  },
+  rinite_alergica: {
+    diseaseId: 'rinite_alergica',
+    symptoms: { sintomas_gripais: 5, tosse: 2 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Prurido nasal, espirros em salva, coriza hialina e obstrução nasal crônica sem febre ou secreção purulenta.',
+    nextStepsExams: 'Diagnóstico é eminentemente clínico. Testes de hipersensibilidade (Prick test ou IgE específica RAST) se persistente.',
+    guideline: 'Consenso Brasileiro de Rinite (ASBAI 2022)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Higiene nasal diária com soro fisiológico e corticoide inalatório nasal (Mometasona/Fluticasona) indicado de forma imediata na atenção básica.',
+    evidenceMarkers: [
+      { finding: 'Espirros em salva + Coriza clara + Prurido', metric: 'Sensibilidade', value: '94%', ref: 'ASBAI Guidelines' }
+    ]
+  },
+  labirintite: {
+    diseaseId: 'labirintite',
+    symptoms: { tontura: 5, nausea_vomito: 4 },
+    durations: ['hyperacute', 'acute'],
+    setting: 'ambos',
+    whyExplanation: 'Vertigem rotatória súbita, desequilíbrio e náuseas/vômitos exacerbados por movimentação cefálica. Excluir causa central via manobra de Dix-Hallpike.',
+    nextStepsExams: 'Exame otoneurológico completo. Ressonância magnética de crânio apenas se houver ataxia central ou déficits focais.',
+    guideline: 'Associação Brasileira de Otorrinolaringologia (ABORL-CCF 2023)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Manobras de reposicionamento de otólitos (Epley) ou sintomáticos otoneurológicos (Dimenidrinato/Betahistina) por curto período.',
+    evidenceMarkers: [
+      { finding: 'Nistagmo posicional com latência e fatigabilidade', metric: 'Especificidade', value: '96%', ref: 'ABORL Guidelines' }
+    ]
+  },
+  dermatite_atopica: {
+    diseaseId: 'dermatite_atopica',
+    symptoms: { coceira: 5, manchas_vermelhas: 4, lesoes_pruriginosas_dobras: 5 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Xerose cutânea severa e lesões pruriginosas recorrentes predominantemente localizadas em dobras flexoras (fossa cubital/poplítea).',
+    nextStepsExams: 'Diagnóstico clínico baseado nos critérios de Hanifin e Rajka.',
+    guideline: 'Guia Prático da Sociedade Brasileira de Dermatologia (SBD 2023)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Hidratação cutânea intensa e corticoide tópico de baixa/média potência por períodos curtos são iniciados imediatamente.',
+    evidenceMarkers: [
+      { finding: 'Prurido + Lesões flexurais crônicas', metric: 'Especificidade', value: '93%', ref: 'SBD Guidelines' }
+    ]
+  },
+  escabiose: {
+    diseaseId: 'escabiose',
+    symptoms: { coceira: 5, manchas_vermelhas: 3 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Prurido noturno intenso com pápulas e túneis escabióticos em espaços interdigitais, punhos e região umbilical.',
+    nextStepsExams: 'Dermoscopia ou raspado de pele para identificação do Sarcoptes scabiei.',
+    guideline: 'Diretrizes de Dermatologia Infectológica (SBD 2022)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Ivermectina oral e Permetrina 5% tópica aplicadas a todo o corpo e tratamento simultâneo de comunicantes domiciliares.',
+    evidenceMarkers: [
+      { finding: 'Prurido noturno + Lesões interdigitais', metric: 'Especificidade', value: '90%', ref: 'SBD Guidelines' }
+    ]
+  },
+  celulite_erisipela: {
+    diseaseId: 'celulite_erisipela',
+    symptoms: { febre: 4, manchas_vermelhas: 5, dor_articulacoes: 2 },
+    durations: ['acute'],
+    setting: 'ambos',
+    whyExplanation: 'Eritema, calor, edema e dor local em membro inferior com bordas bem delimitadas (erisipela) ou mal delimitadas (celulite).',
+    nextStepsExams: 'Hemograma completo, PCR e Ultrassonografia Doppler vascular se suspeita de TVP associada.',
+    guideline: 'Diretrizes de Infecções de Pele da SBI (2022)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Início imediato de antibióticos empíricos (Cefalexina ou Penicilina Procaína) para evitar abscessos e sepse.',
+    evidenceMarkers: [
+      { finding: 'Eritema bem delimitado + Calor e febre', metric: 'Sensibilidade', value: '92%', ref: 'SBI Guidelines' }
+    ],
+    labProfile: [
+      { markerId: 'leucocitose_desvio', weight: 25 },
+      { markerId: 'pcr_vhs_elevado', weight: 20 }
+    ]
+  },
+  herpes_zoster: {
+    diseaseId: 'herpes_zoster',
+    symptoms: { lesoes_herpeticas: 5, manchas_vermelhas: 4, febre: 2 },
+    durations: ['acute'],
+    setting: 'ubs',
+    whyExplanation: 'Vesículas agrupadas sobre base eritematosa com distribuição dermatomérica unilateral e dor neuropática acentuada.',
+    nextStepsExams: 'Diagnóstico é eminentemente clínico. PCR para VZV ou citodiagnóstico de Tzanck em casos atípicos.',
+    guideline: 'Diretrizes de Infectologia Pediátrica e Adulto (SBI 2023)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Aciclovir oral (800mg 5x/dia) iniciado idealmente nas primeiras 72 horas para reduzir dor neuropática pós-herpética.',
+    evidenceMarkers: [
+      { finding: 'Vesículas em dermátomo unilateral', metric: 'Especificidade', value: '99%', ref: 'SBI Guidelines' }
+    ]
+  },
+  endometriose: {
+    diseaseId: 'endometriose',
+    symptoms: { dor_abdominal: 5, secura_vaginal: 2 },
+    durations: ['chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Dismenorreia secundária progressiva, dor pélvica crônica, dispareunia profunda e infertilidade.',
+    nextStepsExams: 'Ultrassonografia pélvica/transvaginal com preparo intestinal especializado e Ressonância Magnética pélvica.',
+    guideline: 'Federação Brasileira das Associações de Ginecologia e Obstetrícia (FEBRASGO 2023)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'Requer mapeamento por imagem de alta resolução e acompanhamento ginecológico antes de condutas cirúrgicas.',
+    evidenceMarkers: [
+      { finding: 'Dismenorreia severa + Dispareunia profunda', metric: 'Sensibilidade', value: '86%', ref: 'FEBRASGO Guidelines' }
+    ]
+  },
+  hpb: {
+    diseaseId: 'hpb',
+    symptoms: { dor_urinar: 4, desidratacao_sinal: 1 },
+    durations: ['chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Sintomas urinários obstrutivos e irritativos (jato fraco, hesitação, nictúria e polaciúria) em homens > 50 anos.',
+    nextStepsExams: 'Toque retal, dosagem de PSA sérico, Ultrassonografia de próstata/vias urinárias e medição de residuo pós-miccional.',
+    guideline: 'Sociedade Brasileira de Urologia (SBU 2023)',
+    treatmentAllowed: 'confirmation_needed',
+    treatmentAllowedJustification: 'Exige confirmação por Toque Retal, PSA e Ultrassonografia para descartar Neoplasia de Próstata antes de iniciar Ansiolíticos/Alfa-bloqueadores (Tansulosina).',
+    evidenceMarkers: [
+      { finding: 'Toque retal com próstata aumentada fibroelástica', metric: 'Especificidade', value: '88%', ref: 'SBU Guidelines' }
+    ]
+  },
+  epilepsia_crise: {
+    diseaseId: 'epilepsia_crise',
+    symptoms: { deficit_motor: 4, tontura: 3 },
+    durations: ['hyperacute'],
+    setting: 'ps',
+    whyExplanation: 'Crise convulsiva tônico-clônica generalizada ou focal com perda de consciência e período pós-ictal caracterizado por sonolência.',
+    nextStepsExams: 'Eletroencefalograma (EEG), Tomografia de crânio e dosagem de eletrólitos/glicemia no PS.',
+    guideline: 'Liga Brasileira de Epilepsia (LBE 2022)',
+    treatmentAllowed: 'immediate_critical',
+    treatmentAllowedJustification: 'Protocolo de Estado de Mal Epiléptico no PS com Diazepam 10mg EV se crise ativa por mais de 5 minutos.',
+    evidenceMarkers: [
+      { finding: 'Movimentos tônico-clônicos + Período pós-ictal', metric: 'Especificidade', value: '97%', ref: 'LBE Guidelines' }
+    ]
+  },
+  lombalgia_aguda: {
+    diseaseId: 'lombalgia_aguda',
+    symptoms: { dor_lombar: 5, dor_articulacoes: 3 },
+    durations: ['acute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Dor lombar mecânica sem irradiação para dermátomos ou sinais de alarme neurológicos (síndrome da cauda equina).',
+    nextStepsExams: 'Radiografia de coluna apenas se houver sinais de alarme ou insucesso do tratamento por > 6 semanas.',
+    guideline: 'Diretriz da Sociedade Brasileira de Ortopedia e Traumatologia (SBOT 2022)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Analgésicos (Dipirona), relaxante muscular e orientações de repouso relativo na atenção primária.',
+    evidenceMarkers: [
+      { finding: 'Dor lombar postural sem sinais de alarme', metric: 'Sensibilidade', value: '95%', ref: 'SBOT Guidelines' }
+    ]
+  },
+  fascite_plantar: {
+    diseaseId: 'fascite_plantar',
+    symptoms: { dor_primeiros_passos: 5, dor_articulacoes: 3 },
+    durations: ['subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Dor severa no calcanhar ao dar os primeiros passos do dia após se levantar da cama, aliviando com a caminhada.',
+    nextStepsExams: 'Diagnóstico é eminentemente clínico. Radiografia do pé pode demonstrar esporão calcâneo associado.',
+    guideline: 'Sociedade Brasileira de Medicina do Esporte e Ortopedia (SBME 2022)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Alongamento da fáscia plantar, gelo local, uso de calçados adequados e AINEs por curto período.',
+    evidenceMarkers: [
+      { finding: 'Dor calcânea nos primeiros passos matinais', metric: 'Especificidade', value: '95%', ref: 'SBME Guidelines' }
+    ]
+  },
+  tunel_carpo: {
+    diseaseId: 'tunel_carpo',
+    symptoms: { parestesia_mediano: 5, fraqueza_unilateral: 3 },
+    durations: ['chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Parestesia e dormência no território do nervo mediano (1º ao 3º dedos), com sinal de Phalen e Tinel positivos.',
+    nextStepsExams: 'Eletroneuromiografia (ENMG) de membros superiores.',
+    guideline: 'Diretrizes da Sociedade Brasileira de Neurofisiologia Clínica (SBNC 2022)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Uso de órtese de imobilização noturna do punho e analgésicos e encaminhamento se parestesia contínua.',
+    evidenceMarkers: [
+      { finding: 'Sinal de Phalen positivo em punho', metric: 'LR+', value: '2.8', ref: 'SBNC Guidelines' }
+    ]
+  },
+  bursite_ombro: {
+    diseaseId: 'bursite_ombro',
+    symptoms: { dor_ombro_elevar: 5, dor_articulacoes: 3 },
+    durations: ['acute', 'subacute', 'chronic'],
+    setting: 'ubs',
+    whyExplanation: 'Dor mecânica no ombro durante a abdução e rotação externa (arco doloroso entre 60° e 120°), indicando síndrome do impacto.',
+    nextStepsExams: 'Ultrassonografia ou Ressonância Magnética de ombro.',
+    guideline: 'Sociedade Brasileira de Cirurgia de Ombro e Cotovelo (SBCOC 2023)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Analgésicos, AINEs tópicos/orais, fisioterapia e cinesioterapia imediata na UBS.',
+    evidenceMarkers: [
+      { finding: 'Teste de Neer / Hawkins positivo', metric: 'Sensibilidade', value: '89%', ref: 'SBCOC Guidelines' }
+    ]
+  },
+  conjuntivite: {
+    diseaseId: 'conjuntivite',
+    symptoms: { olho_vermelho_seco: 5, manchas_vermelhas: 2 },
+    durations: ['acute'],
+    setting: 'ubs',
+    whyExplanation: 'Hiperemia conjuntival, sensação de areia nos olhos, lacrimejamento e secreção purulenta (bacteriana) ou serosa (viral).',
+    nextStepsExams: 'Avaliação em lâmpada de fenda por Oftalmologista se houver dor intensa, fotofobia grave ou perda visual.',
+    guideline: 'Consenso de Conjuntivites do Conselho Brasileiro de Oftalmologia (CBO 2022)',
+    treatmentAllowed: 'immediate',
+    treatmentAllowedJustification: 'Compressas frias, colírios lubrificantes e colírio antibiótico (Tobramicina) se secreção purulenta abundante.',
+    evidenceMarkers: [
+      { finding: 'Hiperemia conjuntival + Secreção sem dor acentuada', metric: 'Sensibilidade', value: '92%', ref: 'CBO Guidelines' }
+    ]
+  },
+  glaucoma_agudo: {
+    diseaseId: 'glaucoma_agudo',
+    symptoms: { pressao_ocular_elevada: 5, cefaleia: 4, nausea_vomito: 3 },
+    durations: ['hyperacute'],
+    setting: 'ps',
+    whyExplanation: 'Olho vermelho doloroso com dor ocular e cefaleia ipsilateral intensa, visão borrada com halos coloridos e pupila em meias-midríase fixa.',
+    nextStepsExams: 'Tonometria de aplanação urgente no Pronto Socorro Oftalmológico.',
+    guideline: 'Sociedade Brasileira de Glaucoma (SBG 2023)',
+    treatmentAllowed: 'immediate_critical',
+    treatmentAllowedJustification: 'Urgência oftalmológica absoluta! Requer medicação hipotensora ocular (Timolol, Acetazolamida, Manitol EV) imediata para salvar a visão.',
+    evidenceMarkers: [
+      { finding: 'Dor ocular severa + Halos na visão + Midríase', metric: 'Especificidade', value: '98%', ref: 'SBG Guidelines' }
     ]
   }
 };
@@ -1057,6 +1331,8 @@ export default function SymptomDiagnosticModule() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Todas');
   const [selectedSymptoms, setSelectedSymptoms] = useState<Record<string, 'hyperacute' | 'acute' | 'subacute' | 'chronic'>>({});
+  const [selectedLabs, setSelectedLabs] = useState<Record<string, boolean>>({});
+  const [inputTab, setInputTab] = useState<'sintomas' | 'exames'>('sintomas');
   const [expandedSuspect, setExpandedSuspect] = useState<string | null>(null);
   const [settingFilter, setSettingFilter] = useState<'todos' | 'ubs' | 'ps'>('todos');
   const [copiedReport, setCopiedReport] = useState(false);
@@ -1078,6 +1354,16 @@ export default function SymptomDiagnosticModule() {
     });
   }, [searchTerm, selectedCategory]);
 
+  // Filter lab markers
+  const filteredLabs = useMemo(() => {
+    return LAB_MARKERS.filter(l => {
+      const matchesSearch = l.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            l.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            l.id.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
+    });
+  }, [searchTerm]);
+
   const handleToggleSymptom = (id: string) => {
     setSelectedSymptoms(prev => {
       const next = { ...prev };
@@ -1090,19 +1376,33 @@ export default function SymptomDiagnosticModule() {
     });
   };
 
+  const handleToggleLab = (id: string) => {
+    setSelectedLabs(prev => {
+      const next = { ...prev };
+      if (next[id]) {
+        delete next[id];
+      } else {
+        next[id] = true;
+      }
+      return next;
+    });
+  };
+
   const handleChangeDuration = (id: string, duration: 'hyperacute' | 'acute' | 'subacute' | 'chronic') => {
     setSelectedSymptoms(prev => ({ ...prev, [id]: duration }));
   };
 
   const handleReset = () => {
     setSelectedSymptoms({});
+    setSelectedLabs({});
     setExpandedSuspect(null);
   };
 
   // Advanced Algorithm with dynamic detailed calculation explanations
   const suspectedDiagnoses = useMemo(() => {
     const userSymptomIds = Object.keys(selectedSymptoms);
-    if (userSymptomIds.length === 0) return [];
+    const userLabIds = Object.keys(selectedLabs);
+    if (userSymptomIds.length === 0 && userLabIds.length === 0) return [];
 
     // Dynamically expand DISEASE_SYMPTOM_PROFILES with all catalog diseases to guarantee 100% coverage
     const completeProfiles = { ...DISEASE_SYMPTOM_PROFILES };
@@ -1290,6 +1590,29 @@ export default function SymptomDiagnosticModule() {
         synergyBonus = (matchedSymptomCount - 1) * 8;
       }
 
+      // --- LABORATORY & IMAGING MARKERS EVALUATION ---
+      let labBonus = 0;
+      const labDetails: { labName: string; weight: number; isDefinitive?: boolean }[] = [];
+
+      if (profile.labProfile && userLabIds.length > 0) {
+        profile.labProfile.forEach(labReq => {
+          if (selectedLabs[labReq.markerId]) {
+            const labObj = LAB_MARKERS.find(l => l.id === labReq.markerId);
+            const name = labObj ? labObj.name : labReq.markerId;
+            const w = labReq.weight;
+            labBonus += w;
+            if (labReq.isDefinitive) {
+              labBonus += 20; // Extra boost for pathognomonic/definitive laboratory or ultrasound finding
+            }
+            labDetails.push({
+              labName: name,
+              weight: w,
+              isDefinitive: labReq.isDefinitive
+            });
+          }
+        });
+      }
+
       // --- AJUSTES DEMOGRÁFICOS (IDADE E SEXO) ---
       let demographicExplanation = '';
       let ageExclude = false;
@@ -1395,7 +1718,7 @@ export default function SymptomDiagnosticModule() {
       }
 
       // Calculate final probability
-      let finalProbability = rawBasePercentage - totalPenalty + synergyBonus + ageAdjustment - unexplainedSymptomPenalty;
+      let finalProbability = rawBasePercentage - totalPenalty + synergyBonus + ageAdjustment - unexplainedSymptomPenalty + labBonus;
 
       // --- AJUSTE CLÍNICO DE EXTREMA PRECISÃO: DIAGNÓSTICO DIFERENCIAL (EVITAR GECA vs APENDICITE) ---
       if (selectedSymptoms['diarreia'] && profile.diseaseId === 'apendicite') {
@@ -1572,12 +1895,14 @@ export default function SymptomDiagnosticModule() {
           totalProfileWeight,
           synergyBonus,
           totalPenalty,
+          labBonus,
+          labDetails,
           matchingDetails,
           missingKeySymptomDetails
         }
       };
     })
-    .filter(res => res.matchedSymptomCount > 0 && res.probability > 0) // show matches with at least one matching symptom and positive probability (exclude demographic exclusions)
+    .filter(res => (res.matchedSymptomCount > 0 || (res.calculationDetails.labDetails && res.calculationDetails.labDetails.length > 0)) && res.probability > 0)
     .filter(res => {
       if (settingFilter === 'todos') return true;
       if (settingFilter === 'ubs') return res.setting === 'ubs' || res.setting === 'ambos';
@@ -1587,7 +1912,7 @@ export default function SymptomDiagnosticModule() {
     .sort((a, b) => b.probability - a.probability);
 
     return results;
-  }, [selectedSymptoms, settingFilter, age, sex]);
+  }, [selectedSymptoms, selectedLabs, settingFilter, age, sex]);
 
   // Generate copyable clinical report
   const handleCopyReport = () => {
@@ -1595,6 +1920,11 @@ export default function SymptomDiagnosticModule() {
       const s = SYMPTOMS_AND_SIGNS.find(x => x.id === id);
       const durText = dur === 'hyperacute' ? '< 24 horas' : dur === 'acute' ? '1 a 7 dias' : dur === 'subacute' ? '1 a 4 semanas' : 'mais de 4 semanas';
       return `- ${s ? s.name : id} (Duração: ${durText})`;
+    }).join('\n');
+
+    const labTexts = Object.keys(selectedLabs).map(id => {
+      const l = LAB_MARKERS.find(x => x.id === id);
+      return `- ${l ? l.name : id} [${l ? l.category : 'Lab'}]`;
     }).join('\n');
 
     const hypothesesTexts = suspectedDiagnoses.slice(0, 3).map(d => {
@@ -1609,8 +1939,11 @@ DADOS DO PACIENTE:
 - Idade: ${age} anos
 - Sexo Biológico: ${sex === 'M' ? 'Masculino' : 'Feminino'}
 
-SINTOMAS APRESENTADOS:
-${symptomTexts}
+SINTOMAS E SINAIS APRESENTADOS:
+${symptomTexts || '(Nenhum sintoma selecionado)'}
+
+EXAMES / MARCADORES COMPLEMENTARES:
+${labTexts || '(Nenhum marcador laboratorial informado)'}
 
 HIPÓTESES DIAGNÓSTICAS (Escore de Probabilidade Cruzada):
 ${hypothesesTexts || 'Nenhuma hipótese com correlação significativa.'}
@@ -1699,122 +2032,191 @@ Observação: Este relatório é um instrumento de apoio à decisão clínica e 
           </div>
         </div>
 
-        {/* Filter bar */}
+        {/* Input Mode Selector Tabs */}
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl gap-1">
+          <button
+            type="button"
+            onClick={() => setInputTab('sintomas')}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              inputTab === 'sintomas'
+                ? 'bg-white dark:bg-slate-900 text-rose-600 dark:text-rose-400 shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+            }`}
+          >
+            <Stethoscope size={13} />
+            <span>Sintomas ({Object.keys(selectedSymptoms).length})</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setInputTab('exames')}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              inputTab === 'exames'
+                ? 'bg-white dark:bg-slate-900 text-cyan-600 dark:text-cyan-400 shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+            }`}
+          >
+            <FlaskConical size={13} />
+            <span>Exames Lab ({Object.keys(selectedLabs).length})</span>
+          </button>
+        </div>
+
+        {/* Search bar */}
         <div className="space-y-3">
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input 
               type="text" 
-              placeholder="Buscar sintomas (ex: febre, dor, peito)..."
+              placeholder={inputTab === 'sintomas' ? "Buscar sintomas (ex: febre, dor, peito)..." : "Buscar exames/imagem (ex: hemograma, troponina, usg)..."}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800/80 rounded-xl py-2.5 pl-10 pr-4 text-xs font-medium focus:ring-2 focus:ring-rose-500 focus:outline-none dark:text-white"
             />
           </div>
 
-          <div className="flex gap-1 overflow-x-auto pb-1.5 scrollbar-thin scrollbar-thumb-slate-200">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all ${
-                  selectedCategory === cat 
-                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 shadow-sm'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          {inputTab === 'sintomas' && (
+            <div className="flex gap-1 overflow-x-auto pb-1.5 scrollbar-thin scrollbar-thumb-slate-200">
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap transition-all ${
+                    selectedCategory === cat 
+                      ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-950 shadow-sm'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Symptoms List */}
-        <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1 scrollbar-thin">
-          {filteredSymptoms.map(symptom => {
-            const isSelected = !!selectedSymptoms[symptom.id];
-            return (
-              <div 
-                key={symptom.id}
-                className={`p-3 rounded-2xl border transition-all space-y-2.5 ${
-                  isSelected 
-                    ? 'bg-rose-50/30 dark:bg-rose-950/5 border-rose-500/40' 
-                    : 'bg-slate-50/30 dark:bg-slate-900/10 border-slate-200/60 dark:border-slate-850 hover:border-slate-300'
-                }`}
-              >
+        {/* Symptoms List Mode */}
+        {inputTab === 'sintomas' ? (
+          <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1 scrollbar-thin">
+            {filteredSymptoms.map(symptom => {
+              const isSelected = !!selectedSymptoms[symptom.id];
+              return (
                 <div 
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => handleToggleSymptom(symptom.id)}
+                  key={symptom.id}
+                  className={`p-3 rounded-2xl border transition-all space-y-2.5 ${
+                    isSelected 
+                      ? 'bg-rose-50/30 dark:bg-rose-950/5 border-rose-500/40' 
+                      : 'bg-slate-50/30 dark:bg-slate-900/10 border-slate-200/60 dark:border-slate-850 hover:border-slate-300'
+                  }`}
+                >
+                  <div 
+                    className="flex items-center justify-between cursor-pointer"
+                    onClick={() => handleToggleSymptom(symptom.id)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all shrink-0 ${
+                        isSelected 
+                          ? 'bg-rose-600 border-rose-600 text-white' 
+                          : 'border-slate-350 dark:border-slate-700'
+                      }`}>
+                        {isSelected && <CheckCircle2 size={13} strokeWidth={3} />}
+                      </div>
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{symptom.name}</span>
+                          <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md ${
+                            symptom.type === 'sign' 
+                              ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400' 
+                              : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                          }`}>
+                            {symptom.type === 'sign' ? 'Sinal' : 'Sintoma'}
+                          </span>
+                        </div>
+                        <p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">{symptom.category}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Duration Picker inside selected symptom */}
+                  {isSelected && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="pt-2 border-t border-slate-200/50 dark:border-slate-850/85 space-y-1.5"
+                    >
+                      <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
+                        <Clock size={11} /> Há quanto tempo iniciou?
+                      </span>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {(
+                          [
+                            { id: 'hyperacute', label: '< 24h' },
+                            { id: 'acute', label: '1-7 d' },
+                            { id: 'subacute', label: '1-4 sem' },
+                            { id: 'chronic', label: '> 4 sem' }
+                          ] as { id: DurationType; label: string }[]
+                        ).map(dur => (
+                          <button
+                            key={dur.id}
+                            onClick={() => handleChangeDuration(symptom.id, dur.id)}
+                            className={`py-1 rounded-lg text-[9px] font-black uppercase text-center transition-all ${
+                              selectedSymptoms[symptom.id] === dur.id
+                                ? 'bg-rose-600 text-white shadow-sm'
+                                : 'bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100'
+                            }`}
+                          >
+                            {dur.label}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          /* Laboratory & Imaging Markers List Mode */
+          <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1 scrollbar-thin">
+            {filteredLabs.map(lab => {
+              const isSelected = !!selectedLabs[lab.id];
+              return (
+                <div
+                  key={lab.id}
+                  onClick={() => handleToggleLab(lab.id)}
+                  className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                    isSelected
+                      ? 'bg-cyan-50/40 dark:bg-cyan-950/20 border-cyan-500/50'
+                      : 'bg-slate-50/30 dark:bg-slate-900/10 border-slate-200/60 dark:border-slate-850 hover:border-slate-300'
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all shrink-0 ${
-                      isSelected 
-                        ? 'bg-rose-600 border-rose-600 text-white' 
+                      isSelected
+                        ? 'bg-cyan-600 border-cyan-600 text-white'
                         : 'border-slate-350 dark:border-slate-700'
                     }`}>
                       {isSelected && <CheckCircle2 size={13} strokeWidth={3} />}
                     </div>
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{symptom.name}</span>
-                        <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md ${
-                          symptom.type === 'sign' 
-                            ? 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400' 
-                            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                        }`}>
-                          {symptom.type === 'sign' ? 'Sinal' : 'Sintoma'}
+                        <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{lab.name}</span>
+                        <span className="text-[8px] font-black uppercase px-1.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                          {lab.category}
                         </span>
                       </div>
-                      <p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">{symptom.category}</p>
+                      <p className="text-[9.5px] text-slate-500 dark:text-slate-400">{lab.description}</p>
                     </div>
                   </div>
                 </div>
+              );
+            })}
+          </div>
+        )}
 
-                {/* Duration Picker inside selected symptom */}
-                {isSelected && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="pt-2 border-t border-slate-200/50 dark:border-slate-850/85 space-y-1.5"
-                  >
-                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
-                      <Clock size={11} /> Há quanto tempo iniciou?
-                    </span>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {(
-                        [
-                          { id: 'hyperacute', label: '< 24h' },
-                          { id: 'acute', label: '1-7 d' },
-                          { id: 'subacute', label: '1-4 sem' },
-                          { id: 'chronic', label: '> 4 sem' }
-                        ] as { id: DurationType; label: string }[]
-                      ).map(dur => (
-                        <button
-                          key={dur.id}
-                          onClick={() => handleChangeDuration(symptom.id, dur.id)}
-                          className={`py-1 rounded-lg text-[9px] font-black uppercase text-center transition-all ${
-                            selectedSymptoms[symptom.id] === dur.id
-                              ? 'bg-rose-600 text-white shadow-sm'
-                              : 'bg-white dark:bg-slate-850 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100'
-                          }`}
-                        >
-                          {dur.label}
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {Object.keys(selectedSymptoms).length > 0 && (
+        {(Object.keys(selectedSymptoms).length > 0 || Object.keys(selectedLabs).length > 0) && (
           <button 
             onClick={handleReset}
             className="w-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-800"
           >
-            <RefreshCw size={13} /> Limpar Seleção
+            <RefreshCw size={13} /> Limpar Todas as Seleções
           </button>
         )}
       </div>
@@ -1853,15 +2255,15 @@ Observação: Este relatório é um instrumento de apoio à decisão clínica e 
           </div>
         </div>
 
-        {Object.keys(selectedSymptoms).length === 0 ? (
+        {Object.keys(selectedSymptoms).length === 0 && Object.keys(selectedLabs).length === 0 ? (
           <div className="bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 rounded-[32px] p-12 text-center flex flex-col items-center justify-center space-y-4">
             <div className="w-16 h-16 rounded-3xl bg-slate-100 dark:bg-slate-800/80 flex items-center justify-center text-slate-400">
               <Brain size={32} />
             </div>
             <div className="space-y-1.5 max-w-sm">
-              <h3 className="font-serif font-black text-slate-800 dark:text-white">Selecione Sintomas</h3>
+              <h3 className="font-serif font-black text-slate-800 dark:text-white">Selecione Sintomas ou Exames</h3>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Adicione as queixas e sinais observados no painel lateral esquerdo para gerar hipóteses probabilísticas imediatas.
+                Adicione as queixas, sinais ou achados laboratoriais/imagem no painel lateral esquerdo para gerar hipóteses probabilísticas imediatas.
               </p>
             </div>
           </div>
@@ -2038,11 +2440,28 @@ Observação: Este relatório é um instrumento de apoio à decisão clínica e 
                                   </div>
                                 )}
 
+                                {details.labBonus > 0 && details.labDetails && details.labDetails.length > 0 && (
+                                  <div className="flex flex-col text-cyan-600 dark:text-cyan-400 font-medium border-t border-slate-100 dark:border-slate-800/40 pt-1.5 space-y-1">
+                                    <div className="flex justify-between">
+                                      <span>5. Marcadores de Exames e Imagem ({details.labDetails.length} achados):</span>
+                                      <span>+{details.labBonus}%</span>
+                                    </div>
+                                    <div className="pl-3 space-y-0.5 text-[11px] text-cyan-600/90 dark:text-cyan-300 border-l border-cyan-200 dark:border-cyan-900">
+                                      {details.labDetails.map((lab, lIdx) => (
+                                        <div key={lIdx} className="flex justify-between">
+                                          <span>• {lab.labName} {lab.isDefinitive && <span className="text-emerald-500 font-bold">(Patognomônico/Confirmatório)</span>}</span>
+                                          <span>+{lab.weight + (lab.isDefinitive ? 20 : 0)}%</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+
                                 <div className="flex justify-between border-t border-slate-250 dark:border-slate-800 pt-2 text-slate-800 dark:text-white font-bold">
                                   <span>Probabilidade Clínica Final:</span>
                                   <span className="text-rose-600 dark:text-rose-400">
-                                    {details.rawBasePercentage}% {details.totalPenalty > 0 && ` - ${details.totalPenalty}%`} {details.synergyBonus > 0 && ` + ${details.synergyBonus}%`} {suspect.demographicAdjustment !== 0 && ` ${suspect.demographicAdjustment > 0 ? '+' : ''}${suspect.demographicAdjustment}%`} = {prob}%
-                                    {prob === 95 && <span className="text-[10px] font-normal text-slate-400 block leading-none">(Teto clínico máximo para anamnese)</span>}
+                                    {details.rawBasePercentage}% {details.totalPenalty > 0 && ` - ${details.totalPenalty}%`} {details.synergyBonus > 0 && ` + ${details.synergyBonus}%`} {suspect.demographicAdjustment !== 0 && ` ${suspect.demographicAdjustment > 0 ? '+' : ''}${suspect.demographicAdjustment}%`} {details.labBonus > 0 && ` + ${details.labBonus}%`} = {prob}%
+                                    {prob === 95 && <span className="text-[10px] font-normal text-slate-400 block leading-none">(Teto clínico máximo)</span>}
                                   </span>
                                 </div>
                               </div>

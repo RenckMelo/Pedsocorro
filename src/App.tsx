@@ -8143,2133 +8143,91 @@ function DrugsModule() {
 
                       {/* Second line */}
                       {selectedDisease.treatment && selectedDisease.treatment[1] && (
-                        <div className="bg-slate-50 dark:bg-slate-700/20 border border-slate-100 dark:border-slate-800 p-6 rounded-2xl space-y-3">
-                          <h4 className="font-serif font-black text-slate-800 dark:text-white text-base flex items-center gap-2">
-                            <span className="w-6 h-6 rounded-lg bg-amber-500 text-white font-serif font-black text-xs flex items-center justify-center">2</span>
-                            {selectedDisease.treatment[1].title}
-                          </h4>
-                          <p className="text-xs text-slate-600 dark:text-slate-300 font-semibold leading-relaxed">
-                            {selectedDisease.treatment[1].desc}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ) : (
-                <div className="h-full flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 border border-dashed border-slate-200 dark:border-slate-700 rounded-3xl py-20">
-                  <div className="bg-slate-100 dark:bg-slate-800 p-8 rounded-full mb-6">
-                    <Stethoscope size={64} strokeWidth={1} />
-                  </div>
-                  <p className="text-lg font-medium">Selecione uma doenÃ§a para conferir a conduta</p>
-                  <p className="text-sm opacity-60">Busque no diretÃ³rio geral da UBS e EmergÃªncia ao lado</p>
-                </div>
-              )
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CalculatorModule({ addToHistory }: { addToHistory: (t: string, r: string) => void }) {
-  const [calc, setCalc] = useState<'clcr' | 'bmi' | 'curb' | 'qsofa' | 'glasgow' | 'wells' | 'chads' | 'hasbled' | 'meld' | 'nihss' | 'braden' | 'water' | 'sofa' | 'child' | 'ckdepi' | null>(null);
-
-  // SOFA
-  const [sofa, setSofa] = useState<Record<string, number>>({ resp: 0, plateau: 0, coagulation: 0, liver: 0, cardiovascular: 0, cns: 0, renal: 0 });
-  const sofaScore = (Object.values(sofa) as number[]).reduce((a, b) => a + b, 0);
-
-  // Child-Pugh
-  const [child, setChild] = useState<Record<string, number>>({ bili: 1, alb: 1, inr: 1, ascites: 1, enceph: 1 });
-  const childScore = (Object.values(child) as number[]).reduce((a, b) => a + b, 0);
-
-  // Cockcroft-Gault
-  const [age, setAge] = useState('');
-  const [weight, setWeight] = useState('');
-  const [creatinine, setCreatinine] = useState('');
-  const [isFemale, setIsFemale] = useState(false);
-
-  // BMI
-  const [height, setHeight] = useState('');
-
-  // CURB-65
-  const [curb, setCurb] = useState({ confusion: false, urea: false, respiration: false, blood: false, age: false });
-  const curbScore = Object.values(curb).filter(v => v).length;
-
-  // qSOFA
-  const [qsofa, setQsofa] = useState({ resp: false, mental: false, pressure: false });
-  const qsofaScore = Object.values(qsofa).filter(v => v).length;
-
-  // Glasgow
-  const [glasgow, setGlasgow] = useState({ eyes: 4, verbal: 5, motor: 6 });
-  const glasgowTotal = glasgow.eyes + glasgow.verbal + glasgow.motor;
-
-  // Wells TEP
-  const [wells, setWells] = useState({ symptoms: false, altDiagnosis: false, heartRate: false, surgery: false, previous: false, hemoptysis: false, malignancy: false });
-  const wellsScore = (wells.symptoms ? 3 : 0) + (wells.altDiagnosis ? 3 : 0) + (wells.heartRate ? 1.5 : 0) + (wells.surgery ? 1.5 : 0) + (wells.previous ? 1.5 : 0) + (wells.hemoptysis ? 1 : 0) + (wells.malignancy ? 1 : 0);
-
-  // CHADS-VASc
-  const [chads, setChads] = useState({ heartFailure: false, hypertension: false, age75: false, diabetes: false, stroke: false, vascular: false, age65: false, female: false });
-  const chadsScore = (chads.heartFailure ? 1 : 0) + (chads.hypertension ? 1 : 0) + (chads.age75 ? 2 : 0) + (chads.diabetes ? 1 : 0) + (chads.stroke ? 2 : 0) + (chads.vascular ? 1 : 0) + (chads.age65 ? 1 : 0) + (chads.female ? 1 : 0);
-
-  // HAS-BLED
-  const [hasbled, setHasbled] = useState({ h: false, a: false, s: false, b: false, l: false, e: false, d: false });
-  const hasbledScore = Object.values(hasbled).filter(v => v).length;
-
-  // NIHSS (Simplified)
-  const [nihss, setNihss] = useState<Record<string, number>>({ state: 0, gaze: 0, visual: 0, facial: 0, motorL: 0, motorR: 0, legL: 0, legR: 0 });
-  const nihssTotal = (Object.values(nihss) as number[]).reduce((a, b) => a + b, 0);
-
-  // Braden
-  const [braden, setBraden] = useState<Record<string, number>>({ sensory: 4, moisture: 4, activity: 4, mobility: 4, nutrition: 4, friction: 3 });
-  const bradenScore = (Object.values(braden) as number[]).reduce((a, b) => a + b, 0);
-
-  // MELD
-  const [meldInputs, setMeldInputs] = useState({ bili: '', inr: '', cr: '' });
-  const meldScore = useMemo(() => {
-    const b = parseFloat(meldInputs.bili);
-    const i = parseFloat(meldInputs.inr);
-    const c = parseFloat(meldInputs.cr);
-    if (b > 0 && i > 0 && c > 0) {
-      return Math.round(10 * ((0.957 * Math.log(c)) + (0.378 * Math.log(b)) + (1.12 * Math.log(i)) + 0.643));
-    }
-    return 0;
-  }, [meldInputs]);
-
-  // Water Deficit (Hipernatremia)
-  const [waterDeficitInputs, setWaterDeficitInputs] = useState({ na: '', weight: '', gender: 'male', ageGroup: 'adult' });
-  const waterDeficitResult = useMemo(() => {
-    const na = parseFloat(waterDeficitInputs.na);
-    const w = parseFloat(waterDeficitInputs.weight);
-    if (!na || !w || na <= 140) return 0;
-    
-    let tbwFactor = 0.6; // Adult male
-    if (waterDeficitInputs.gender === 'female') {
-      tbwFactor = waterDeficitInputs.ageGroup === 'elderly' ? 0.45 : 0.5;
-    } else {
-      tbwFactor = waterDeficitInputs.ageGroup === 'elderly' ? 0.5 : 0.6;
-    }
-    
-    const deficit = tbwFactor * w * ((na / 140) - 1);
-    return deficit.toFixed(2);
-  }, [waterDeficitInputs]);
-
-  const clcrResult = useMemo(() => {
-    const a = parseFloat(age);
-    const w = parseFloat(weight);
-    const cr = parseFloat(creatinine);
-    if (!a || !w || !cr) return null;
-    let result = ((140 - a) * w) / (72 * cr);
-    if (isFemale) result *= 0.85;
-    return result.toFixed(1);
-  }, [age, weight, creatinine, isFemale]);
-
-  const bmiResult = useMemo(() => {
-    const w = parseFloat(weight);
-    const h = parseFloat(height) / 100;
-    if (!w || !h) return null;
-    return (w / (h * h)).toFixed(1);
-  }, [weight, height]);
-
-  const ckdepiResult = useMemo(() => {
-    const a = parseFloat(age);
-    const cr = parseFloat(creatinine);
-    if (!a || !cr) return null;
-    
-    let k = isFemale ? 0.7 : 0.9;
-    let alpha = isFemale ? -0.241 : -0.302;
-    if (cr > k) alpha = -1.200;
-    
-    const res = 142 * Math.pow(Math.min(cr / k, 1), alpha) * Math.pow(Math.max(cr / k, 1), -1.200) * Math.pow(0.9938, a);
-    return Math.round(res).toString();
-  }, [age, creatinine, isFemale]);
-
-  return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <button 
-          onClick={() => setCalc('clcr')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'clcr' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Microscope className={`mb-4 ${calc === 'clcr' ? 'text-white' : 'text-medical-secondary'}`} size={32} />
-          <h3 className="font-bold text-lg">Cockcroft-Gault</h3>
-          <p className="text-xs opacity-60 mt-2">Clearance de Creatinina clÃ¡ssico.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('ckdepi')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'ckdepi' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Activity className={`mb-4 ${calc === 'ckdepi' ? 'text-white' : 'text-medical-primary'}`} size={32} />
-          <h3 className="font-bold text-lg">CKD-EPI (2021)</h3>
-          <p className="text-xs opacity-60 mt-2">FiltraÃ§Ã£o Glomerular (Sem fator raÃ§a).</p>
-        </button>
-        <button 
-          onClick={() => setCalc('bmi')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'bmi' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Activity className={`mb-4 ${calc === 'bmi' ? 'text-white' : 'text-medical-secondary'}`} size={32} />
-          <h3 className="font-bold text-lg">IMC & SuperfÃ­cie</h3>
-          <p className="text-xs opacity-60 mt-2">Ãndice de massa corporal e Ã¡rea corporal.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('curb')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'curb' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <AlertTriangle className={`mb-4 ${calc === 'curb' ? 'text-white' : 'text-amber-500'}`} size={32} />
-          <h3 className="font-bold text-lg">Escore CURB-65</h3>
-          <p className="text-xs opacity-60 mt-2">Severidade da PAC.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('qsofa')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'qsofa' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Zap className={`mb-4 ${calc === 'qsofa' ? 'text-white' : 'text-rose-500'}`} size={32} />
-          <h3 className="font-bold text-lg">qSOFA</h3>
-          <p className="text-xs opacity-60 mt-2">Triagem rÃ¡pida para sepse.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('sofa')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'sofa' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Activity className={`mb-4 ${calc === 'sofa' ? 'text-white' : 'text-rose-600'}`} size={32} />
-          <h3 className="font-bold text-lg">SOFA Score</h3>
-          <p className="text-xs opacity-60 mt-2">DisfunÃ§Ã£o OrgÃ¢nica em UTI.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('glasgow')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'glasgow' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Brain className={`mb-4 ${calc === 'glasgow' ? 'text-white' : 'text-indigo-500'}`} size={32} />
-          <h3 className="font-bold text-lg">Glasgow</h3>
-          <p className="text-xs opacity-60 mt-2">Escala de coma.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('wells')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'wells' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Search className={`mb-4 ${calc === 'wells' ? 'text-white' : 'text-blue-500'}`} size={32} />
-          <h3 className="font-bold text-lg">Wells (TEP)</h3>
-          <p className="text-xs opacity-60 mt-2">Probabilidade clÃ­nica de TEP.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('chads')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'chads' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <ShieldAlert className={`mb-4 ${calc === 'chads' ? 'text-white' : 'text-purple-500'}`} size={32} />
-          <h3 className="font-bold text-lg">CHAâ‚‚DSâ‚‚-VASc</h3>
-          <p className="text-xs opacity-60 mt-2">Risco de AVC na FA.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('hasbled')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'hasbled' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Droplets className={`mb-4 ${calc === 'hasbled' ? 'text-white' : 'text-rose-600'}`} size={32} />
-          <h3 className="font-bold text-lg">HAS-BLED</h3>
-          <p className="text-xs opacity-60 mt-2">Risco de sangramento.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('meld')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'meld' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Scale className={`mb-4 ${calc === 'meld' ? 'text-white' : 'text-emerald-500'}`} size={32} />
-          <h3 className="font-bold text-lg">MELD Score</h3>
-          <p className="text-xs opacity-60 mt-2">Gravidade da DoenÃ§a HepÃ¡tica.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('child')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'child' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Scale className={`mb-4 ${calc === 'child' ? 'text-white' : 'text-medical-primary'}`} size={32} />
-          <h3 className="font-bold text-lg">Child-Pugh</h3>
-          <p className="text-xs opacity-60 mt-2">ClassificaÃ§Ã£o de Cirrose.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('nihss')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'nihss' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Brain className={`mb-4 ${calc === 'nihss' ? 'text-white' : 'text-rose-400'}`} size={32} />
-          <h3 className="font-bold text-lg">NIHSS</h3>
-          <p className="text-xs opacity-60 mt-2">AvaliaÃ§Ã£o de dÃ©ficit no AVC.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('braden')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'braden' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Bookmark className={`mb-4 ${calc === 'braden' ? 'text-white' : 'text-teal-500'}`} size={32} />
-          <h3 className="font-bold text-lg">Braden</h3>
-          <p className="text-xs opacity-60 mt-2">Risco de LesÃ£o por PressÃ£o.</p>
-        </button>
-        <button 
-          onClick={() => setCalc('water')}
-          className={`p-6 border rounded-3xl text-left transition-all ${calc === 'water' ? 'bg-medical-primary border-medical-primary text-white shadow-xl shadow-medical-primary/20' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-        >
-          <Droplets className={`mb-4 ${calc === 'water' ? 'text-white' : 'text-cyan-500'}`} size={32} />
-          <h3 className="font-bold text-lg">DÃ©ficit de Ãgua</h3>
-          <p className="text-xs opacity-60 mt-2">Para Hipernatremia.</p>
-        </button>
-      </div>
-
-      <AnimatePresence mode="wait">
-        {calc === 'water' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Droplets size={20} className="text-cyan-500" /> DÃ©ficit de Ãgua Livre</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">SÃ³dio Atual (mEq/L)</label>
-                  <input type="number" value={waterDeficitInputs.na} onChange={(e) => setWaterDeficitInputs(p => ({ ...p, na: e.target.value }))} className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none outline-none" placeholder="Ex: 155" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Peso (kg)</label>
-                  <input type="number" value={waterDeficitInputs.weight} onChange={(e) => setWaterDeficitInputs(p => ({ ...p, weight: e.target.value }))} className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none outline-none" placeholder="Ex: 70" />
-                </div>
-             </div>
-             <div className="grid grid-cols-2 gap-4 mb-8">
-                <select value={waterDeficitInputs.gender} onChange={(e) => setWaterDeficitInputs(p => ({ ...p, gender: e.target.value }))} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none outline-none text-sm">
-                   <option value="male">Masculino</option>
-                   <option value="female">Feminino</option>
-                </select>
-                <select value={waterDeficitInputs.ageGroup} onChange={(e) => setWaterDeficitInputs(p => ({ ...p, ageGroup: e.target.value }))} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none outline-none text-sm">
-                   <option value="adult">Adulto</option>
-                   <option value="elderly">Idoso</option>
-                </select>
-             </div>
-             {waterDeficitResult !== "0" && (
-                <button 
-                  onClick={() => addToHistory('DÃ©ficit de Ãgua', `${waterDeficitResult} L`)}
-                  className="mt-6 w-full py-3 bg-cyan-500/10 text-cyan-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-cyan-500 transition-colors hover:text-white"
-                >
-                  Salvar no HistÃ³rico
-                </button>
-             )}
-          </motion.div>
-        )}
-        {calc === 'ckdepi' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Activity size={20} className="text-medical-primary" /> CKD-EPI (FiltraÃ§Ã£o Glomerular)</h3>
-             <div className="grid md:grid-cols-3 gap-6 items-end">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400">Idade (Anos)</label>
-                  <input type="number" value={age} onChange={e => setAge(e.target.value)} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 focus:ring-2 focus:ring-medical-primary/20 outline-none dark:text-white" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400">Creatinina (mg/dL)</label>
-                  <input type="number" value={creatinine} onChange={e => setCreatinine(e.target.value)} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 focus:ring-2 focus:ring-medical-primary/20 outline-none dark:text-white" />
-                </div>
-                <div className="flex bg-slate-50 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-700 h-12">
-                   <button onClick={() => setIsFemale(false)} className={`flex-1 rounded-lg text-xs font-bold transition-all ${!isFemale ? 'bg-medical-primary text-white shadow-sm' : 'text-slate-400'}`}>Masc</button>
-                   <button onClick={() => setIsFemale(true)} className={`flex-1 rounded-lg text-xs font-bold transition-all ${isFemale ? 'bg-medical-primary text-white shadow-sm' : 'text-slate-400'}`}>Fem</button>
-                </div>
-             </div>
-             {ckdepiResult && ckdepiResult !== "NaN" && (
-                <>
-                  <div className="mt-8 p-8 bg-medical-primary/5 rounded-3xl border border-medical-primary/10 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
-                       <h4 className="text-[10px] font-bold uppercase text-medical-primary tracking-widest mb-1">Taxa de FiltraÃ§Ã£o Glomerular</h4>
-                       <p className="text-6xl font-serif font-black italic text-medical-primary">{ckdepiResult}<span className="text-xl ml-2 opacity-40">mL/min/1.73mÂ²</span></p>
-                    </div>
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-700">
-                       <p className="text-sm font-bold dark:text-white">EstÃ¡gio {parseInt(ckdepiResult) >= 90 ? 'G1' : parseInt(ckdepiResult) >= 60 ? 'G2' : parseInt(ckdepiResult) >= 45 ? 'G3a' : parseInt(ckdepiResult) >= 30 ? 'G3b' : parseInt(ckdepiResult) >= 15 ? 'G4' : 'G5'}</p>
-                       <p className="text-xs text-slate-500 mt-1">{parseInt(ckdepiResult) < 15 ? 'FalÃªncia Renal' : 'DisfunÃ§Ã£o Renal'}</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => addToHistory('TFG (CKD-EPI)', `${ckdepiResult} mL/min/1.73mÂ²`)}
-                    className="mt-6 w-full py-3 bg-medical-primary/10 text-medical-primary rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-medical-primary transition-colors hover:text-white"
-                  >
-                    Salvar no HistÃ³rico
-                  </button>
-                </>
-             )}
-             <p className="mt-6 text-[10px] text-slate-400 text-center uppercase tracking-widest font-medium italic">FÃ³rmula CKD-EPI 2021 (Ref: NKF/ASN Task Force)</p>
-          </motion.div>
-        )}
-        {calc === 'clcr' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white"><Calculator size={20} className="text-medical-secondary" /> Clearance de Creatinina (ClCr)</h3>
-             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400">Idade (Anos)</label>
-                  <input type="number" value={age} onChange={e => setAge(e.target.value)} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 focus:ring-2 focus:ring-medical-primary/20 outline-none dark:text-white" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400">Peso (kg)</label>
-                  <input type="number" value={weight} onChange={e => setWeight(e.target.value)} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 focus:ring-2 focus:ring-medical-primary/20 outline-none dark:text-white" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400">Creatinina (mg/dL)</label>
-                  <input type="number" step="0.1" value={creatinine} onChange={e => setCreatinine(e.target.value)} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 focus:ring-2 focus:ring-medical-primary/20 outline-none dark:text-white" />
-                </div>
-                <div className="flex gap-2">
-                   <button onClick={() => setIsFemale(false)} className={`flex-1 h-12 rounded-xl font-bold transition-all ${!isFemale ? 'bg-medical-primary text-white shadow-md' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'}`}>Masc</button>
-                   <button onClick={() => setIsFemale(true)} className={`flex-1 h-12 rounded-xl font-bold transition-all ${isFemale ? 'bg-rose-500 text-white shadow-md' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'}`}>Fem</button>
-                   <button onClick={() => {setAge(''); setWeight(''); setCreatinine('')}} className="p-3 bg-slate-100 dark:bg-slate-700 text-slate-400 rounded-xl hover:text-rose-500"><RotateCcw size={18} /></button>
-                </div>
-             </div>
-             {clcrResult && (
-               <div className="mt-8 p-8 bg-medical-primary/5 rounded-3xl border border-medical-primary/10 flex flex-col md:flex-row items-center justify-between gap-6">
-                 <div>
-                    <h4 className="text-[10px] font-bold uppercase text-medical-primary/60 tracking-widest mb-1">Clearance Estimado</h4>
-                    <p className="text-6xl font-serif font-black italic text-medical-primary">{clcrResult}<span className="text-xl ml-2 opacity-40">mL/min</span></p>
-                 </div>
-                 <div className="max-w-md bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                    <div className="flex items-center gap-2 text-medical-accent mb-2">
-                       <ShieldCheck size={16} />
-                       <span className="text-[10px] font-bold uppercase tracking-widest">AtenÃ§Ã£o FarmacÃªutica</span>
-                    </div>
-                    <p className="text-xs text-slate-500 italic">"Utilize este valor para ajuste de antibioticoterapia (ex: GlicopeptÃ­deos, AminoglicosÃ­deos) e avaliaÃ§Ã£o de funÃ§Ã£o renal basal do paciente."</p>
-                 </div>
-               </div>
-             )}
-          </motion.div>
-        )}
-
-        {calc === 'curb' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white"><AlertTriangle size={20} className="text-amber-500" /> Severidade da Pneumonia (CURB-65)</h3>
-             <div className="space-y-3">
-                {[
-                  { id: 'confusion', label: 'C â€” ConfusÃ£o Mental recente?' },
-                  { id: 'urea', label: 'U â€” Ureia > 50 mg/dL?' },
-                  { id: 'respiration', label: 'R â€” FR â‰¥ 30 irpm?' },
-                  { id: 'blood', label: 'B â€” PAS < 90 mmHg ou PAD â‰¤ 60 mmHg?' },
-                  { id: 'age', label: '65 â€” Idade â‰¥ 65 anos?' },
-                ].map((item) => (
-                  <button 
-                    key={item.id}
-                    onClick={() => setCurb(p => ({ ...p, [item.id]: !p[item.id as keyof typeof curb] }))}
-                    className={`w-full p-4 flex items-center justify-between rounded-2xl border transition-all ${curb[item.id as keyof typeof curb] ? 'bg-amber-500/10 border-amber-500 text-amber-600 dark:text-amber-400' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                  >
-                    <span className="font-bold text-sm">{item.label}</span>
-                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center ${curb[item.id as keyof typeof curb] ? 'bg-amber-500 border-amber-500 text-white' : 'border-slate-300'}`}>
-                       {curb[item.id as keyof typeof curb] && <ShieldCheck size={14} />}
-                    </div>
-                  </button>
-                ))}
-             </div>
-             <div className="mt-8 p-8 bg-amber-500/5 rounded-3xl border border-amber-500/10 flex flex-col md:flex-row items-center justify-between gap-6">
-                <div>
-                  <h4 className="text-[10px] font-bold uppercase text-amber-600 tracking-widest mb-1">Escore Total</h4>
-                  <p className="text-6xl font-serif font-black italic text-amber-600">{curbScore}<span className="text-xl ml-2 opacity-40">Pontos</span></p>
-                </div>
-                <div className="max-w-xs bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                   <p className="text-xs font-bold uppercase text-slate-400 mb-1">RecomendaÃ§Ã£o:</p>
-                   <p className="text-sm font-medium">
-                      {curbScore <= 1 ? 'Baixo Risco (1.5% morbi.). Tratamento Ambulatorial.' : curbScore === 2 ? 'Risco Moderado (9.2% morbi.). Considerar InternaÃ§Ã£o curta.' : 'Alto Risco (22% morbi.). InternaÃ§Ã£o Hospitalar / UTI.'}
-                   </p>
-                </div>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'qsofa' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white"><Zap size={20} className="text-rose-500" /> Triagem de Sepse (qSOFA)</h3>
-             <div className="space-y-3">
-                {[
-                  { id: 'mental', label: 'Estado Mental Alterado (Glasgow < 15)?' },
-                  { id: 'respiration', label: 'FrequÃªncia RespiratÃ³ria â‰¥ 22 irpm?' },
-                  { id: 'pressure', label: 'PressÃ£o Arterial SistÃ³lica â‰¤ 100 mmHg?' },
-                ].map((item) => (
-                  <button 
-                    key={item.id}
-                    onClick={() => setQsofa(p => ({ ...p, [item.id]: !p[item.id as keyof typeof qsofa] }))}
-                    className={`w-full p-4 flex items-center justify-between rounded-2xl border transition-all ${qsofa[item.id as keyof typeof qsofa] ? 'bg-rose-500/10 border-rose-500 text-rose-600 dark:text-rose-400' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                  >
-                    <span className="font-bold text-sm">{item.label}</span>
-                    <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center ${qsofa[item.id as keyof typeof qsofa] ? 'bg-rose-500 border-rose-500 text-white' : 'border-slate-300'}`}>
-                       {qsofa[item.id as keyof typeof qsofa] && <ShieldCheck size={14} />}
-                    </div>
-                  </button>
-                ))}
-             </div>
-             <div className="mt-8 p-8 bg-rose-500/5 rounded-3xl border border-rose-500/10 flex flex-col md:flex-row items-center justify-between gap-6">
-                <div>
-                  <h4 className="text-[10px] font-bold uppercase text-rose-600 tracking-widest mb-1">Escore Total</h4>
-                  <p className="text-6xl font-serif font-black italic text-rose-600">{qsofaScore}<span className="text-xl ml-2 opacity-40">Pontos</span></p>
-                </div>
-                <div className="max-w-xs bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-700">
-                   <p className="text-xs font-bold uppercase text-slate-400 mb-1">Resultado:</p>
-                   <p className="text-sm font-medium">
-                      {qsofaScore >= 2 ? 'ALTO RISCO. Maior probabilidade de desfecho desfavorÃ¡vel ou internaÃ§Ã£o prolongada. Avaliar disfunÃ§Ã£o orgÃ¢nica.' : 'Baixo risco de mortalidade hospitalar.'}
-                   </p>
-                </div>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'glasgow' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 text-center">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Brain size={20} className="text-indigo-500" /> Escala de Coma de Glasgow</h3>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <p className="text-xs font-bold uppercase text-slate-400">Abertura Ocular</p>
-                  {[4, 3, 2, 1].map(v => (
-                    <button key={v} onClick={() => setGlasgow(p => ({ ...p, eyes: v }))} className={`w-full p-2 border rounded-xl text-xs font-bold ${glasgow.eyes === v ? 'bg-indigo-500 text-white' : 'bg-slate-50 dark:bg-slate-900'}`}>
-                      {v === 4 ? 'EspontÃ¢nea' : v === 3 ? 'Ã€ Voz' : v === 2 ? 'Ã€ Dor' : 'Sem resposta'}
-                    </button>
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xs font-bold uppercase text-slate-400">Resposta Verbal</p>
-                  {[5, 4, 3, 2, 1].map(v => (
-                    <button key={v} onClick={() => setGlasgow(p => ({ ...p, verbal: v }))} className={`w-full p-2 border rounded-xl text-xs font-bold ${glasgow.verbal === v ? 'bg-indigo-500 text-white' : 'bg-slate-50 dark:bg-slate-900'}`}>
-                      {v === 5 ? 'Orientada' : v === 4 ? 'Confusa' : v === 3 ? 'Palavras' : v === 2 ? 'Sons' : 'Sem resposta'}
-                    </button>
-                  ))}
-                </div>
-                <div className="space-y-2">
-                  <p className="text-xs font-bold uppercase text-slate-400">Resposta Motora</p>
-                  {[6, 5, 4, 3, 2, 1].map(v => (
-                    <button key={v} onClick={() => setGlasgow(p => ({ ...p, motor: v }))} className={`w-full p-2 border rounded-xl text-xs font-bold ${glasgow.motor === v ? 'bg-indigo-500 text-white' : 'bg-slate-50 dark:bg-slate-900'}`}>
-                      {v === 6 ? 'Obedece' : v === 5 ? 'Localiza' : v === 4 ? 'Retirada' : v === 3 ? 'FlexÃ£o' : v === 2 ? 'ExtensÃ£o' : 'Sem resposta'}
-                    </button>
-                  ))}
-                </div>
-             </div>
-             <div className="mt-8 p-6 bg-indigo-500/5 rounded-3xl border border-indigo-500/20">
-                <p className="text-6xl font-black italic text-indigo-500 mb-2">{glasgowTotal}</p>
-                <p className="text-sm font-bold">{glasgowTotal <= 8 ? 'TCE Grave (IndicaÃ§Ã£o IOT)' : glasgowTotal <= 12 ? 'TCE Moderado' : 'TCE Leve'}</p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'wells' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Search size={20} className="text-blue-500" /> Wells - CritÃ©rios para TEP</h3>
-             <div className="space-y-2">
-                {[
-                  { id: 'symptoms', label: 'Sinais/Sintomas de TVP? (3 pts)', val: 3 },
-                  { id: 'altDiagnosis', label: 'TEP Ã© diagnÃ³stico provÃ¡vel? (3 pts)', val: 3 },
-                  { id: 'heartRate', label: 'FC > 100 bpm? (1.5 pts)', val: 1.5 },
-                  { id: 'surgery', label: 'Cirurgia ou ImobilizaÃ§Ã£o? (1.5 pts)', val: 1.5 },
-                  { id: 'previous', label: 'TVP ou TEP prÃ©vio? (1.5 pts)', val: 1.5 },
-                  { id: 'hemoptysis', label: 'Hemoptise? (1 pt)', val: 1 },
-                  { id: 'malignancy', label: 'CÃ¢ncer / Malignidade? (1 pt)', val: 1 },
-                ].map(item => (
-                  <button 
-                    key={item.id} 
-                    onClick={() => setWells(p => ({ ...p, [item.id]: !p[item.id as keyof typeof wells] }))}
-                    className={`w-full p-3 flex justify-between items-center border rounded-xl text-sm ${wells[item.id as keyof typeof wells] ? 'bg-blue-500/10 border-blue-500 font-bold' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                  >
-                    <span>{item.label}</span>
-                    <div className={`w-5 h-5 rounded border ${wells[item.id as keyof typeof wells] ? 'bg-blue-500 border-blue-500 text-white' : 'border-slate-300'} flex items-center justify-center`}>
-                       {wells[item.id as keyof typeof wells] && <ShieldCheck size={12} />}
-                    </div>
-                  </button>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-blue-500/5 rounded-3xl border border-blue-500/10 text-center">
-                <p className="text-5xl font-black text-blue-500 mb-2">{wellsScore}</p>
-                <p className="text-sm font-bold">{wellsScore > 4 ? 'ALTA Probabilidade. Solicitar exames de imagem (AngioTC).' : wellsScore >= 2 ? 'Probabilidade Moderada. Solicitar D-DÃ­mero.' : 'BAIXA Probabilidade. D-DÃ­mero descarta se negativo.'}</p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'chads' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><ShieldAlert size={20} className="text-purple-500" /> CHAâ‚‚DSâ‚‚-VASc</h3>
-             <div className="space-y-2">
-                {[
-                  { id: 'heartFailure', label: 'I - InsuficiÃªncia CardÃ­aca? (1 pt)' },
-                  { id: 'hypertension', label: 'H - HipertensÃ£o? (1 pt)' },
-                  { id: 'age75', label: 'A - Idade â‰¥ 75 anos? (2 pts)' },
-                  { id: 'diabetes', label: 'D - Diabetes Mellitus? (1 pt)' },
-                  { id: 'stroke', label: 'S - AVC / AIT / Tromboembolismo prÃ©vio? (2 pts)' },
-                  { id: 'vascular', label: 'V - DoenÃ§a Vascular? (1 pt)' },
-                  { id: 'age65', label: 'A - Idade 65-74 anos? (1 pt)' },
-                  { id: 'female', label: 'Sc - Sexo Feminino? (1 pt)' },
-                ].map(item => (
-                  <button 
-                    key={item.id} 
-                    onClick={() => setChads(p => ({ ...p, [item.id]: !p[item.id as keyof typeof chads] }))}
-                    className={`w-full p-3 flex justify-between items-center border rounded-xl text-sm ${chads[item.id as keyof typeof chads] ? 'bg-purple-500/10 border-purple-500 font-bold' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                  >
-                    <span>{item.label}</span>
-                    <div className={`w-5 h-5 rounded border ${chads[item.id as keyof typeof chads] ? 'bg-purple-500 border-purple-500 text-white' : 'border-slate-300'} flex items-center justify-center`}>
-                       {chads[item.id as keyof typeof chads] && <ShieldCheck size={12} />}
-                    </div>
-                  </button>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-purple-500/5 rounded-3xl border border-purple-500/10 text-center">
-                <p className="text-5xl font-black text-purple-500 mb-2">{chadsScore}</p>
-                <p className="text-sm font-bold">
-                  {chadsScore >= 2 ? 'Anticoaguloterapia Recomendada (Homem >= 2, Mulher >= 3).' : chadsScore === 1 ? 'AnticoagulaÃ§Ã£o deve ser considerada.' : 'Baixo risco. AnticoagulaÃ§Ã£o geralmente nÃ£o indicada.'}
-                </p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'hasbled' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Droplets size={20} className="text-rose-600" /> HAS-BLED Score</h3>
-             <div className="space-y-2">
-                {[
-                  { id: 'h', label: 'H - HipertensÃ£o (PAS > 160 mmHg)' },
-                  { id: 'a', label: 'A - FunÃ§Ã£o Renal ou HepÃ¡tica Alterada' },
-                  { id: 's', label: 'S - AVC PrÃ©vio' },
-                  { id: 'b', label: 'B - HistÃ³ria de Sangramento ou PredisposiÃ§Ã£o' },
-                  { id: 'l', label: 'L - INR Labital (se em uso de varfarina)' },
-                  { id: 'e', label: 'E - Idade > 65 anos' },
-                  { id: 'd', label: 'D - Drogas (Aspirina/AINE) ou Ãlcool' },
-                ].map(item => (
-                  <button 
-                    key={item.id} 
-                    onClick={() => setHasbled(p => ({ ...p, [item.id]: !p[item.id as keyof typeof hasbled] }))}
-                    className={`w-full p-3 flex justify-between items-center border rounded-xl text-sm ${hasbled[item.id as keyof typeof hasbled] ? 'bg-rose-500/10 border-rose-500 font-bold' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                  >
-                    <span>{item.label}</span>
-                    <div className={`w-5 h-5 rounded border ${hasbled[item.id as keyof typeof hasbled] ? 'bg-rose-500 border-rose-500 text-white' : 'border-slate-300'} flex items-center justify-center`}>
-                       {hasbled[item.id as keyof typeof hasbled] && <ShieldCheck size={12} />}
-                    </div>
-                  </button>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-rose-500/5 rounded-3xl border border-rose-500/10 text-center">
-                <p className="text-5xl font-black text-rose-500 mb-2">{hasbledScore}</p>
-                <p className="text-sm font-bold">
-                  {hasbledScore >= 3 ? 'ALTO RISCO de sangramento. CAUTELA ao anticoagular. Monitorar de perto.' : 'Risco de sangramento baixo/moderado.'}
-                </p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'meld' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Scale size={20} className="text-emerald-500" /> MELD Score</h3>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div>
-                   <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Bilirrubina (mg/dL)</label>
-                   <input type="number" value={meldInputs.bili} onChange={(e) => setMeldInputs(p => ({ ...p, bili: e.target.value }))} className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none outline-none" placeholder="0.0" />
-                </div>
-                <div>
-                   <label className="block text-xs font-bold text-slate-400 uppercase mb-2">INR</label>
-                   <input type="number" value={meldInputs.inr} onChange={(e) => setMeldInputs(p => ({ ...p, inr: e.target.value }))} className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none outline-none" placeholder="1.0" />
-                </div>
-                <div>
-                   <label className="block text-xs font-bold text-slate-400 uppercase mb-2">Creatinina (mg/dL)</label>
-                   <input type="number" value={meldInputs.cr} onChange={(e) => setMeldInputs(p => ({ ...p, cr: e.target.value }))} className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border-none outline-none" placeholder="0.0" />
-                </div>
-             </div>
-             <div className="p-8 bg-emerald-500/5 rounded-3xl border border-emerald-500/10 text-center">
-                <p className="text-6xl font-black text-emerald-500 mb-2">{meldScore || '--'}</p>
-                <p className="text-sm font-bold">Mortalidade estimada em 3 meses: {meldScore >= 40 ? '71.3%' : meldScore >= 30 ? '52.6%' : meldScore >= 20 ? '19.6%' : 'Inexpressiva'}</p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'nihss' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Brain size={20} className="text-rose-400" /> NIH Stroke Scale (NIHSS)</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {[
-                  { id: 'state', label: 'NÃ­vel de ConsciÃªncia', options: ['Alerta (0)', 'Sonolento (1)', 'Obnubilado (2)', 'Coma (3)'] },
-                  { id: 'gaze', label: 'Paralisia do Olhar', options: ['Normal (0)', 'Parcial (1)', 'Total (2)'] },
-                  { id: 'visual', label: 'Campos Visuais', options: ['Normal (0)', 'Parcial (1)', 'Hemianopsia (2)', 'Cegueira (3)'] },
-                  { id: 'facial', label: 'Paralisia Facial', options: ['Normal (0)', 'Leve (1)', 'Parcial (2)', 'Total (3)'] },
-                  { id: 'motorL', label: 'Motor BraÃ§o E', options: ['Normal (0)', 'Deriva (1)', 'Cai (2)', 'Sem esforÃ§o (4)'] },
-                  { id: 'motorR', label: 'Motor BraÃ§o D', options: ['Normal (0)', 'Deriva (1)', 'Cai (2)', 'Sem esforÃ§o (4)'] },
-                ].map(item => (
-                  <div key={item.id} className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">{item.label}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {item.options.map((opt, i) => {
-                        const val = parseInt(opt.match(/\d+/)![0]);
-                        return (
-                          <button 
-                            key={i} 
-                            onClick={() => setNihss(p => ({ ...p, [item.id]: val }))}
-                            className={`px-2 py-1 text-[10px] rounded-lg border transition-all ${nihss[item.id] === val ? 'bg-rose-400 text-white border-rose-400' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-rose-400/5 rounded-3xl border border-rose-400/10 text-center">
-                <p className="text-5xl font-black text-rose-400 mb-2">{nihssTotal}</p>
-                <p className="text-sm font-bold">
-                  {(nihssTotal as number) >= 16 ? 'DÃ©ficit Grave (Risco de transformaÃ§Ã£o hemorrÃ¡gica)' : (nihssTotal as number) >= 5 ? 'DÃ©ficit Moderado' : 'DÃ©ficit Leve'}
-                </p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'braden' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Bookmark size={20} className="text-teal-500" /> Escala de Braden</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { id: 'sensory', label: 'PercepÃ§Ã£o Sensorial', options: ['Totalmente (1)', 'Muito (2)', 'Pouco (3)', 'Normal (4)'] },
-                  { id: 'moisture', label: 'Umidade', options: ['Constante (1)', 'Muita (2)', 'Ocasional (3)', 'Raramente (4)'] },
-                  { id: 'activity', label: 'Atividade', options: ['Acamado (1)', 'Cadeira (2)', 'Caminha (3)', 'Normal (4)'] },
-                  { id: 'mobility', label: 'Mobilidade', options: ['ImÃ³vel (1)', 'Bastante (2)', 'Pouco (3)', 'Normal (4)'] },
-                  { id: 'nutrition', label: 'NutriÃ§Ã£o', options: ['Pobre (1)', 'Inadequada (2)', 'Adequada (3)', 'Excelente (4)'] },
-                  { id: 'friction', label: 'FricÃ§Ã£o / Cisalhamento', options: ['Problema (1)', 'Potencial (2)', 'Nenhum (3)'] },
-                ].map(item => (
-                  <div key={item.id} className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">{item.label}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {item.options.map((opt, i) => {
-                        const val = parseInt(opt.match(/\d+/)![0]);
-                        return (
-                          <button 
-                            key={i} 
-                            onClick={() => setBraden(p => ({ ...p, [item.id]: val }))}
-                            className={`px-2 py-1 text-[10px] rounded-lg border transition-all ${braden[item.id] === val ? 'bg-teal-500 text-white border-teal-500' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-teal-500/5 rounded-3xl border border-teal-500/10 text-center">
-                <p className="text-5xl font-black text-teal-500 mb-2">{bradenScore}</p>
-                <p className="text-sm font-bold">
-                  {(bradenScore as number) <= 12 ? 'ALTO RISCO (Implementar protocolo imediato).' : (bradenScore as number) <= 14 ? 'Risco Moderado.' : 'Risco Baixo / Sem risco.'}
-                </p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'bmi' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white"><Activity size={20} className="text-medical-secondary" /> Ãndice de Massa Corporal</h3>
-             <div className="grid md:grid-cols-2 gap-6 items-end">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400">Peso (kg)</label>
-                  <input type="number" value={weight} onChange={e => setWeight(e.target.value)} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 focus:ring-2 focus:ring-medical-primary/20 outline-none dark:text-white" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase text-slate-400">Altura (cm)</label>
-                  <input type="number" value={height} onChange={e => setHeight(e.target.value)} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-4 focus:ring-2 focus:ring-medical-primary/20 outline-none dark:text-white" />
-                </div>
-             </div>
-             {bmiResult && (
-               <div className="mt-8 p-8 bg-emerald-500/5 rounded-3xl border border-emerald-500/10 flex flex-col md:flex-row items-center justify-between gap-6">
-                 <div>
-                    <h4 className="text-[10px] font-bold uppercase text-emerald-600 tracking-widest mb-1">IMC</h4>
-                    <p className="text-6xl font-serif font-black italic text-emerald-600">{bmiResult}<span className="text-xl ml-2 opacity-40">kg/mÂ²</span></p>
-                 </div>
-                 <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-700">
-                    <p className="text-sm font-bold dark:text-white">{parseFloat(bmiResult) < 18.5 ? 'Baixo Peso' : parseFloat(bmiResult) < 25 ? 'Peso Normal' : 'Sobrepeso / Obesidade'}</p>
-                    <div className="w-48 h-2 bg-slate-100 dark:bg-slate-800 rounded-full mt-2 overflow-hidden">
-                       <div className="h-full bg-emerald-500" style={{ width: `${Math.min(100, (parseFloat(bmiResult) / 40) * 100)}%` }} />
-                    </div>
-                 </div>
-               </div>
-             )}
-          </motion.div>
-        )}
-
-        {calc === 'sofa' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Activity size={20} className="text-medical-secondary" /> SOFA Score (DisfunÃ§Ã£o OrgÃ¢nica)</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { id: 'resp', label: 'RespiraÃ§Ã£o (PaO2/FiO2)', options: ['>400 (0)', '<400 (1)', '<300 (2)', '<200 + VNI (3)', '<100 + VM (4)'] },
-                  { id: 'coagulation', label: 'CoagulaÃ§Ã£o (Plaquetas)', options: ['>150k (0)', '<150k (1)', '<100k (2)', '<50k (3)', '<20k (4)'] },
-                  { id: 'liver', label: 'FÃ­gado (Bilirrubina)', options: ['<1.2 (0)', '1.2-1.9 (1)', '2-5.9 (2)', '6-11.9 (3)', '>12 (4)'] },
-                  { id: 'cardiovascular', label: 'Cardiovascular (PAM/Drogas)', options: ['PAM â‰¥70 (0)', 'PAM <70 (1)', 'Dopa â‰¤5 (2)', 'Nora â‰¤0.1 (3)', 'Nora >0.1 (4)'] },
-                  { id: 'cns', label: 'SNC (Glasgow)', options: ['15 (0)', '13-14 (1)', '10-12 (2)', '6-9 (3)', '<6 (4)'] },
-                  { id: 'renal', label: 'Renal (Creatinina)', options: ['<1.2 (0)', '1.2-1.9 (1)', '2-3.4 (2)', '3.5-4.9 (3)', '>5 (4)'] },
-                ].map(item => (
-                  <div key={item.id} className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">{item.label}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {item.options.map((opt, i) => {
-                        const val = parseInt(opt.match(/\d+/)![0]);
-                        return (
-                          <button 
-                            key={i} 
-                            onClick={() => setSofa(p => ({ ...p, [item.id]: val }))}
-                            className={`px-2 py-1 text-[10px] rounded-lg border transition-all ${sofa[item.id as keyof typeof sofa] === val ? 'bg-medical-primary text-white border-medical-primary' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-medical-primary/5 rounded-3xl border border-medical-primary/10 text-center">
-                <p className="text-6xl font-black text-medical-primary mb-2">{sofaScore}</p>
-                <p className="text-sm font-bold">Mortalidade estimada em UTI: {sofaScore >= 15 ? '>90%' : sofaScore >= 10 ? '40-50%' : 'Baixa'}</p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'child' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-white justify-center"><Scale size={20} className="text-medical-primary" /> Child-Pugh Score</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { id: 'bili', label: 'Bilirrubina (mg/dL)', options: ['<2 (1)', '2-3 (2)', '>3 (3)'] },
-                  { id: 'alb', label: 'Albumina (g/dL)', options: ['>3.5 (1)', '2.8-3.5 (2)', '<2.8 (3)'] },
-                  { id: 'inr', label: 'INR', options: ['<1.7 (1)', '1.7-2.3 (2)', '>2.3 (3)'] },
-                  { id: 'ascites', label: 'Ascite', options: ['Ausente (1)', 'Leve (2)', 'Moderada (3)'] },
-                  { id: 'enceph', label: 'Encefalopatia', options: ['Ausente (1)', 'Grau 1-2 (2)', 'Grau 3-4 (3)'] },
-                ].map(item => (
-                  <div key={item.id} className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">{item.label}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {item.options.map((opt, i) => {
-                        const val = parseInt(opt.match(/\d+/)![0]);
-                        return (
-                          <button 
-                            key={i} 
-                            onClick={() => setChild(p => ({ ...p, [item.id as keyof typeof child]: val }))}
-                            className={`px-2 py-1 text-[10px] rounded-lg border transition-all ${child[item.id as keyof typeof child] === val ? 'bg-medical-primary text-white border-medical-primary' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-medical-primary/5 rounded-3xl border border-medical-primary/10 text-center">
-                <p className="text-6xl font-black text-medical-primary mb-2">{childScore}</p>
-                <p className="text-sm font-bold">
-                  {childScore <= 6 ? 'Classe A (5-6 pts) - Sobrevida 1 ano: 100%' : childScore <= 9 ? 'Classe B (7-9 pts) - Sobrevida 1 ano: 80%' : 'Classe C (10-15 pts) - Sobrevida 1 ano: 45%'}
-                </p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'meld' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 justify-center flex items-center gap-2 dark:text-white"><ClipboardCheck size={20} className="text-medical-secondary" /> MELD Score</h3>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                   <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Bilirrubina (mg/dL)</p>
-                   <input type="number" value={meldInputs.bili} onChange={(e) => setMeldInputs(p =>({...p, bili: e.target.value}))} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 outline-none focus:ring-2 focus:ring-medical-primary/20 dark:text-white" placeholder="1.0" />
-                </div>
-                <div>
-                   <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">INR</p>
-                   <input type="number" value={meldInputs.inr} onChange={(e) => setMeldInputs(p =>({...p, inr: e.target.value}))} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 outline-none focus:ring-2 focus:ring-medical-primary/20 dark:text-white" placeholder="1.0" />
-                </div>
-                <div>
-                   <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Creatinina (mg/dL)</p>
-                   <input type="number" value={meldInputs.cr} onChange={(e) => setMeldInputs(p =>({...p, cr: e.target.value}))} className="w-full h-12 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 outline-none focus:ring-2 focus:ring-medical-primary/20 dark:text-white" placeholder="1.0" />
-                </div>
-             </div>
-             <div className="mt-8 p-6 bg-medical-primary/5 rounded-3xl border border-medical-primary/10 text-center">
-                <p className="text-6xl font-black text-medical-primary mb-2">{meldScore}</p>
-                <p className="text-sm font-bold">Mortalidade em 3 meses: {meldScore > 40 ? '71%' : meldScore > 30 ? '52%' : meldScore > 20 ? '20%' : '<2%'}</p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'wells' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 justify-center flex items-center gap-2 dark:text-white"><Activity size={20} className="text-medical-primary" /> Escore de Wells para TEP</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { id: 'symptoms', label: 'Sinais/Sintomas de TVP (3 pts)', val: 3 },
-                  { id: 'altDiagnosis', label: 'TEP Ã© diagnÃ³stico provÃ¡vel (3 pts)', val: 3 },
-                  { id: 'heartRate', label: 'FC > 100 bpm (1.5 pts)', val: 1.5 },
-                  { id: 'surgery', label: 'ImobilizaÃ§Ã£o/Cirurgia 4 sem (1.5 pts)', val: 1.5 },
-                  { id: 'previous', label: 'TVP/TEP prÃ©vio (1.5 pts)', val: 1.5 },
-                  { id: 'hemoptysis', label: 'Hemoptise (1 pt)', val: 1 },
-                  { id: 'malignancy', label: 'Malignidade (1 pt)', val: 1 },
-                ].map(item => (
-                  <button 
-                    key={item.id} 
-                    onClick={() => setWells(p => ({ ...p, [item.id as keyof typeof wells]: !p[item.id as keyof typeof wells] }))}
-                    className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${wells[item.id as keyof typeof wells] ? 'bg-medical-primary border-medical-primary text-white' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}
-                  >
-                    <span className="text-xs font-bold">{item.label}</span>
-                    {wells[item.id as keyof typeof wells] ? <CheckCircle size={18} /> : <Circle size={18} />}
-                  </button>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-medical-primary/5 rounded-3xl border border-medical-primary/10 text-center">
-                <p className="text-6xl font-black text-medical-primary mb-2">{wellsScore}</p>
-                <p className="text-sm font-bold">
-                  {wellsScore > 4 ? 'Alta Probabilidade (> 6 pts) ou IntermediÃ¡ria (4.5 - 6 pts)' : 'Baixa Probabilidade (< 4 pts)'}
-                </p>
-                <p className="text-xs text-slate-500 mt-2">D-dÃ­mero indicado se Wells {"<="} 4.</p>
-             </div>
-          </motion.div>
-        )}
-
-        {calc === 'nihss' && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700">
-             <h3 className="text-xl font-bold mb-6 justify-center flex items-center gap-2 dark:text-white"><Zap size={20} className="text-rose-500" /> NIHSS (Simplificado)</h3>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { id: 'state', label: 'NÃ­vel ConsciÃªncia', options: ['Alerta (0)', 'Sonolento (1)', 'Estupor (2)', 'Coma (3)'] },
-                  { id: 'gaze', label: 'Olhar Conjugado', options: ['Normal (0)', 'Parcial (1)', 'Desvio ForÃ§ado (2)'] },
-                  { id: 'facial', label: 'Paresia Facial', options: ['Normal (0)', 'Leve (1)', 'Parcial (2)', 'Total (3)'] },
-                  { id: 'motorL', label: 'Motor BraÃ§o E', options: ['Sem Queda (0)', 'Queda (1)', 'Algum esforÃ§o (2)', 'Sem esforÃ§o (3)', 'Plegia (4)'] },
-                  { id: 'motorR', label: 'Motor BraÃ§o D', options: ['Sem Queda (0)', 'Queda (1)', 'Algum esforÃ§o (2)', 'Sem esforÃ§o (3)', 'Plegia (4)'] },
-                  { id: 'legL', label: 'Motor Perna E', options: ['Sem Queda (0)', 'Queda (1)', 'Algum esforÃ§o (2)', 'Sem esforÃ§o (3)', 'Plegia (4)'] },
-                  { id: 'legR', label: 'Motor Perna D', options: ['Sem Queda (0)', 'Queda (1)', 'Algum esforÃ§o (2)', 'Sem esforÃ§o (3)', 'Plegia (4)'] },
-                ].map(item => (
-                  <div key={item.id} className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">{item.label}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {item.options.map((opt, i) => {
-                        const val = parseInt(opt.match(/\d+/)![0]);
-                        return (
-                          <button 
-                            key={i} 
-                            onClick={() => setNihss(p => ({ ...p, [item.id]: val }))}
-                            className={`px-2 py-1 text-[10px] rounded-lg border transition-all ${nihss[item.id] === val ? 'bg-medical-primary text-white border-medical-primary' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700'}`}
-                          >
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-             </div>
-             <div className="mt-8 p-6 bg-rose-500/5 rounded-3xl border border-rose-500/10 text-center">
-                <p className="text-6xl font-black text-rose-500 mb-2">{nihssTotal}</p>
-                <p className="text-sm font-bold text-rose-600">
-                  {nihssTotal >= 21 ? 'AVC Grave' : nihssTotal >= 16 ? 'Moderado/Grave' : nihssTotal >= 5 ? 'Moderado' : 'Leve'}
-                </p>
-             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function Sidebar({ activeSection, onSelect, isOpen, setIsOpen, onOpenSuggestion }: { activeSection: AppSection; onSelect: (s: AppSection) => void; isOpen: boolean; setIsOpen: (o: boolean) => void; onOpenSuggestion: () => void; }) {
-  const menuItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: 'InÃ­cio' },
-    { id: 'symptoms', icon: Brain, label: 'AnÃ¡lise de Sintomas' },
-    { id: 'ubs', icon: Stethoscope, label: 'AtenÃ§Ã£o BÃ¡sica / UBS' },
-    { id: 'ambulatorio', icon: ClipboardList, label: 'AmbulatÃ³rios' },
-    { id: 'emergency', icon: ShieldAlert, label: 'Pronto Socorro' },
-    { id: 'drugs', icon: Pill, label: 'Doses & KD' },
-    { id: 'calculators', icon: Calculator, label: 'Calculadoras' },
-    { id: 'flowcharts', icon: Activity, label: 'Fluxogramas' },
-    { id: 'prescriptions', icon: FileText, label: 'PrescriÃ§Ãµes' },
-    { id: 'forms', icon: ClipboardCheck, label: 'FormulÃ¡rios' },
-    { id: 'notes', icon: Bookmark, label: 'Notas e Cadernos' },
-    { id: 'auth', icon: UserCheck, label: 'Perfil & Login' },
-    { id: 'summaries', icon: BookOpen, label: 'Resumos' },
-    { id: 'history', icon: History, label: 'HistÃ³rico' },
-  ];
-
-  return (
-    <>
-      {/* Backdrop */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[55] lg:hidden"
-          />
-        )}
-      </AnimatePresence>
-
-      <aside className={`fixed left-0 top-0 h-screen w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-[60] flex flex-col py-8 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
-         <div className="px-8 mb-10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-rose-600 text-white p-2.5 rounded-2xl shadow-lg shadow-rose-600/20 rotate-3">
-                 <ShieldCheck size={24} />
-              </div>
-              <div>
-                 <h1 className="font-serif font-black italic text-xl text-slate-800 dark:text-white tracking-tighter">Pedsocorro</h1>
-                 <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500">Protocolos MÃ©dicos</p>
-              </div>
-            </div>
-            <button onClick={() => setIsOpen(false)} className="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl">
-              <X size={20} />
-            </button>
-         </div>
-
-         <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => onSelect(item.id as AppSection)}
-                className={`w-full flex items-center gap-4 p-4 rounded-2xl transition-all group ${
-                  activeSection === item.id 
-                    ? 'bg-medical-primary text-white shadow-lg shadow-medical-primary/20' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                }`}
-              >
-                <item.icon size={20} strokeWidth={activeSection === item.id ? 2.5 : 2} />
-                <span className="font-bold text-sm tracking-tight">{item.label}</span>
-                {activeSection === item.id && (
-                  <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                )}
-              </button>
-            ))}
-         </nav>
-
-         <div className="px-6 mt-8 space-y-4">
-            <button
-               onClick={onOpenSuggestion}
-               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200/50 dark:border-amber-800/30 transition-all font-bold text-sm shadow-sm"
-            >
-               <MessageSquarePlus size={20} />
-               <span>Caixa de SugestÃµes</span>
-            </button>
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-[32px] p-5 border border-slate-100 dark:border-slate-800/50">
-               <div className="flex items-center gap-3 mb-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.4)]" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">System Core</span>
-               </div>
-               <p className="text-[10px] text-slate-500 dark:text-slate-400 font-bold leading-relaxed mb-4">Base de protocolos 2026.1 atualizada e validada.</p>
-               <div className="flex -space-x-2">
-                 <div className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-800 bg-medical-primary flex items-center justify-center text-[10px] text-white font-bold">DR</div>
-                 <div className="w-6 h-6 rounded-full border-2 border-white dark:border-slate-800 bg-slate-400 flex items-center justify-center text-[10px] text-white font-bold">AI</div>
-               </div>
-            </div>
-         </div>
-      </aside>
-    </>
-  );
-}
-
-// --- Main App ---
-
-export default function App() {
-  const [activeSection, setActiveSection] = useState<AppSection>('dashboard');
-  const [selectedDisease, setSelectedDisease] = useState<typeof PRESCRIPTIONS[0] | null>(null);
-
-  // --- User Account State ---
-  const [currentUser, setCurrentUser] = useState<User | null>(() => getCurrentUser());
-  
-  // --- Subscription / Paywall State ---
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(() => {
-    return localStorage.getItem('pedsocorro_subscribed') === 'true';
-  });
-  const [showPricingModal, setShowPricingModal] = useState<boolean>(false);
-  const [selectedPricingPlan, setSelectedPricingPlan] = useState<string>('mensal');
-  const [licenseKeyInput, setLicenseKeyInput] = useState<string>('');
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card'>('pix');
-  const [activationMsg, setActivationMsg] = useState<string>('');
-
-  // --- Password Authentication State ---
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return sessionStorage.getItem('pedsocorro_auth') === 'true';
-  });
-  const [passwordInput, setPasswordInput] = useState('');
-  const [passwordError, setPasswordError] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    if (passwordInput === '9669') {
-      sessionStorage.setItem('pedsocorro_auth', 'true');
-      setIsAuthenticated(true);
-      setPasswordError(false);
-    } else if (passwordInput.length >= 4 && passwordInput !== '9669') {
-      setPasswordError(true);
-      const timer = setTimeout(() => {
-        setPasswordInput('');
-        setPasswordError(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [passwordInput]);
-
-  // --- State for UBS Module Hoisting ---
-  const [selectedUbsDiseaseId, setSelectedUbsDiseaseId] = useState<string>('drge');
-  const [selectedUbsSubTab, setSelectedUbsSubTab] = useState<'cronicos' | 'mulher' | 'mental' | 'condutas' | 'guia'>('guia');
-  const [selectedCatalogDisease, setSelectedCatalogDisease] = useState<DiseaseInfo | null>(null);
-
-  // --- State for History and Search ---
-  const [history, setHistory] = useState<{id: string, title: string, result: string, date: string}[]>(() => {
-    const saved = localStorage.getItem('med_history');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const addToHistory = (title: string, result: string) => {
-    const newItem = {
-      id: Math.random().toString(36).substr(2, 9),
-      title,
-      result,
-      date: new Date().toLocaleString('pt-BR')
-    };
-    const next = [newItem, ...history].slice(0, 20); // Keep last 20
-    setHistory(next);
-    localStorage.setItem('med_history', JSON.stringify(next));
-  };
-
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [showSuggestionModal, setShowSuggestionModal] = useState(false);
-  const [suggestionText, setSuggestionText] = useState('');
-  const [suggestionSent, setSuggestionSent] = useState(false);
-
-  // If not subscribed, render the gorgeous Landing Page & Pricing / Paywall Gate
-  if (!isSubscribed) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#090D1A] text-slate-900 dark:text-slate-100 font-sans selection:bg-rose-500 selection:text-white transition-colors duration-300">
-        {/* Navbar */}
-        <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-6 lg:px-12 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-rose-600 text-white p-2.5 rounded-2xl shadow-lg shadow-rose-600/20 rotate-3">
-              <ShieldCheck size={24} />
-            </div>
-            <div>
-              <h1 className="font-serif font-black italic text-xl text-slate-900 dark:text-white tracking-tighter">Pedsocorro</h1>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500">Plataforma MÃ©dica 2026</p>
-            </div>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-            <a href="#recursos" className="hover:text-rose-600 transition-colors">Recursos</a>
-            <a href="#precos" className="hover:text-rose-600 transition-colors">LogÃ­stica de PreÃ§o</a>
-            <a href="#depoimentos" className="hover:text-rose-600 transition-colors">ResidÃªncia & SUS</a>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => setIsDark(!isDark)}
-              className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:scale-105 transition-all"
-              title={isDark ? "Modo Claro" : "Modo Escuro"}
-            >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            <button 
-              onClick={() => {
-                setIsSubscribed(true);
-                localStorage.setItem('pedsocorro_subscribed', 'true');
-                sessionStorage.setItem('pedsocorro_auth', 'true');
-                setIsAuthenticated(true);
-                setActiveSection('auth');
-              }}
-              className="px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-            >
-              <UserCheck size={16} className="text-rose-600" />
-              <span>Login / Entrar</span>
-            </button>
-            <button 
-              onClick={() => setShowPricingModal(true)}
-              className="px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-rose-600/25 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-            >
-              Assinar Agora
-            </button>
-          </div>
-        </header>
-
-        {/* Hero Section */}
-        <section className="relative overflow-hidden py-20 lg:py-32 px-6 lg:px-12 max-w-7xl mx-auto text-center space-y-8">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-rose-500/10 via-transparent to-transparent blur-3xl pointer-events-none" />
-          
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-black uppercase tracking-wider animate-bounce">
-            <Sparkles size={14} /> Nova VersÃ£o 2026.1 com Protocolos Oficiais do SUS e UBS
-          </div>
-
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black italic tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-[1.1]">
-            O Sistema ClÃ­nico Definitivo para <span className="text-rose-600">MÃ©dicos, Residentes e Internato</span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed">
-            Tenha acesso imediato a calculadoras de emergÃªncia, guias farmacolÃ³gicos completos com ajuste renal, prescriÃ§Ãµes hospitalares de plantÃ£o e fichas de anamnese pediÃ¡trica e adulta estruturadas.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-            <button 
-              onClick={() => {
-                setIsSubscribed(true);
-                localStorage.setItem('pedsocorro_subscribed', 'true');
-                sessionStorage.setItem('pedsocorro_auth', 'true');
-                setIsAuthenticated(true);
-                setActiveSection('auth');
-              }}
-              className="px-8 py-4 bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2.5 cursor-pointer"
-            >
-              <UserCheck size={18} className="text-rose-500" />
-              <span>JÃ¡ tenho conta (Fazer Login)</span>
-            </button>
-
-            <button 
-              onClick={() => setShowPricingModal(true)}
-              className="px-8 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-2xl shadow-rose-600/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-3 cursor-pointer"
-            >
-              <span>Assinar por R$ 10,00/mÃªs</span>
-              <ChevronRight size={18} />
-            </button>
-
-            <button 
-              onClick={() => {
-                setIsSubscribed(true);
-                localStorage.setItem('pedsocorro_subscribed', 'true');
-              }}
-              className="px-8 py-4 bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-700 rounded-2xl font-black uppercase tracking-widest text-sm shadow-sm hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <Zap size={16} className="text-amber-500" />
-              <span>Testar Acesso Livre (Demo)</span>
-            </button>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-16 max-w-5xl mx-auto border-t border-slate-200 dark:border-slate-800">
-            <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
-              <span className="text-3xl font-serif italic font-black text-rose-600">+160</span>
-              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">DoenÃ§as & Protocolos UBS</span>
-            </div>
-            <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
-              <span className="text-3xl font-serif italic font-black text-teal-600">50+</span>
-              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">FÃ¡rmacos & Ajuste Renal</span>
-            </div>
-            <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
-              <span className="text-3xl font-serif italic font-black text-amber-500">24/7</span>
-              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">Anamnese Offline-First</span>
-            </div>
-            <div className="p-6 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-sm text-center">
-              <span className="text-3xl font-serif italic font-black text-purple-600">100%</span>
-              <span className="text-xs font-bold text-slate-500 block mt-1 uppercase tracking-wider">Baseado no SUS & CFM</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Detailed Features Section */}
-        <section id="recursos" className="py-20 px-6 lg:px-12 max-w-7xl mx-auto space-y-16">
-          <div className="text-center space-y-4">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-rose-600">MÃ³dulos Profissionais Integrados</span>
-            <h2 className="text-3xl sm:text-4xl font-serif italic font-black tracking-tight text-slate-900 dark:text-white">
-              Tudo o que VocÃª Precisa no PlantÃ£o e no AmbulatÃ³rio
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto text-sm font-medium">
-              Cada ferramenta foi desenhada por mÃ©dicos especialistas para garantir agilidade, seguranÃ§a e precisÃ£o em segundos.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                icon: ClipboardCheck,
-                title: 'Anamnese PediÃ¡trica & Adulto',
-                desc: 'Fichas estruturadas completas com histÃ³rico vacinal, marcos do desenvolvimento, investigaÃ§Ã£o de sintomas e notas clÃ­nicas persistentes.',
-                color: 'text-rose-600 bg-rose-500/10 border-rose-500/20'
-              },
-              {
-                icon: Pill,
-                title: 'Guia de Medicamentos & Posologia',
-                desc: '+50 fÃ¡rmacos essenciais com orientaÃ§Ãµes de diluiÃ§Ã£o, posologia hospitalar, contraindicaÃ§Ãµes e ajuste rigoroso para funÃ§Ã£o renal.',
-                color: 'text-teal-600 bg-teal-500/10 border-teal-500/20'
-              },
-              {
-                icon: ShieldAlert,
-                title: 'Pronto-Socorro & EmergÃªncia',
-                desc: 'Protocolos rÃ¡pidos de ACLS, sepse, choque circulatÃ³rio, dor torÃ¡cica, IAM, AVC e critÃ©rios de alarme de alto risco.',
-                color: 'text-amber-500 bg-amber-500/10 border-amber-500/20'
-              },
-              {
-                icon: Brain,
-                title: 'AtenÃ§Ã£o BÃ¡sica (UBS) & SaÃºde Mental',
-                desc: 'Escalas PHQ-9 e GAD-7 interativas, cÃ¡lculo de idade gestacional (DUM), prÃ©-natal e protocolo de hipertensÃ£o e diabetes (Hiperdia).',
-                color: 'text-purple-600 bg-purple-500/10 border-purple-500/20'
-              },
-              {
-                icon: FileText,
-                title: 'PrescriÃ§Ãµes de PlantÃ£o Hospitalar',
-                desc: 'Modelos prontos de condutas para enfermarias e ambulatÃ³rios, com receitas em formato limpo prontas para impressÃ£o.',
-                color: 'text-blue-600 bg-blue-500/10 border-blue-500/20'
-              },
-              {
-                icon: Calculator,
-                title: 'Calculadoras ClÃ­nicas & Escores',
-                desc: 'Clearance de creatinina (Cockcroft-Gault), Escore de Centor, CURB-65, Glasgow, FagerstrÃ¶m e perfis de risco cardiovascular.',
-                color: 'text-emerald-600 bg-emerald-500/10 border-emerald-500/20'
-              }
-            ].map((feat, idx) => (
-              <div key={idx} className="bg-white dark:bg-slate-900/60 p-8 rounded-[32px] border border-slate-200/60 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all space-y-5 group">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${feat.color} shadow-sm group-hover:scale-110 transition-transform`}>
-                  <feat.icon size={28} />
-                </div>
-                <h3 className="font-serif italic font-black text-xl text-slate-900 dark:text-white">{feat.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-xs font-medium leading-relaxed">{feat.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Pricing Logistics Section */}
-        <section id="precos" className="py-20 px-6 lg:px-12 max-w-7xl mx-auto space-y-16 bg-slate-100/60 dark:bg-slate-900/40 rounded-[40px] border border-slate-200/60 dark:border-slate-800">
-          <div className="text-center space-y-4">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-rose-600">Investimento Profissional</span>
-            <h2 className="text-3xl sm:text-5xl font-serif italic font-black tracking-tight text-slate-900 dark:text-white">
-              LogÃ­stica de PreÃ§o & Planos de Assinatura
-            </h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-xl mx-auto text-sm font-medium">
-              Escolha o plano ideal para sua fase na medicina. Acesso imediato em todos os dispositivos (celular, tablet e computador).
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                id: 'mensal',
-                name: 'Plano Mensal',
-                subtitle: 'Assinatura FlexÃ­vel sem Fidelidade',
-                price: '10,00',
-                period: 'mÃªs',
-                features: ['Acesso total a todas as calculadoras', 'Guia farmacolÃ³gico completo e doses', 'Anamneses clÃ­nicas com atalhos', 'Suporte a plantÃµes e rotina'],
-                highlight: false,
-                badge: 'FlexÃ­vel',
-                color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
-              },
-              {
-                id: 'semestral',
-                name: 'Plano Semestral (Promo)',
-                subtitle: 'A cada 6 meses (R$ 48,00)',
-                price: '8,00',
-                period: 'mÃªs (R$ 48,00/semestre)',
-                features: ['Tudo do Plano Mensal', '20% de Economia semestral', 'Garante tabela promocional', 'Suporte com atualizaÃ§Ãµes continuadas'],
-                highlight: false,
-                badge: '20% OFF',
-                color: 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900'
-              },
-              {
-                id: 'anual',
-                name: 'Plano Anual (Super Promo)',
-                subtitle: 'Pagamento Ãšnico de R$ 84,00/ano (Mais Vendido)',
-                price: '7,00',
-                period: 'mÃªs (R$ 84,00/ano)',
-                features: ['Acesso Ilimitado Completo por 12 Meses', 'Maior Economia (30% OFF)', 'Anamneses, Doses & Guia ClÃ­nico', 'Suporte MÃ©dico VIP PrioritÃ¡rio 2026'],
-                highlight: true,
-                badge: '30% OFF â€¢ Mais Vantajoso',
-                color: 'border-rose-600 bg-white dark:bg-slate-900 ring-2 ring-rose-600/30'
-              }
-            ].map((plan) => (
-              <div key={plan.id} className={`relative p-8 rounded-[36px] border ${plan.color} shadow-lg flex flex-col justify-between space-y-8`}>
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-rose-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md">
-                  {plan.badge}
-                </div>
-                
-                <div className="space-y-4 pt-2">
-                  <div>
-                    <h3 className="text-xl font-serif italic font-black text-slate-900 dark:text-white">{plan.name}</h3>
-                    <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mt-1">{plan.subtitle}</p>
-                  </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-sm font-bold text-slate-400">R$</span>
-                    <span className="text-4xl font-serif font-black tracking-tight text-slate-900 dark:text-white">{plan.price}</span>
-                    <span className="text-xs text-slate-500 font-medium">/{plan.period}</span>
-                  </div>
-                  <ul className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
-                    {plan.features.map((f, i) => (
-                      <li key={i} className="flex items-center gap-3 text-xs font-semibold text-slate-600 dark:text-slate-300">
-                        <CheckCircle size={16} className="text-rose-600 shrink-0" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <button 
-                  onClick={() => {
-                    setSelectedPricingPlan(plan.id as any);
-                    setShowPricingModal(true);
-                  }}
-                  className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-xs transition-all cursor-pointer ${
-                    plan.highlight
-                      ? 'bg-rose-600 hover:bg-rose-700 text-white shadow-xl shadow-rose-600/30 hover:scale-105 active:scale-95'
-                      : 'bg-slate-900 dark:bg-white hover:bg-slate-800 text-white dark:text-slate-900 hover:scale-105 active:scale-95'
-                  }`}
-                >
-                  Assinar {plan.name}
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Pricing / Checkout / Activation Modal */}
-        {showPricingModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-            <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-md" onClick={() => setShowPricingModal(false)} />
-            <div className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[40px] shadow-2xl overflow-hidden overflow-y-auto max-h-[95vh] border border-slate-200 dark:border-slate-800 p-8 sm:p-10 space-y-8">
-              <div className="flex justify-between items-start">
-                <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-rose-600">Checkout Seguro Pedsocorro</span>
-                  <h3 className="text-2xl sm:text-3xl font-serif italic font-black text-slate-900 dark:text-white mt-1">AtivaÃ§Ã£o de Assinatura</h3>
-                </div>
-                <button onClick={() => setShowPricingModal(false)} className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-rose-600">
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Selected Plan Summary */}
-              <div className="p-5 bg-rose-50 dark:bg-rose-950/30 rounded-2xl border border-rose-100 dark:border-rose-900/50 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] font-black uppercase text-rose-600 tracking-wider">Plano Selecionado:</span>
-                  <h4 className="font-serif italic font-black text-lg text-slate-900 dark:text-white capitalize">
-                    {selectedPricingPlan === 'mensal' && 'Plano Mensal (R$ 10,00/mÃªs)'}
-                    {selectedPricingPlan === 'semestral' && 'Plano Semestral Promo (R$ 48,00/semestre -- R$ 8,00/mÃªs)'}
-                    {selectedPricingPlan === 'anual' && 'Plano Anual Super Promo (R$ 84,00/ano -- R$ 7,00/mÃªs)'}
-                    {selectedPricingPlan !== 'mensal' && selectedPricingPlan !== 'semestral' && selectedPricingPlan !== 'anual' && 'Plano Promocional Pedsocorro (R$ 10,00/mÃªs)'}
-                  </h4>
-                </div>
-                <button onClick={() => {}} className="text-xs font-bold text-rose-600 underline">Alterar</button>
-              </div>
-
-              {/* Payment Method Selector */}
-              <div className="space-y-3">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-500 block">Forma de Pagamento:</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={() => setPaymentMethod('pix')}
-                    className={`p-4 rounded-2xl border text-center font-bold text-xs uppercase transition-all flex items-center justify-center gap-2 ${
-                      paymentMethod === 'pix'
-                        ? 'bg-rose-600 text-white border-rose-600 shadow-md'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    <Sparkles size={14} /> Pix InstantÃ¢neo (5% Desconto)
-                  </button>
-                  <button 
-                    onClick={() => setPaymentMethod('card')}
-                    className={`p-4 rounded-2xl border text-center font-bold text-xs uppercase transition-all flex items-center justify-center gap-2 ${
-                      paymentMethod === 'card'
-                        ? 'bg-rose-600 text-white border-rose-600 shadow-md'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    <Lock size={14} /> CartÃ£o de CrÃ©dito
-                  </button>
-                </div>
-              </div>
-
-              {paymentMethod === 'pix' ? (
-                <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-3xl border border-slate-200 dark:border-slate-700 text-center space-y-4">
-                  <div className="w-36 h-36 bg-white p-3 rounded-2xl mx-auto shadow-sm border border-slate-200 flex items-center justify-center">
-                    <div className="text-[10px] font-mono text-center font-bold text-slate-600 leading-tight">
-                      [ QR CODE PIX SIMULADO ]<br />Escaneie com seu banco
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-500 font-medium">Chave Pix Copia e Cola:</p>
-                  <div className="p-3 bg-white dark:bg-slate-900 rounded-xl font-mono text-[11px] text-slate-700 dark:text-slate-300 select-all border border-slate-200 dark:border-slate-700">
-                    00020126580014br.gov.bcb.pix0136pedsocorro2026medicina...
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-600 dark:text-slate-300">NÃºmero do CartÃ£o</label>
-                    <input type="text" placeholder="4532 â€¢â€¢â€¢â€¢ â€¢â€¢â€¢â€¢ 8891" className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono" />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-600 dark:text-slate-300">Validade</label>
-                      <input type="text" placeholder="MM/AA" className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-600 dark:text-slate-300">CVV</label>
-                      <input type="password" placeholder="â€¢â€¢â€¢" maxLength={4} className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono" />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* License Key Activation Option */}
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-500 block">JÃ¡ possui uma Chave de LicenÃ§a Institucional?</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="text" 
-                    placeholder="Ex: PS-2026-MEDICINA" 
-                    value={licenseKeyInput}
-                    onChange={(e) => setLicenseKeyInput(e.target.value)}
-                    className="flex-1 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-mono uppercase"
-                  />
-                  <button 
-                    onClick={() => {
-                      if (licenseKeyInput.trim().length > 3 || true) {
-                        setIsSubscribed(true);
-                        localStorage.setItem('pedsocorro_subscribed', 'true');
-                        setShowPricingModal(false);
-                      }
-                    }}
-                    className="px-6 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black text-xs uppercase tracking-wider"
-                  >
-                    Ativar
-                  </button>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-4 flex flex-col sm:flex-row gap-3">
-                <button 
-                  onClick={() => {
-                    setIsSubscribed(true);
-                    localStorage.setItem('pedsocorro_subscribed', 'true');
-                    setShowPricingModal(false);
-                  }}
-                  className="flex-1 py-4 bg-rose-600 hover:bg-rose-700 text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-rose-600/25 transition-all"
-                >
-                  ğŸš€ Confirmar Pagamento & Acessar Sistema
-                </button>
-                <button 
-                  onClick={() => {
-                    setIsSubscribed(true);
-                    localStorage.setItem('pedsocorro_subscribed', 'true');
-                    setShowPricingModal(false);
-                  }}
-                  className="py-4 px-6 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-2xl font-black uppercase tracking-widest text-xs transition-all"
-                >
-                  ğŸ§ª Testar Demo Livre
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Footer */}
-        <footer className="py-12 px-6 lg:px-12 border-t border-slate-200 dark:border-slate-800 text-center text-xs text-slate-500 font-medium">
-          <p>&copy; 2026 Pedsocorro. Todos os direitos reservados. Plataforma de auxÃ­lio mÃ©dico profissional.</p>
-        </footer>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-slate-100 dark:bg-[#090D1A] text-slate-900 dark:text-slate-300 transition-colors duration-300 flex flex-col justify-between p-6">
-        {/* Top bar with dark mode toggle */}
-        <div className="flex justify-end max-w-md mx-auto w-full">
-          <button 
-            onClick={() => setIsDark(!isDark)}
-            className="w-10 h-10 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
-            aria-label="Toggle dark mode"
-          >
-            {isDark ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-        </div>
-
-        {/* Center Card */}
-        <div className="flex-1 flex items-center justify-center max-w-md mx-auto w-full py-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={passwordError ? {
-              opacity: 1,
-              y: 0,
-              x: [0, -12, 12, -12, 12, -8, 8, -4, 4, 0],
-              transition: { duration: 0.5, ease: "easeInOut" }
-            } : { opacity: 1, y: 0, x: 0 }}
-            className="w-full bg-white dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/60 dark:border-slate-800/60 p-8 rounded-[32px] shadow-2xl flex flex-col items-center"
-          >
-            {/* Pulsing Lock Icon */}
-            <div className="relative mb-6">
-              <div className="absolute inset-0 rounded-full bg-rose-500/20 blur-xl animate-pulse" />
-              <div className="relative w-16 h-16 rounded-3xl bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400">
-                <Lock size={28} />
-              </div>
-            </div>
-
-            <h1 className="font-serif font-black italic text-2xl text-slate-800 dark:text-white mb-2 text-center tracking-tight">
-              Acesso Restrito
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 text-center max-w-xs mb-8 leading-relaxed">
-              Pedsocorro Ã© um ambiente mÃ©dico profissional. Insira o cÃ³digo de seguranÃ§a para acessar os protocolos e diretrizes de conduta.
-            </p>
-
-            {/* Password input display: dots */}
-            <div className="flex justify-center gap-4 mb-6 cursor-pointer" onClick={() => document.getElementById('pass-gate-input')?.focus()}>
-              {[0, 1, 2, 3].map((index) => {
-                const isFilled = passwordInput.length > index;
-                return (
-                  <div 
-                    key={index} 
-                    className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
-                      passwordError 
-                        ? 'border-rose-500 bg-rose-500' 
-                        : isFilled 
-                          ? 'border-rose-600 bg-rose-600 dark:border-rose-500 dark:bg-rose-500 scale-110 shadow-lg shadow-rose-500/30' 
-                          : 'border-slate-300 dark:border-slate-700 bg-transparent'
-                    }`}
-                  />
-                );
-              })}
-            </div>
-
-            {/* Invisible native input for screen readers and standard typing */}
-            <input 
-              id="pass-gate-input"
-              type="password"
-              pattern="[0-9]*"
-              inputMode="numeric"
-              maxLength={4}
-              value={passwordInput}
-              onChange={(e) => {
-                const val = e.target.value.replace(/[^0-9]/g, '');
-                if (val.length <= 4) setPasswordInput(val);
-              }}
-              className="sr-only"
-              autoFocus
-              placeholder="â€¢â€¢â€¢â€¢"
-            />
-
-            {/* Optional text input view if user prefers toggling */}
-            <div className="text-[10px] font-mono tracking-widest uppercase text-slate-400 dark:text-slate-500 mb-6 flex items-center gap-1.5 cursor-pointer select-none" onClick={() => setShowPassword(!showPassword)}>
-              <span className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                {showPassword ? 'Ocultar CÃ³digo' : 'Exibir CÃ³digo'}
-              </span>
-              {showPassword ? <EyeOff size={10} /> : <Eye size={10} />}
-            </div>
-
-            {showPassword && passwordInput.length > 0 && (
-              <div className="text-lg font-mono font-black text-rose-600 dark:text-rose-400 tracking-[0.3em] mb-6">
-                {passwordInput}
-              </div>
-            )}
-
-            {/* Error message */}
-            <div className="h-6 mb-2 flex items-center justify-center">
-              {passwordError && (
-                <span className="text-xs text-rose-500 font-bold flex items-center gap-1.5 animate-fade-in">
-                  <XCircle size={14} /> Senha incorreta. Tente novamente.
-                </span>
-              )}
-            </div>
-
-            {/* Keypad */}
-            <div className="grid grid-cols-3 gap-3 w-full max-w-[280px]">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <button
-                  key={num}
-                  type="button"
-                  onClick={() => {
-                    if (passwordInput.length < 4) {
-                      setPasswordInput(prev => prev + num);
-                    }
-                  }}
-                  className="w-full aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-750 flex items-center justify-center text-lg font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:scale-95 transition-all shadow-sm cursor-pointer"
-                >
-                  {num}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setPasswordInput('')}
-                className="w-full aspect-square rounded-2xl bg-slate-100/60 dark:bg-slate-800/20 flex items-center justify-center text-xs font-black uppercase text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 active:scale-95 transition-all cursor-pointer"
-              >
-                Limpar
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (passwordInput.length < 4) {
-                    setPasswordInput(prev => prev + '0');
-                  }
-                }}
-                className="w-full aspect-square rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/50 dark:border-slate-750 flex items-center justify-center text-lg font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 active:scale-95 transition-all shadow-sm cursor-pointer"
-              >
-                0
-              </button>
-              <button
-                type="button"
-                onClick={() => setPasswordInput(prev => prev.slice(0, -1))}
-                className="w-full aspect-square rounded-2xl bg-slate-100/60 dark:bg-slate-800/20 flex items-center justify-center text-xs font-black uppercase text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 active:scale-95 transition-all cursor-pointer"
-              >
-                Apagar
-              </button>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Footer info */}
-        <div className="text-center text-[10px] text-slate-400 dark:text-slate-600 uppercase tracking-widest font-bold">
-          Â© 2026 Pedsocorro â€¢ Protocolo Seguro Encriptado
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-[#CAD3DC] dark:bg-[#090D1A] text-slate-900 dark:text-slate-300 transition-colors duration-300">
-      {/* Mobile Header */}
-      <div className="lg:hidden h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 sticky top-0 z-50">
-        <div className="flex items-center gap-2">
-           <ShieldCheck className="text-rose-600" size={24} />
-           <span className="font-serif font-black italic text-lg text-slate-800 dark:text-white tracking-tighter">Pedsocorro</span>
-        </div>
-        <button 
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl"
-        >
-          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
-
-      <Sidebar 
-        activeSection={activeSection} 
-        onSelect={(s) => {
-          setActiveSection(s);
-          setIsSidebarOpen(false);
-          setSelectedDisease(null);
-        }} 
-        isOpen={isSidebarOpen}
-        setIsOpen={setIsSidebarOpen}
-        onOpenSuggestion={() => setShowSuggestionModal(true)}
-      />
-      
-      <div className={`transition-all duration-300 ${isSidebarOpen ? 'blur-md' : ''} lg:pl-72`}>
-        {/* Top Header */}
-        <header className="h-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 px-8 flex items-center justify-between">
-           <div className="flex items-center gap-2">
-              <span className="text-slate-400 dark:text-slate-600 font-mono text-[10px] uppercase">Status:</span>
-              <span className="font-black text-xs uppercase tracking-[0.2em] text-rose-600">{activeSection}</span>
-           </div>
-           
-           <div className="flex items-center gap-6">
-              <div className="hidden sm:flex items-center gap-3 text-rose-600 bg-rose-50 dark:bg-rose-900/20 px-4 py-2 rounded-2xl border border-rose-100 dark:border-rose-900/50 shadow-sm shadow-rose-500/10">
-                <ShieldCheck size={16} />
-                <span className="text-[11px] font-black uppercase tracking-[0.15em]">PEDSOCORRO PROTOCOLS</span>
-              </div>
-
-              {/* User Profile Badge */}
-              <button
-                onClick={() => setActiveSection('auth')}
-                className="flex items-center gap-2.5 px-3 py-1.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-rose-300 dark:hover:border-rose-800 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
-                title="Gerenciar Conta / Alterne UsuÃ¡rio"
-              >
-                <div className={`w-7 h-7 rounded-xl ${currentUser?.avatarColor || 'bg-rose-600'} text-white flex items-center justify-center font-bold text-xs shadow-sm`}>
-                  {currentUser?.name?.charAt(0) || 'D'}
-                </div>
-                <div className="hidden md:block text-left">
-                  <span className="block text-xs font-bold text-slate-800 dark:text-slate-100 leading-tight line-clamp-1">
-                    {currentUser?.name || 'Dr. MÃ©dico'}
-                  </span>
-                  <span className="block text-[9px] font-mono text-slate-400 leading-none">
-                    {currentUser?.crm || 'LOGIN'}
-                  </span>
-                </div>
-              </button>
-
-              <button 
-                onClick={() => setIsDark(!isDark)}
-                className="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
-                title={isDark ? "Ativar Modo Claro" : "Ativar Modo Escuro"}
-              >
-                {isDark ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-              <button 
-                onClick={() => {
-                  sessionStorage.removeItem('pedsocorro_auth');
-                  setIsAuthenticated(false);
-                  setPasswordInput('');
-                }}
-                className="w-11 h-11 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:scale-105 active:scale-95 transition-all shadow-sm cursor-pointer"
-                title="Bloquear Aplicativo (Sair)"
-              >
-                <Lock size={19} />
-              </button>
-           </div>
-        </header>
-
-        {/* Content Area */}
-        <main className="p-4 md:p-10 max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
-           <AnimatePresence mode="wait">
-
-              {activeSection === 'symptoms' && <motion.div key="sy" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="AnÃ¡lise de Sintomas & AuxÃ­lio DiagnÃ³stico" subtitle="Algoritmo de triagem clÃ­nica cruzada para AtenÃ§Ã£o BÃ¡sica (UBS) e Pronto Atendimento (UPA/PS)." icon={Brain} /><SymptomDiagnosticModule /></motion.div>}
-
-              {activeSection === 'ubs' && <motion.div key="ub" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="AtenÃ§Ã£o BÃ¡sica / UBS" subtitle="Protocolos de vigilÃ¢ncia, prÃ©-natal, doenÃ§as crÃ´nicas e escores de saÃºde mental." icon={Stethoscope} /><UbsModule activeSubTab={selectedUbsSubTab} setActiveSubTab={setSelectedUbsSubTab} selectedGuiaDiseaseId={selectedUbsDiseaseId} setSelectedGuiaDiseaseId={setSelectedUbsDiseaseId} /></motion.div>}
-              {activeSection === 'ambulatorio' && <motion.div key="am" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><AmbulatoriosModule /></motion.div>}
-              {activeSection === 'emergency' && <motion.div key="em" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Pronto Socorro" subtitle="Protocolos de emergÃªncia, exames imediatos e condutas crÃ­ticas." icon={ShieldAlert} /><EmergencyModule onSelect={setSelectedDisease} /></motion.div>}
-              {activeSection === 'dashboard' && <motion.div key="db" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><Dashboard setActiveSection={setActiveSection} addToHistory={addToHistory} setSelectedDisease={setSelectedDisease} setSelectedUbsDiseaseId={setSelectedUbsDiseaseId} setSelectedUbsSubTab={setSelectedUbsSubTab} setSelectedCatalogDisease={setSelectedCatalogDisease} /></motion.div>}
-              {activeSection === 'drugs' && <motion.div key="dr" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Guia de Dosagem" subtitle="Doses recomendadas para prÃ¡tica clÃ­nica hospitalar e ambulatorial." icon={Pill} /><DrugsModule /></motion.div>}
-              {activeSection === 'forms' && <motion.div key="fo" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Anamnese e FormulÃ¡rios AutÃ´nomos" subtitle="Fichas estruturadas de pediatria, clÃ­nica mÃ©dica, classificaÃ§Ã£o de risco Manchester e receituÃ¡rios." icon={ClipboardCheck} /><FormsModule onRedirectToSymptoms={() => setActiveSection('symptoms')} medications={MEDICATIONS} currentUser={currentUser} /></motion.div>}
-              {activeSection === 'notes' && (
-                <motion.div key="no" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                  <SectionTitle title="Notas e Cadernos ClÃ­nicos" subtitle="OrganizaÃ§Ã£o dinÃ¢mica em tÃ³picos e pastas com suporte a Markdown." icon={Bookmark} />
-                  {currentUser ? (
-                    <NotesModule currentUser={currentUser} />
-                  ) : (
-                    <div className="p-8 text-center bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                      <p className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">Efetue o login para acessar suas notas e cadernos pessoais.</p>
-                      <button onClick={() => setActiveSection('auth')} className="px-6 py-3 bg-rose-600 text-white rounded-2xl font-bold text-xs uppercase tracking-wider">Acessar Login</button>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-              {activeSection === 'auth' && (
-                <motion.div key="au" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                  <SectionTitle title="Gerenciamento de Conta & Perfil MÃ©dico" subtitle="Alterne usuÃ¡rios ou crie uma nova conta com isolamento total de dados." icon={UserCheck} />
-                  <AuthScreen 
-                    currentUser={currentUser} 
-                    onLoginSuccess={(user) => {
-                      setCurrentUser(user);
-                      localStorage.setItem('medical_app_current_user', JSON.stringify(user));
-                      setActiveSection('dashboard');
-                    }} 
-                    onLogout={() => {
-                      setCurrentUser(null);
-                      localStorage.removeItem('medical_app_current_user');
-                    }} 
-                  />
-                </motion.div>
-              )}
-              {activeSection === 'calculators' && <motion.div key="ca" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Calculadoras ClÃ­nicas" subtitle="Scores de gravidade, funÃ§Ã£o renal e ferramentas de screening." icon={Calculator} /><CalculatorModule addToHistory={addToHistory} /></motion.div>}
-              {activeSection === 'summaries' && <motion.div key="su" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SummaryModule /></motion.div>}
-              
-              {activeSection === 'flowcharts' && (
-                <motion.div key="fl" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
-                   <SectionTitle title="Fluxogramas de Conduta" subtitle="Diretrizes interativas baseadas em consensos atualizados." icon={Activity} />
-                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                       <FlowchartHydration />
-                       <FlowchartTEP />
-                       <FlowchartSepsis />
-                      <FlowchartACLS />
-                      <FlowchartTachy />
-                      <FlowchartBrady />
-                      <FlowchartStroke />
-                      <FlowchartAsthma />
-                      <FlowchartGIBleed />
-                      <FlowchartHyperkalemia />
-                      <FlowchartHypertension />
-                      <FlowchartShock />
-                      <FlowchartAnaphylaxis />
-                   </div>
-                </motion.div>
-              )}
-
-              {activeSection === 'prescriptions' && (
-                <motion.div key="pr" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-                   <PrescriptionGuide />
-                </motion.div>
-              )}
-
-              {activeSection === 'lab' && <motion.div key="lb" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><LabModule /></motion.div>}
-              {activeSection === 'history' && (
-                <motion.div key="hi" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
-                   <SectionTitle title="HistÃ³rico de Atividades" subtitle="Seus Ãºltimos 20 cÃ¡lculos realizados neste dispositivo." icon={History} />
-                   {history.length > 0 ? (
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {history.map(item => (
-                          <div key={item.id} className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all">
-                             <div className="flex justify-between items-start mb-4">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{item.date}</span>
-                                <div className="w-8 h-8 rounded-full bg-medical-primary/10 flex items-center justify-center text-medical-primary">
-                                   <Calculator size={14} />
-                                </div>
-                             </div>
-                             <h4 className="font-bold text-slate-700 dark:text-slate-200 mb-1">{item.title}</h4>
-                             <p className="text-2xl font-black text-medical-primary">{item.result}</p>
-                          </div>
-                        ))}
-                        <button 
-                          onClick={() => { setHistory([]); localStorage.removeItem('med_history'); }}
-                          className="md:col-span-2 lg:col-span-3 py-4 text-rose-500 font-bold text-sm hover:bg-rose-50 rounded-2xl transition-colors mt-4"
-                        >
-                          Limpar Todo o HistÃ³rico
-                        </button>
-                     </div>
-                   ) : (
-                     <div className="text-center py-20 bg-slate-50 dark:bg-slate-900/50 rounded-[40px] border border-dashed border-slate-200 dark:border-slate-700">
-                        <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
-                          <History className="text-slate-300" size={32} />
-                        </div>
-                        <h3 className="text-xl font-bold dark:text-white">Sem histÃ³rico recente</h3>
-                        <p className="text-slate-500 mt-2">Os cÃ¡lculos realizados nas ferramentas aparecerÃ£o aqui.</p>
-                     </div>
-                   )}
-                </motion.div>
-              )}
-           </AnimatePresence>
-        </main>
-
-        {/* Disease Detail Modal */}
-        <AnimatePresence>
-          {selectedDisease && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setSelectedDisease(null)}
-                className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
-              />
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-[40px] shadow-2xl overflow-hidden overflow-y-auto max-h-[90vh] custom-scrollbar"
-              >
-                <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm sticky top-0 z-10">
-                  <div>
-                    <span className={`inline-block px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest mb-4 shadow-sm ${
-                      selectedDisease.category.includes('Vermelho') ? 'bg-rose-500 text-white shadow-rose-500/20' : 
-                      selectedDisease.category.includes('Amarelo') ? 'bg-amber-500 text-white shadow-amber-500/20' : 
-                      'bg-emerald-500 text-white shadow-emerald-500/20'
-                    }`}>
-                      {selectedDisease.category}
-                    </span>
-                    <h2 className="text-4xl font-serif font-black italic tracking-tighter text-slate-800 dark:text-white leading-tight">
-                      {selectedDisease.title}
-                    </h2>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedDisease(null)}
-                    className="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 transition-all"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-
-                <div className="p-10 space-y-10">
-                  <div className="grid md:grid-cols-1 gap-8">
-                    <div>
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
-                        <Activity size={14} className="text-rose-600" /> Conduta e Manejo ClÃ­nico
-                      </h4>
-                      <div className="space-y-4">
-                        {selectedDisease.items.map((item, idx) => (
-                          <div key={idx} className="flex gap-6 p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 group hover:border-rose-500/30 transition-colors">
-                            <div className="w-10 h-10 rounded-2xl bg-rose-600/10 flex items-center justify-center text-rose-600 shrink-0 font-bold text-base shadow-sm group-hover:bg-rose-600 group-hover:text-white transition-all">
-                              {idx + 1}
-                            </div>
-                            <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed font-medium">{item}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {selectedDisease.guidelines && (
-                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
-                        <Bookmark size={14} className="text-rose-600" /> ObservaÃ§Ãµes & Guidelines
-                      </h4>
-                      <div className="p-8 bg-rose-600/5 border-l-4 border-rose-600 rounded-r-3xl">
-                         <p className="text-base text-slate-800 dark:text-slate-200 font-medium leading-relaxed italic">
-                           " {selectedDisease.guidelines} "
-                         </p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-10 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-center">
-                   <button 
-                     onClick={() => setSelectedDisease(null)}
-                     className="w-full py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-3xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-slate-950/20"
-                   >
-                     Protocolo Lido & Compreendido
-                   </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-
-        {/* Catalog Disease Detail Modal */}
-        <AnimatePresence>
-          {selectedCatalogDisease && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setSelectedCatalogDisease(null)}
-                className="absolute inset-0 bg-slate-950/60 backdrop-blur-md"
-              />
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-[40px] shadow-2xl overflow-hidden overflow-y-auto max-h-[90vh] custom-scrollbar"
-              >
-                <div className="p-10 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start bg-slate-50/50 dark:bg-slate-800/50 backdrop-blur-sm sticky top-0 z-10">
-                  <div>
-                    <span className="inline-block px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest mb-4 shadow-sm bg-teal-500 text-white shadow-teal-500/20">
-                      {selectedCatalogDisease.category}
-                    </span>
-                    <h2 className="text-4xl font-serif font-black italic tracking-tighter text-slate-800 dark:text-white leading-tight">
-                      {selectedCatalogDisease.name}
-                    </h2>
-                  </div>
-                  <button 
-                    onClick={() => setSelectedCatalogDisease(null)}
-                    className="p-4 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:text-rose-600 transition-all"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-
-                <div className="p-10 space-y-10">
-                  {/* CritÃ©rio DiagnÃ³stico */}
-                  <div>
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 flex items-center gap-2">
-                      <Stethoscope size={14} className="text-teal-600" /> CritÃ©rio DiagnÃ³stico / DescriÃ§Ã£o
-                    </h4>
-                    <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed font-semibold p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800">
-                      {selectedCatalogDisease.diagnostic}
-                    </p>
-                  </div>
-
-                  {/* Sinais de Alarme */}
-                  {selectedCatalogDisease.alarm && (
-                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
-                      <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 flex items-center gap-2">
-                        <AlertTriangle size={14} className="text-amber-500" /> Sinais de Alarme & Alerta Vermelho
-                      </h4>
-                      <div className="p-6 bg-amber-500/10 dark:bg-amber-500/20 border-l-4 border-amber-500 rounded-r-3xl text-amber-800 dark:text-amber-200 font-bold text-sm leading-relaxed">
-                        {selectedCatalogDisease.alarm}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Treatment Steps */}
-                  <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
-                      <Activity size={14} className="text-rose-600" /> Conduta e Manejo TerapÃªutico
-                    </h4>
-                    <div className="space-y-4">
-                      {selectedCatalogDisease.treatment.map((step, idx) => (
-                        <div key={idx} className="flex gap-6 p-6 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 group hover:border-teal-500/30 transition-colors">
-                          <div className="w-10 h-10 rounded-2xl bg-teal-600/10 flex items-center justify-center text-teal-600 shrink-0 font-bold text-base shadow-sm group-hover:bg-teal-600 group-hover:text-white transition-all">
-                            {idx + 1}
-                          </div>
-                          <div className="space-y-1">
-                            <h5 className="font-bold text-slate-800 dark:text-slate-100 text-base">{step.title}</h5>
-                            <p className="text-slate-600 dark:text-slate-350 text-sm leading-relaxed font-medium">{step.desc}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-10 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex justify-center">
-                   <button 
-                     onClick={() => setSelectedCatalogDisease(null)}
-                     className="w-full py-5 bg-teal-600 text-white rounded-3xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-teal-900/20"
-                   >
-                     Protocolo Lido & Compreendido
-                   </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-
-        <footer className="p-8 border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md">
-           <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-medium text-slate-400">
-              <div className="flex flex-wrap items-center gap-2">
-                 <ShieldCheck size={14} className="text-rose-500" />
-                 <span>Protocolos revisados 2026.1 - Base Pedsocorro Integrada</span>
-                 <span className="ml-2 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 font-bold border border-teal-150 dark:border-teal-900/50">
-                   {UBS_CATALOG_DISEASES.length} Geral (UBS)
-                 </span>
-                 <span className="ml-1 px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 font-bold border border-rose-150 dark:border-rose-900/50">
-                   {PS_CATALOG_DISEASES.length} Pronto Socorro (PS)
-                 </span>
-              </div>
-              <div className="flex gap-6 uppercase tracking-widest text-[10px]">
-                 <a href="#" className="hover:text-rose-600">Diretrizes</a>
-                 <a href="#" className="hover:text-rose-600">LGPD</a>
-                 <button onClick={() => setShowSuggestionModal(true)} className="hover:text-rose-600 font-bold">CAIXA DE SUGESTÃ•ES</button>
-              </div>
-              <p>&copy; 2026 Pedsocorro. Uso Profissional.</p>
-           </div>
-        </footer>
-      </div>
-      
-      {/* Suggestion Modal */}
-      <AnimatePresence>
-        {showSuggestionModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" 
-              onClick={() => setShowSuggestionModal(false)} 
-            />
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-2xl border border-slate-200 dark:border-slate-800"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-600 flex items-center justify-center">
-                    <MessageSquarePlus size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-serif font-black italic text-xl text-slate-900 dark:text-white">Caixa de SugestÃµes</h3>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Feedback de UsuÃ¡rio Pro</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setShowSuggestionModal(false)}
-                  className="p-2 rounded-xl text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {suggestionSent ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle size={32} />
-                  </div>
-                  <h4 className="font-black text-lg text-slate-900 dark:text-white mb-2">SugestÃ£o Recebida!</h4>
-                  <p className="text-sm text-slate-500">Muito obrigado! Sua contribuiÃ§Ã£o nos ajuda a melhorar a plataforma.</p>
-                  <button 
-                    onClick={() => {
-                      setShowSuggestionModal(false);
-                      setTimeout(() => setSuggestionSent(false), 500);
-                    }}
-                    className="mt-6 w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs uppercase tracking-wider"
-                  >
-                    Fechar
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
-                    Sua opiniÃ£o Ã© fundamental. Encontrou algum erro em um protocolo, tem alguma ideia nova ou sugestÃ£o de melhoria?
-                  </p>
-                  <textarea 
-                    value={suggestionText}
-                    onChange={(e) => setSuggestionText(e.target.value)}
-                    placeholder="Descreva aqui sua sugestÃ£o..."
-                    className="w-full h-32 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm focus:ring-2 focus:ring-amber-500/20 outline-none resize-none"
-                  />
-                  <button 
-                    disabled={!suggestionText.trim()}
-                    onClick={() => {
-                      setSuggestionSent(true);
-                      setSuggestionText('');
-                    }}
-                    className="w-full py-4 rounded-2xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-black uppercase tracking-widest text-xs transition-all shadow-lg shadow-amber-500/20"
-                  >
-                    Enviar SugestÃ£o
-                  </button>
-                </div>
-              )}
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
+       xœì½KsäF¶&¸×¯pñªÄˆ*Æ“d¦HÊ"ùÈä­d’•Ae•uN„ˆpF „ğàC,šİîİ,z7«Ş´©zÆÊªÌ´ÍÌâ.›ÿäş‚ù	s»pÜˆ`ÊT‘V¥8 ‡?ÿÎñó $ó·5°ÏIß±‚àµ5¦ÛK½a-p¬ÖÖ›d`ù%OšÍF»Iz? ¾øGÜj5ã‡åÒM(Ô6ˆïEî€jíK‡«OkWµÕ¥Ï²M‘5Z“Ûtæ¹a- ¾}FØÏcõ?^†Ò—Ø÷YÙÅÈ)¿İ³JÎzI hÔúÔ¡ñCkRk¶ Ú MuåV\@WFRwœ!±±Æ=èğ:4@úvAƒ/M{ş¡}v%.—vÚ[üzq¯êĞ~H{v@¡ŸõĞ§V8†*ŞµŞ×C;tèMÑ7Fk…s0‘;·]ôeĞyÙ*”‰ÎíçˆC­ík>u¬K:˜2èÅ}Ğ _Ü¥‰¹ú­PºévU_­ñÃ­ÆØmÏ­kîVÉ3RÉ¿‘Y~£ÚYä8œDğ?µ¾çÑŠ<!kš	ÁIRWìÀ
+Ft ®ß¶vıÂ‚Oˆ}Öîä
+ÔN ‘‰¤Œa¨0…Í¤bÖİq¯¶a Œ­nHÃ‘ô½	%ıİ¾ŞX»!Aè{èíA8Ú¾nİÆ³¤¥mXÍŒpÇt`Gã¥."L%%ÑØ"º·³ÈÄò-Ò÷Ü3XÛ>a?QhOó™`L<`vxS³´ó<
+¾(q=2°}ŞşìÛRßr`ØÈ7Ï»„’ı1õ‡·ÿpû¶E,8ÖÀÓ~OÛÛªr­ùV£ãÚc˜“ŸÔíÓô]¥*é"ùYıê³›Ï>;‹Ü>’;Ùµœ~ÓëùGŞ rhåšXƒÁ©÷Ò ìŠÜ<#j	,…ğN"°†âÇ?«d{‡œ{ö€ÜTÉ5|Æ7É»>Ô¿Bâ‡Ş“m´BÓ·–ûNß_&!Ë½±ÍşíG~ıø>ğÎ,ök“0ô.Øïê8pdø¯‘ô:`¿ÇÔá?\{ğÛ=ßP—¿ßäŸK*ïlñFÿÃ€NX#\ ê
+ş
+ºÑhîñA'í¾Í:Ô…J‡ŞĞ>¬Á­xhÜ÷—Q˜¥É3Ò\!\HVÄ~÷=kˆ#³À®ûœúüålïÜ
+pfD‘°}êZü‚Qş*i6©ß¦ĞšÊqïÏÀ†ëç–Ñ ‚·ªÄ
+DkŞ½¯Ö}:ˆú´R^ôØ¬Yäw¤·BšI‡wq\j'Ñp$Í#–ñ‰Ä_%;Ş³ûi­Ëé±m×ç×,$°ßHÀ“üT:Å>hè»7{·¼ş‡¾ï…µVä„iß¬!e=ë©Ü¯Êò²ÔwÔBöàÙÏ‚gû¸÷Ù®íòŠw“Ë‚wìà€-‡¿q(.”çÏ,' Iw¦/ÒÆ½44NÂ7o×6Ö¥¦Â¢ã„Ê[×Œ]F#PöíAO’$kÛ,Êzç’+Yñ[[øT<µ™™…;Õú™íÀb­œ3R­;Ô†£¸ß«ëñûdAş!È¬Èdå‰Ö ÁÕ#.'p3€éZø½¼¦Ô&²[SÚø‚³­´•‚±vŠ›™–Ò+\k+¸@[¹ö€ã>#JÓDU§ôª—u|(>¾äµH¬®¸}DVJN÷Odò†"Aİğ+Óºàj<	½qÎ¬îÙÖĞõ;-QËßÀI	Œ/ì‰Wò˜ŸÛ^$¿2ö&á•\Ğ½=t-·¥›ÖÎ„/°«zÜ:ò5Y¬Ö¬B¿Å-¹šÛI‹á^«¾¹+Z¯½÷D{3íŞÎÜLû—ÜLVçËÎ^·ö¶ÓíËœ6;ÁyáWfbX,ÛI	õjBıºÊÒ…µød=¹ØV2ÏƒeÉeºû¤¯o¤¯Ÿ1î¤]ÛØÈd~ØU]n¤2 â¶Ô\ÍmÖp(ogÊã.h^áÑ¼wKÿ™uM9ïjnª^vºµç¯ö÷$Ì±gÂüwv²ÒÑLÇ=eÉ¯”G¥2Ğ¶ø¤Q‰›SXÕëÃ—İ.©tíñÄ±Ïlx>íR¬?¯ñWÉM? ´2´~à?Îí b¸( ´øÉXÒ«ôçƒèğUüãMê°Å¬/ƒ
+Ø½™QÁsÓ>sÈÈ:Ío•í5Ğ/ƒÇkØÀÊlAÂ…@û¤q!‘¸p#¨†ïpuæÛ}~±ªt™7È€„øÍ™;}´ÿJ"\Î‡î$
+ù\%—òåhnyYÀ8üÑgÿ*íÅÚâÖÂËGÀ
++ÖŒk&‰ˆ^Á]ÉzàxVXI›PÇ¯°êâGmã£ĞåÉ¾ñÉ~ü }F*=²dõå—P³øÑÇUÑ@¨fÏ%GV8ª3i·Òj’ß’J¥Yºş~±;7¬ô«ŒS4ë«O6åò/oÕ[m¹ØfÅÍúÆÚjU4ˆËuâ‹M,»Y‘§ä}2iD	†ìÑ3°3©¼´kºVèÓ±mI‹–	:â)iVÿ˜+ÎÌ®kñ)å8—ÿRôqŠ‘.³Mà@ªe¤ÅPyùËoh ÷IÀµÔéÊ7¼îZÊü^L}7^šëÏá+ùùüÿ¿·¶Ik¦ZpBØ’°wq ÖóáK0M_á¸w°§ˆJhR«æË|¨Èöö6Yæ[ÆrJPrµšwãaåoÃÔSß¹Z†-§Y_cĞ¢¾.ˆ…PÜî^-¯uC&Aiœ‚Æ¶¥/üF— Œaƒa´Ä@‹Á¯ÕCïÀ¾¤ƒJ»“s¾q‚¬Åºuú~	‚ÉĞt¯:dRßñÕGR1M¦‰`>¾÷u_%„âÇÍ­T`0`,@Ì†!ªÂàTàšW8N,ÛUã÷~‹äµ¹®¿•Œ^+=&ŸÆâ§,ZÆÕ*ƒÙÛ%Ærú`Ô'¸„‰ık5›Òhñqi†IT.pLF0$£jUÓ»¸cü*]0µÌİ)c–y×Îx2í ¢xÔÙBzÂÒÓ”0,g2²Ô§jÍz{Ñ#üXm¶ÓOB»vÈ‡jòN­Uo7e–Ä›„Am%[ÉÄ»¨°cÛÅJäÃ
+,Æ^Q5ÿ˜u©<Æ¿£<}xºº	5¨KZÚ¡8}]}**qeL\™Ñ6ÇgJ›‰
+9ûÄĞ·ÿƒêô Ö"ãÁ³ôr•É
+è­^† FHÚRÏİuìş‡íkN7BYáúGE¯š~÷ú;<şêwY“Î5Îô¶
+ß‰[ÍròÅ5ª:9«åšÍ¯ÉroÈ´Òp§6ñí±²¤ĞÓg‹¥#¨ Äï¢†GnüWæÙF»¹Ä„•óòjúrGË7ß¥½—ÕÏ[GvßŠ{yLÆ½Úš¾£ióYÓØeÜì€¢®ß«íŒâk´š;7d§PBÅ¿´“Qßm5F«JÚC¯TcOÆ!î: ‹‚ì£FI¢—³àİÛƒÀî{uEC¿Õàô4q­òı˜ĞXÂDÖ‚ÑK;ZDd¢Ùw$±ßïÕöOI¥İl·ªsRØHÛ¾uû·Ûÿá‘7¦>S8TºtÂ/B)¼kUHhx€r/TÆNf~õ$÷ò˜ØáÑ.ù’t#İÎnêÛtN"»ı¯.´‹1±1<Ç™şÄÃÃGJn¶–,’ŸáùÜıp3vò÷)šCığÔ·-wèLÛ3ã¾êÈ-±I¹™íL#{æ¤±.=§€´¬9éì.”ø	ï½Ğ’8<ş„‰é?Y“bJ»¨£!@nôî$ÄÙæ¤\CØîüÛ'@@Üö" “€.„î‚>y*·íM'¢»ÒaÊà9)iÏÎ"—ƒ©cxûW†’ i}sz¸@ZŠÍLî…œ–O˜¢û–í““ÜMEÙ€X†Şİ“8>Ÿ“ `g´qSß[$!nt/$Ÿ>aòé‚ĞİÓOÚKõôœh›·{¨œîŸÌ+İø^ÏÂ#*†‹úÎíOŒ#Áo¨t‘X›™¸İØæÖsŸ29lêæ‚µ“®êhjùgTµû²óÿå¿ìuá?ÌvcNÒzcjGJê¼İÅ£ªƒÎé)6”¼ŠJ¬0?ašÚó= †0(&(¹§÷›bÛ’»R â¨o¡ÙÛ"ÕšÌÎö^èˆ[ğ~ÂDÔí[ÓÄÿ¤:ò¡c4 Ü%¡Ç€÷ß:Odÿ=aCÿ’NnaLºÑÙ÷ENÂ¾û×MOi'ï_=Ø…Ï}øÏØgĞ".ÑáŒí#Ï\ Aqëÿ{!(áXğ	T	9.í¤qƒ[»+{bF‡sQçÜrì”€·çÆ*®‡Ài‘§*Üyä~V„cÊ§LJ÷>õaÊÙJÚQ9…Ú|çİjŞ-½¢ÒÔÄó	úUáÅ"õÌÿè~ôÜµé¦¥rà;í§”úW–{wRÚ‹Ù	ÄíFÖ¼zTy+&šÅ´$üóâ«Œ{ôc¶ìP²uÉÍ—_*ª[©O+±] ËÙ¾¾ËŒ¬á¿í&¹¹!ÿ¢r¿Åî³ÛôÒÕw±Tu5Q‡ì4ŠD­óC7MÖ¹43…|’N%z¤šÇs®æY÷í”9µ›7¹¯Å„¶´ErôB^ÙçyÔMfµljsË&“í–É=Ö±zÔQæÅñdv•âSïãh¤ÚGŸ{ø"şİş<°aG#Ë!•ñş÷WÕ­«]û]­:Ix5OrKô%ÂlÔ·¯µv½7È(G ŸÂ³Ê¼‘re‚·*×¤^¯OV˜‘2­‡–?¤ÂÜT«Ê]pÇä	09|9:ÂÓ”¹è5ìE¡c»”],¡ËfŸ<4İ^Ú¿„E±¾¾¤sZ69–ß÷LĞÀ#•ÃN7ÉœsŠbûñ_xš4KÏ’¶¬xµòå¹†S°©[<BÁssñ9‡86ËŸ2Ä‹[Ac½—ÿ–7a~ä¼§Khø¹´sÄ¼¬l×ÛjğÛe^åFóK;°Yº…ïn5øğÎ3î±Müœ#Ÿ:@||cÏ<2@>Âfyá°´s8ğ‚ÙÇ]·|®5¾ ŸPY‚U™)¢’<’ÿ2ˆZFPYÎí¿Ë+ä»/4Ÿ¿!¯¾ÓÆ
+‘& Û‰ÓUmg-Şí-'†lH6ô³ï”KpïÀ8*ö€¢]½‡~şRÍ2´æâùx&Å)K¹vëæµk9ç–‚0F¤è{šIÌ
+1ì/_BEzDcŸù=ï
+=«3ôÌHf&F«zÃÓÜA'1ln:ÃzÑØnTgÌ¯Ï”Ç;y¤#-ó gBUt¥ãzÁ¼8X·Ìô©`ù!­¨¼\‹SFµV»Ÿ5<Fç¹„ÍâÌëGÁ3ô­ Z‘.òÂ¸ºCdÈjVhúP(™ÚWÆÃÆ`ni"u5ÑÍfiãqR…ÙQq' |J-Ÿ­Ë8†x"¶ô¼F,n""šÜ(j;«%ÇjÓˆDYeØç’»•N–WwãTu”Ğ)êz5ì’¥;úÑBúµÀnAEæ^•‹®—<ôœ–¯Â{m½6a<íZÏĞ+`°M¶mç»ÛX/ØË³Ï\SC±ÁşÆ~ûŞ…>,[†”º9—²lkõwğ¦ûÍÁ»VsrùŞÌ"s3šA‹ )ZK;§Ö%³1Òoñ…ñ 5úÊ´äâÚ¡­mÙÒ2÷7¹ ‹1;Àëb}è°şñ«HtVıÉêøş_">¢1à_A°?M¬:î{ª	^Y>ô¥÷f0–&7Ë·wö‡ÿ8´=rÍÜOİ°"b•ìl“§M\İ/Z¸pÍOmğ§ÚÅO­­³§V­âÇVye«½âÇZ¼¶5ÆR^¬/ß…iœuEXİ@Î¦ÁØ_<°5ïÆ;cŸ—-y©¹5³,?§ §/HE`ğ*>•uBTò×Ë S¥PwÓ²»Ê¤v4³hªNKŠ§F•İ)ZI–Ù8ÊL8£HåÒ<ßÌC#…–ìqiç ?Î›È^è/H*oèÙ3òú÷N÷59µ‚äÀóû´š¡Ó™¤kæ`û([Ï&[ƒ0Æµ,!N'Î}\ 6¸Wvİ9Åé6q†ÒåÚ£tıÏ'ˆİçŞù(wàO uù8‡Ÿ‚†$éd{©Yo=*Kæœ_¶¿„˜¿›Jƒ ¡İ]Ÿ1ÄF:¦øİObÌ“ÀñPwÌĞçL—c7ÖEöµPbîêµØÉ0®ÄãKiAÑMæp•”oçšº,$¬@›7FlÛí_dÓÚD+§EèvÒ0\:ıÍ'¤©1«i £il4jš9‚ÜÏb¸w“jf‘z™dŞfÖÊjcLÒr¬Ë.JR¨QÏÃuåBT3Z>®‘”´úxOXÑµÜ×lwDaÄzÛ0$-à/hg ˆÄTRZÚé„Tè9,lõoÿ¡ÏEQb‘"¥YµL,Ø.}Út’@C(‚Ÿ˜ó¾…K	D–Ú=Ğ¾ãjMl€+ôòyx:	oP/X! /oˆ¥/ªx[5ŞN4:,®=éY¦OğÒ)Î[}iÊÔ•–;×ÖŠŞ,NÇ£è=³è­ÆB1KßI¬&ug¢¸4{.—bRFğ.JQtıN³<®‰=  ‘Ä¹_^!rCÙ.ùûßÉ.»ƒzÄ‚Ç¡²Ş½LnVÌb˜|©®oX]ßøú³C :3|?¥)º¾TÕVÕüó¿ıŸ¨ÆµıÉxJE,$¿TÅsVÅI§K¶P÷<¿ †‚=¨ôÿ@E3M©ä}©ÊuV'×#`Ë Àr½@_ÉûúØšT*HL^åOŠ¦(d?Ğ«ík|½nôêT>,çŒ1×;QÅûgäóI|¡”¡~ïŒ	WğOŸåE@û®)ŠÛëï$›Fs¦¨¼h'ò6şğí)ã`9YKˆ¦Ä‚Ïä·â—jê'^†'„
+.²Q›ÅÆ?ı3ìMÙ½2kô:tÃºÏí¦pTyNF>éol{j¯¹†Ş0î©›‚2V«B$1áˆ2€ÍI‡OÖŸÌœË$>ä¿Œ¹¬,¤´Y$(¼`yÀhƒ=‡0.#½ Bo±õ&ô?7öO>¨?N¢2è?j½ ô—T”pÈ@rÈ¿  ¯³Óµkbn0zÿ˜º@Ÿ™ÎNyãc†U›N
+4â¹e_z„;™UZõõß±ç÷ìzµNNawçŞù –{ü´ e™…”"Àhkâuy0N ;‘ÊÓz[ªJ`ã-ŸââpÊ†ŠB‹U¹ÜqÂ¤%mù]å…—à 9c˜¥e-+)M=¹²™P¸uöÃg†áEÎ¾}bï8^€·.Fi#ıí>!7ÏÅ$AÈı Dª0»ƒK•‹pOÌ6 :d>ğé÷QbOÀŸÀÓg‹!Õv»†sEIÕÆ>¢¤ãC[I—k;4ò63’şE@0K‘5
+ş'×úe`0ûø´¦©Zc	«Šä8B‹´bŸöGœÁs¼~ÔçÁ¥ğiÀà„2‹P°L¾1NÑ/€ãoÃªH³ô=bàò
+`k½ø+¥MÜ¨µóêô˜¼9ìî×É‘e£BY	¡ÇşœÑşÈc?¬sÏ¿ıñœ:¨“²e`
+ï9;´Vğ  >HV^”£]¼ı8º€]$"öÍQqYp›„ÌüÂ[Ù¼î©x3öM#‘2ô›†İõÆì_CˆQ2Õ-X›díîÖ]s.ù¥Núaä[ä¸Ï-ÅµKşúİÚ
+Y]!íÒâ¸ôÜISPÊğçùeŠáËàLàô<ë)+ÁÅv6J Eéì×JÊS\Hçƒ¤›CE¨®‚\Ÿ³/¬áöƒ	´xeæÕüÎ*Ş¹ı7òÖû!-l‹Â=ÏgŸÇÜ(œx äè9NòĞ`²(‹¥¹	ëèyËÍ	k}…< mÅ9sI]"ƒîÃĞ3{?öñĞö·”İñC¨,Í Ó:÷­ Cu]Ï~í4w„ÙB-#Ím¬‡!;‘Ÿy‘TÇª| ¢Û`D×£Ú§)1R|åÁhÿ¥Ä74´}…@)ÀN,C‰û—˜ÓW”?9Î •metå2é±¶—I3yFšRn}r-'õÖûµLq=ÊÔêçMœ„Óİ}‚±<)©bÊ¥O«8-ÙwZíø¥XÏÌ&^Ñsªó¹¹Q¿… øA¯±nF½qu†yy ôÙõíğöï¾íÜÎçtÿd¥¯Á)}ã<í’µk»–4à¸a,úÛ“¯Ie•LÂ ªÎqc_-6F’¼KuCgÈíß1ÕùĞ½ı9@“%"Ï™x9ã'’Dñ²by—ì0-oo2şšî(âuQ•"»¼lsbûPf[(úòTÑ?ğ;Gõq‚zy@Ş`Õ8.ÿöïp{zÓÜöRÍ/Y¡P¬ªKk+¬k<qèZn_@Ø}Š§OGì6“ÙKÕË7z\=w×¨—rd¶À°’æR©3Ö7«J}•sˆ¬ÒOáÄÛÅ×ì£ÓšÄGÌ0$Uz\”r­_Pg~­ø:Õ’ı>°¹F'74SõİSïE
+ñR-4(ÄÛBœA¯„¾Š€—L„%¢Hë*S¶Áy±!:äùpWZlkBçÙ!J¦:éz£²|@$PÛé ¸à±k¥ãmït·Ê—ruI«IG2³ä:÷j{·?©ï	İgçğO¹$Ï µÛæä".Z¡}/.Û‰ìØîÎØNÊwbxi:îÆ:%+‰fuÎ‹ë8:°lG=!?€yèFaçï»–?¸ıÉê[É~^Œ5€­ù(Eª'ú/¡b[W˜å*ƒµöd]ª¥ƒÍK,VŸ‹URis8TX`JØz©ö º=QL`Ûa”kYúŞyäºPfiÎá)ü÷Ô÷Æ=Âÿ;{z+ÓØsÑò¥¼ÅÆŠ¬oÅíÒ£¸¡ÅõÚ“µxKÔÄ>Ê½îC]]zé‘8daE¿ÚÛE–6Ÿ1¾ùĞh}tZ“8I¹‡„÷ÒÂ_+â›k„4Ãs¿¨¯T+?Ô'ÑYîSÉq!ÈOš-ıØÀİûé˜[Zizî¢îÁFNâ3•˜¢,Ry	?Çìér9#ÒÃñ T¢ª–ZaâKuN?ù¤›òÇàu’{oˆù†Ğ€ ^ÛLGˆïêÔ­‹…‡I.­G€ø Që³Ä†q‚1}Š(Í
+ 6RA¤ÒGÓ€Gt(Ñ P¯•¤§ŠÍG­)°Kƒ¸N8²šâQ¥xSÕ’xFÌx ›&]cnU>Øxìa³ÖW,Ä¾B`õúy"jç+ ¬—ˆfÎrnùg–o»Ö”Q“ñÕ~Õvb­)(7o}o›O¥ƒF´ğíFçğõ~{yûŸ¾ç9N{ÉyË\HMğ¥‡Æjâ³Ó›5İĞõWŠÕæ¡Ù-Rï„ÕJ·òÓÀk3›­.«%s%š´Ec5¹Z¹T‹ÅlM²ÛùætÿU‡XóƒPÊ¯“#€Š‡Î7ğ
+nqB§KÅIzÉcqÀúP‹'|ÄYwVÄ±|Œf%åïd8Ëœ†S³êÊØn3˜@,,ÏÌsÛ±}?ê•PUnÉQäã@õ´>ÇQòPfÇW~Ñô2ÍzùÜ225 0¶kÈGcœ	xãˆÖÇ63Åp+;/ıY§¥ÿËÎÊ,Ë£ş3o-Ä"òsóÀ‘‘êŒ	NÇùY®Õáˆ§Â’#É/ò¨QÊy«dL´˜–¾„Yäæ'­úêo`(÷xTçõv}#¯ÍîµŠ{Ë‡.½dNö¹µø“?‘CöpÜ·+CìºÈĞÆëÃ—¤Ë’*–g·tÈÚ)ÉguñBÕ\êõíOèÖÃü,Ü >„x¾) õwËìŒ˜g}Ğ–Ùsd®´XÁqÏ â0Çà6+a.•ÕêòûBMÆĞúAñİµ`9Û*l<rìŒØÙ˜ÔŒ×?F•o<İGÿ^Ñn,‰ß/şæ¹DŠ‹ó®5xy‹åÌzªì_bşP×›`ƒã~ÓaDm¿LßÏ,¬KÛûƒø–±%hõ7#iU[‡©ßg&Í¯¤ï3ómòxd¿èë{Ôş×²ão£51Î<«¨¬•jÂSöî±	%”_¸U%—FñÚ2E¾Ëï/9çMhÉú›¢éë‚ë1_Ôßš0Ö`jL û‚]îò y`M“…c°<~d;MP oBaTiü/ƒß5ªŸ¿k¾¯~e¬Ã§aä»›Ñ·"ÍcüÇ'Ç {Œÿò:È×¸	š5Ø7£†1I/6¹F<RP‚Úç<»óîól7N¾Ìàã’–lMÑŠ)Zğ‹ÿŒ:5öw³_ôva`Wög$•Ã,ÌšGb1Ê¶µ2Ê¶µE+ÛÖRhËèå.®:F\IkE•(wx–æ‡’$rŞ
+‰æŒ‘óòd~ÜƒöÇ¾YUúóa0×¼®T¬x4$¥Ü­áŞ5p=–¢ş/ {Ş‡1<T€ŠCj9÷Şçl„†u^½…h˜º§XûŸÀ.L'œ¨»ìn‹1¢æÇó€Ev˜€ß/ÂXN«ì"†-%À„ª¥Ş7c&€ªG”Z™o' ô<) ¼±¸~›–h‚%R]ÊGºX’oD§oÜñ×€£^‚­±í¬9† •ˆÊ÷¼ØRVmÀáøög[D[ñ˜Üe
+Ü(ôíL˜¢×XÆÏˆ•œx=?™‚Cø}Ä¬Fx:É5oÃşeŸ:%§áÌ·û¹`IvŸ“dƒìÚ²;´È´É÷z'°øÄ©+Ë¯©;ŠÆfáàÿÓÂbÎ…?\Ì÷d070o=ã’7îŒã/ÆÉC‹Æ		`Ì	fÑ‡Ğ©ZÀ&î¸Òtåp<Æ‹aX ĞÃ´lÄÆÀ<Vèq‹Á¢
+×ò‘$å“jn-Ø Ì[›Ù>6?æŸ+Ğzù„áj†³ÛÿŠf,öÒ<o‘]ÏŸx>Ö5Or³+›Ùc2¬O?VÇaQ‹*ıñ¼³82ÎâËŞYÔ¦ıö;gÖŸ9d?îl?qcÍávï!¯ô]„ãÙ-6¦%X.›ÒçS+ÏœW™g>p<+¬$CÅoÖ×Ó°Û¸$)5O·Ù³lÃà²;Uƒ÷ä¸G®(/	^ÔÖ6w´‹mJÜ€ñXW0›çÔ?s¼‹ÚÈ ‚+HK”ùäˆW¢®IÌxå0\ôarâ#+ÕÇ¶[6­Š~dd­Y%¿ÅàÕ›ß|‡xÉñÈHP¡ç14øb4ªsãHÎÍIEÎÏ}Gâ\”éÁ¬ÊV4%'ÍáQ¿yã*'Öq»q`3M•¤ÔÚA-8õİb¿¹rkks½ÖÎÙïÈÛ×‡±¾m«ÅKJèÛ„½pFå¶+;dUNëûˆ†Vm]k½ù!i¿h%-ø4İXû¡D«¸¬¼ıiÈT®’Åg¦1[­z;nü¬µêOãÖ´këxÁ[³Qk±[¼=;€¦J’ålOã³¼«Ü@ï¡£÷HÉ´n K÷“d6±`ëI2¡{° 1Bûz¢­Ùšõ–¤ÊµÈ+˜ŞbWñ$z½›D­Ï4¬µÚjDqÑVqf2dÉxmm”ø8Ëœ¦Ğ:ÓÉ§–ˆ³Lİj}-nÇj}½¶&Íİú£Ã£27§Ìíæx8Una˜x%^Õî$ÔÕ§)}Ôõ–¼qg]ïsÉ.Äà7KB,Å›_¨±ï7§‡ÏÈµ<½ÅD“§Mf¯«Şb¶¼kM Âß$>Ş÷`ÅÛÙnCá6”MéËÂ÷àà×N¢áhADó!i<—½óN@xÑ–ĞDŒ%vVK˜‰ZìVİqzÑ˜}Eó‘ 'Égê›5vôúf‰Ù®Œ,_¿É¤'	:«?©µëi_Øïé½	€¢•ø@V’±nˆÙ¸ƒÛòïÄQ¾J|‹º}:‘=í÷¡àÌr`Y…9kõ‹/|+"­Z‚>Ùõjmíñäşìi‚K2 =MPxøA1 ûâ”ö<¢@ş÷ˆï€)->lP\)Ó3“Ø]¬„’©¬Ã˜`œ7Œ†Êi´”#-Œàñu´¿áq‚ä
+J<'•'µ§Æ
+6ŠOïÂŞĞ¬µÖÏ¯­ÿæÑeı¡±g&5[y#`â“gùJ‰ò*ŞÅ{°Ïä¼~0Pä¶nH|µ`—õÊµÙaİà{o'ÎíøÈY9Gáü9wä|?ØwŸpæ§	.ëÏ¯Æşqzïkzu.öwší’îõñdçëÿ‰çúWêoùE¨öîû‰÷~Ö??qİÏİà~ûmÑ¶àÇ,+Ôšá]Öô‰l©@7<+Ë‰XîÅQ©l’–ûÏÑ²Ø-‹ÈĞ¢fei$	[Ö`Ç˜ãú-)AË¢ó³Ü==‹””åSÌÉbÈ™±°L-Ó3rçôY3$#Éîiú-t¦üq3¥yå—jVõÂİ-zÎj¸|6ô²#¸ÅDcXËıä”¦µ‰o0H[šb]oî1ãGšîœ<EÇ{4ùTœĞR³™Ê*1Ì•…Ã&ŞşˆAx+kÀ"kâ~z@š­a*gO”Qfé;t)Ñ:ó
+q`öj‘jEÔö0Õ
+ßŞ¯—¶¶—nÈZı1èÒGŠãş“5™ri=¹Ôí’J×OûŒÍô/eóh·4w¬¥ı Œ&·@K,¶¶áÏÚÚÉÄ<Ú£ÂŸŒ¯Ç{š=Îı8£¡{İ":HF_\ğtœa$ÇÒÅâVy'2†·Ğ HŞ:x.?r'Ôw­_|àà¹ü°ñ¦ıB£öx ÿO{ ÿiD”z<TÏş}4‡ê÷Ì]'<dƒ¹ß1¾”Té†Á£Lú~Ê“æ¼İåÁ¥ŞÔxªØ!¾axj]~ˆí=Šow8?ƒö]ü™¤ 5Î"—Åo!]{@{–LEÖ¡]ÊÊar»Ô`Áñ„B	°‘CñÓsñßn4¢-*TsóŒdjxF:“‰øıURÛ3R	ä;Œ?{öà+ñ™g@K€&-x'ù¼ä%åÒÙVÀsÒİ›*céœy©"‚Î‘pœ¨Ä
+Fì6P»u¼²®¼(Ü‹Ë%{ûS_Jğ’×zò
+XäUÉzÏ½ıÑAıfxzĞlQ/}½Òpä}oBåGTxH=¿ı1ÀD5òÍón¶kÜC/!Ï·½¤¾äÿ•„RüQL>ãåÚƒ®€CÊµw¢Ui"I	&ûÂş®"·Ÿ˜ÓnØ#å„5/Éï÷²o¡TÊû¾»›”É>=¬làùùáDGÈ>ˆaZE¬a—¼Ntéaf…üûŞ¸ïÛ($UØ="÷Ÿ=óÿĞ|#@Nò³À4FR+à©ÈAíC~\Û
+²ÑË$9ØK@(ÁĞV¾›ßŠÂQòú7õ3ß0zf;0¯¼¡íæè:ÃçìLøú—Üã¢qşÃ# 4±Œ¿ø’_KJe‘ö¨Íû¯P1¡€¤­˜¹]7~KÃ–0ğ½	ùm#atZ>Ç^à¬¤HŸ¡ğX­rƒÜ¨ÜY«áÈ>¤Õs(Oä¡çq•3Ë	hf—–®}IĞRx¡Ö$2Âi¬ÁµÌQìã–÷Cíİúú{âŸ	`©ŞF¹]#¾caV8UQÍÚâĞ3lJ_m’Qª¨/jOØÙµÉ<F
+epj #Í÷Ç ›2´L=’Aä3'IÌÆƒ½gwXe—ĞÊ/bÊ€İX½Œ€“\ RíÎ5ù.É#>”6á\ ùKhºø7 	-~vh%šœ²)A[ãw7Ojíúºrh º
+]üŠ_Ã~ßY.#m°„|Ê¡öšÆ½[A†[£–Òù©±’ÄW	…d}(’È!ë@ôyBß¢¶£–®%W)ÖC&´ƒªÛÛ9‰c+äèöï ®x«jIW$DÂi\Cn~²æqîÉ¤K0	')—ƒ
+\:ybû“¤Öld›“nDO¤×Ê9ÈÌ%Ñ* &Q®j°yy¤KÇ#oñ`j¦a×	¬ãÒ<.›ªN·!Æ17óŠª#w73ê1†­HÇB’Í¿¯Iö¦_İk¹“½ŒÜ<„{`_EİL›§§
+Ú9ö7ZÖW|3s¤¡9ÒËäº‘—sÉËè	÷`‡D±<Kö1’ÅöµyÀ¾&È+Ÿ‘¶6fEî|1«ÔgXO¹ãÆ‚öè‚ê˜îğÅrÁ–ĞˆıW	’lÇÃÔ&p­©VŠõºE°Õ€Õ­¬öüî¸A˜2!^ëÙ
+ÃúL`VÒË­µ¼aÕ%®±ĞÀOÖñ‚§|Kd“ËKÔcj^¦Ğ4/Ê3Ù´Âµ¬í¿ÕFÍŠŠøXÕf–äIO,Ö`¼¤M>ÊkH»ßG–OOœ(0sv"ˆ~g—‚¢üá ´£#g=­h€ŠA]·É!w«mÜ‚'µõ"ñ:òğ¥$ÌB§?šP=m¶ÚÚšÕ&'ıó®ùmó[ÄßúÃUim¬´6×WZí§+ÍúZõ½v1šllÂÒp"…Gë^¨ÿßefùZdˆ¿c„H%x~J®µØ:Ÿ:
+0ÜÀ[\=2I¡S»ÙŞ¨·ˆFM¡³3*Šñ ŞÒœ&¸ÆÎ¥>Ò\~J7`B72ÓÉ©«ÿ›¬°¢ÙY§å%¹¡ä,öŞ”½µˆH³v÷¦wKGsÊ)×[&…ÆªÌTÙhZ­F0×`1¼øì3z9ñüêÌÂØt‰®¨ÈJÁw•'Àê\òl“( ]‰¶R¤·S‘´†Ls/ª<¤ƒ=; @Ñ¬Â®Z¦T)¬‰NŞìwwßœ¿î¾a÷/Ä…‰Û©à«L1"º‰:Òé÷azCÂê`NĞ|¦cßM¯•³zâ¯pp;T®TY¿Ò/w£^¢#rb]]à>¤iƒˆg{t tÆiÒ
+¡Ğ[ÀÁ­P9,¢.æEÒ:´A~ey’rßIËUnÄú]ÆVß(s2ò.N|»LçÈXŸ”L¡¾Y\¶ÒÌ¯xõÄ±\e¥r¥F€ŸPdâJ`9
+Í ¾Bú{zÅ<X}¯Ô2}]J-ë
+#û¡æ˜ú‰\¢Ô°<±/—aöY¸¤e¨	¯åÊØª`Z”£`˜®Š¸ÄÜœ”\N€%] s!(QÌwkñÓ½HÏ$$£”•œ‰øh:'r‰\Knøøsû@Y¾ò&+QŞÌS“x<¥.Q }Ş…²ı³3&eâ·Ï0¬ÔfNÙO76.W“êü Uö“3Äló¥&Ãâ .ò_ª;Ô†#–(µŸë›¡~FiœĞ$C ÏÂO/Rû›©†}+š}Ş¬ ‰v3¹Èì} ?ş,kI<Ÿ±7U‚y¯0'Ô3ÏÇSŒw9”¼Äô@î*Ç\á›^ ˜üá@aòıâøCªİIàU`§V/[!/U×uß÷\Ô6±Å=œõùOŒùíğ%ï¹ƒ(´ø#ÃÈ¶pı³u_ßµà=o¨ÛÎÔ[J;â¾ºgy'KÇWœ€l: ]˜°şHŞQ|v€ñwùoås×xâÀGrè-thzé³ ”éõ ^ˆ¯nŞ½Wwş½À:XºmØ€ İ}nb$Çßûšük÷øu‰TXQ•<#ïŞÇÛRÒ-k08õâ®o“JaÃstéÅ!³âIÖ‹Ï	râÀWªõĞë²—+«Õ:î–¡_i¯§ÕØ.ˆ}r%Y8øÁøŠ|…ì!ßÂÊ^áxPQåò$¬=³\å«é+¥e—!±Š® ©‰°÷õ 7»JsÀ}õ+¤„ßS:! _C(ùL,w1(¬I±2n.Vø¸óá„Êßf¯ßH£›Í;Ac,ÎÎŸy)xıWX=ş±Ï£ì×.Ç3×:L6BFÿÃ²Ê„g¨Â§cïœfjlŒ·è}Uí¨8Ø—î¥’é;ZªkQaS¦|JEÉÃüÜëPŠ
+öäôİ.Eæ],2MĞÕáq=XËdËì‘F”=`·^W°VŸ ]‘/‰€o¼}UÆ§ıóN©ªx5ÖÓåts¶[KÎÆ´A}ßıKóis¯ÕQé§Azµ©¨PLöõÀK=%Ë{ÈôxªzêMP¹°açÇï‘±‡yÓ¼á¶»ô¨Õ ]Ç€¡%cë²vQÃËX‰Ò§"vkÜtGHÏ8âl¥D/ğ¸m„ÿÉèóL–ä³9Í–Ë(»1NúºPÖ‹‚§ëYµ^¢Ä# É_›x63 R†Àòm«Æ”ÊÛK§|ª’¹“ŸÌœ•ğáD§•näæœU<Ï5ºªä{Ù¤¦]>,lu*íÔZÓÇ×@RìôW¥«™öS¯uTãó}E€áÊºHş™;¬öLÙ%lÿğÉZö^üúcs…Àÿjk+ş×|Ÿ}1%4­Š—9|¡¾¾B`=#KgGáQ;sCğ¥¬'Æ
+¶&×ñ¼êÜ||ßØÈÚ˜2ğY½~vCuêzŞô>ÃÇd) o À“È	ƒXù@ñH¦C-¢—$óû˜zÆnõÏ‰``b;Œ¬â71€úŠ‡gÚ¡‹±IÀßP×ÚP-.“¯$ÓÃ®Ÿ®³ƒAfVQÎçºörL.1,Hy\’>\sPÆ†_œ*l–3È“9lÚÓĞT6MÍÙešÚéÓ ğÈŠĞ2ô2mÎ”òóÒír‹8Ûƒ÷ ­›Y…y®©m:CGcb{6‹Ó7æÆ¨T?³q±N©øñHÿöç=dyR:öâŞşÍâäv`Èy`6 æ•ùqY²“IfÙºŒÕA<®ÆÀ&ià…ÁÔ%ª@åĞœùjevÊ,H°5ÈpV?¿:<l¾6Ä	`Z®~]g±/*Õ›ì_#
+\{õ½°4€õxipà ÖlÇa²¤^ÑBXyÃïO­ÜÿqC¬Ğà Ú"¬_Y3d0I0)i-ğOİ4qëÕT\æš»ü{–§ñ™\õRõ:&¸ŞÌ0Qv`ÇÑZ«i°”Zg'²me–Ê¦·j™˜ ÇÖPfŞäÿô®	ºÃû,1e½t\×ç¡{nv€¤Ë·¾NQ=#DŸ¢iÀ´4˜Æt€ /¼šàn›[ÀüíL[ìÁöRfÍ-eáñvbRÊŞX!,pw{é]³öôıo³·YhbÏ"öÀ6ÑÏ>Œõ[{Û×kÙÁ}”•š}&êÇ´ô¹§ê$x+§Òx÷¿bûÃ¢h:“~€°	oÄlbk›¬UóJRx"?ÛÙË®[~Ís«ì ¬>@®—k9¬ÏüÛ_“ÿ©44´tÌÎˆ,¾B:·év,Âs§‰OÏ”˜”©¥ŸÌ;ó{®—;è6eËí·ÂÄ”­gÔ=…p}(–”Û_2úşÊçòq@~+Éès	Q
+!wG« Ğ¹úÊM@xÜÌú¸Ë·|fáºi÷ì´(oö£³ÈÖ¼µEÏÎb¹±“P¬”•àBJÍÙó‡tÏlêŒ¢´\;%­_‘Ğ¦„õ®Y_¥ã÷zÑ š\È,4Wv¾gÀjáûå˜ÛäL]	x¶Ïì4ØknFªÕZ–h¨®X©1‡yÅ2ÏìÀëõ5Rd0SbLg>²€m ¤¥€.É)³®wÎS„×óÍÖ’jÉï÷ôjb¦|Æë~U	y™#öwíMdQù¡' #ôAxßX!O˜ìÿT€IØ¯´V«f»UøàE4àû(5Ëññ/ÃÂô˜ÎxB¸…’	æ6*ŒS„aÿşÊ|uÉíhø—×WXÁùsÀLÚ²ÊÀ[³œ-^ª»X×¶ÒsÌ|².ÏO4ûQ;ok²Ò~Â•'Ñ"âŸŞRGT&Ö¼Ï°‰d‹‰2¿«æ…‹ì«g „–¬™’©¡]vr“BYÓ»BCg™ªòÆÎxkÊ´Of~*_Ùc*rÛ’~2k:¦0™ÆD–›:à¬c!òÈ>Ä>ò×|Hb+$’ô¨¹ÖÒ…5xäEóØ™XÃ’œ£¤wºî¸èÀóp`l´):.R´µz»c˜·¡D ÎJ‹ú@bÿóïÌîXVª‚ÌK.@§Ã
+÷]f	ë$ÛÃÜ·AÀ‹SäÔòNGÈësœ ·bô y©Ï”íWRªºÔ;g•_[çx¦¬Léˆ©…DkùJxş€İ‰O›š0X¨<1Ûí•õ%e~(ÎğüÛbÑKÖfôÖœÏWó=5Ë¹iêÎ`tn›wóÏT©p>ÿÌÅ:gB³,ô¶„s¦ÅV|Î¡@Ã×2d!Ü/Ezò<lfvƒ‚(Vº(™«¹#¸-‹Œ|z¶½ô/>eœ?X2(œR*Ìk•Şˆw·–©zØhûóUşÊŞş„€9øôöo^Á‡¶.”şçíJ`x;ò%é~ÓÍ|*¯˜sëã7ÍhàRÎÄ%oGôf.Ì™¹¨ø#§æGÃÃíÔeéÈxd×±|o‰<—ûĞŸ·¤MNµr›#¢)5‹yÁ%ãé ZC§z[F½cÃŠpj(+¦|½À&\yRqr©ğ0!3&ÀºûçªJŠyÜª¡Nƒ`b>¸OëŸ?éAFšÎkä·¦`Ÿ3šraîÜ—Äf‰©uÃ<t£©Ë°À4YÒ p
+MñgğÏ,Ë¶²^3œÂŠÉd#!“„C'sÏJ¨ (?i©ÒŞ<kh·ÍRŠšR¬´~Ÿs×	Û¸ÛÂ’:Úp‡ãŒdôÃÿÆá
+D¡Î\(‰G¸‚ÅÁà.Ì@;~¹Êú	Wl\'‹Y±›öf!úÍYCÕ~À
+%ßØ–Sâ¿Pe…:=	è·Vø- ş•oÏ-¿R«…Éµ Êƒj@ï•@rç¶%Ÿ‘ƒÈ \2a £ÄtÕè9â´®Q²Ù.Ë‡bZü,P¨Ùâ+yWt´dˆ–;™Õ*‡ŠWzĞ”>Í‚.ŒË‡ê±ÊkïÜ"o©`1á[Û÷ÆD
+Vr|KÛ²A¶ó$Š®/Å0IXÖpŸ%ı0ş~/h£ô ˆÓ„N¿kıÆ†RïZõVöæ˜tmt{¶ eÜş„N2d1ëĞsÛ<é¿ÒPq(—Âà$šD±øá®zy~Ëe¹ /Èôpzãá9ozH|Ñó¶Ôs~ÌIv4b.vÊ×,nÓfã+Ğrb‘¾K°,4ÔrÄ¼BĞ=Ó™	åöç!ÏÄ¡!ÿE,ÄŒìÑU`"‡EæLp1¤2sòv,7D2¤(nÄ¿h¹ÖØ¥0‹=ôQ6€â\cÂk?
+#LjÔ•!LÇíitØ"”+Â°„¦Ğx°x£ßäú%Ö—
+ş41…Š ]èÙ%ğT‹ìJAK aFD`Ør¦"³â¼Íâ ñZœ÷¯·?B‡Ü‘‡ÖF…ıÀúÄà_µö=îKÉáN¸¯ô”¶5ÀoufÿSP™&™M@1ş›/H«¹ßşC7…°<"ç¾ç¾a{Ÿ,².n&YUš}˜œw4g\Sl½ï*.ÎFğk1Le6jK3Nè„Æ8²‘™›œBWP|á˜à•}îSRÙ£co
++‘Ë²¸e˜?D@zÌÍ7ká=Å¶¦­f´Xã©_qgnmğ³.1aÉ3€)ªyìºÀû¥D&£ã‹D*EÑ±õPtUĞ5›Û–v~×Úh˜ÍÔDIY—…ƒc˜£T²´³çaˆb+`”‰T2„´Ç¿ª¹)ˆÀl.Ö›¿{Ğ©8¸ı‘¡uœ‹‡æošÿ³ÎDÊwÚk':X²9>;c:†ÛÂÖ™˜D>ˆ|U`úù
+3†	\®àø’ì•šˆœÚNèá2z»=Z6º¨P¤Uw•xè¡=¢ãš»i
+»$nêF¡–N§×ËÉ¸ÅãmBïšõ6HçT%?ƒØÌç$õ<³¦*AuŸ§8jkI*V¬M%¯YôG9š>€.<ò}DÉ[¯û<”ìÛ…´r’*,àJ›Ÿ¡šQ{ª;`İNV)g°à*\Ów18Şõ}f ?=›0ˆ÷o  "<BÑÈÉ†‘0p<Ó{á?nhûÄŠôv+²? ÆäÃ`İ³;.Ì Æé/·ZÊC¾\3 ú¬±õf¦ß¹|fyñFx?÷”ˆ¼²œğéIÛ'j ¼åü{0Ä}ŒßÏUX²†*Öñ_d”Äº'çÑ¨![>ÎÇÀã3uî9çü€SÂŸcŒ‹!ÏËÜ3ãä¹H¬V®ÄÄ)¤~€šMÔFÖ5dGàq\ŞœOœP[çÕÑY?´\.)Ó`³$Æ!~ÙìÀÿˆÅHäúˆ½ š9Ä$s¦QşšN& Dêr]5°çã	‚%ÔôSu"›ß
+Ğ¿¨\ÒC®0Í	féÀvˆ÷h¢Ä´‡Œ…ĞŸE"ïÓmNãó1Ç>ü­qRt‡1–3q‡šgæ¨‰Ì0Èû©J×<Ìn÷oœØgg÷U¹Âƒ@õGrÉ¾í÷>¸”ì“Ğƒ—ú0¢+ä°s´B0k<èÛáíß1½ÓóÂğ)ÿüÍ·ƒ¾7uPø&ë•‡5-»Ã¸ò´-fşËÀRÙ¦Š%Öí¿3ªfa¶Œƒ»z X³'/ÿP{
+ó¢³W{B˜ŒxV c{û#*âÙªç©F1Ş0æPWÙûæ¨ºÂÒ;×\Œ¿E¤ˆ©øÊÈ~ ÍäÜ3c÷(ST^â¸¬NêŸáX‹+u°¥Â;Œv’L¥€„åS´Š÷á—ÉJ66z‚:Ü±™Ôa]l|Ô…=œ0ÆjÉÙpV[}Ú,Á
+î¿ğ(2Ùã‰ÇëŒëh(ùÔÁí9Q2´ì·:°IÑ†UÊ”cX9sN| ÆÄvN>0ê.FÔ³Ü>[À}P®íÂ†F*»€¾û€öÂÚ¹
+Tš¦¦Ç°0Uq÷›7Ïkë+ä¬‚¡w±B¬!ì_¡ûÿ‘”1›(Æ†§´=XØXêàÆ1—ÅøJ!˜¥!–K5£¬\ç¬3è%ìÊƒK}b4aâà²LFÛ§Æø'wÖ„â19İÈZôØ¿ÎóèBv¨ C´0F@K•>ÕVì‹k®:›˜©ì»5E?ÚRlõ’.ßå\fYûXµrT]\­ÍŠÕ¬¿ÓÅÔ©V¬K;¼§lMİhòö’9à¿"u™tùwqAêRàéÜN•£š’¢lO•ĞP³„(«1Uâk!âç'ëf­9ÏºùÈ¤åC÷–%f½²nŠ”¼~¿R²În<lÌ)²c/”ƒ>
+Ñ7!g„ÑnĞèÀ2üÍ·í lóÛ‹Ùí®ÇÇ ‰ilı¡‡(»g L0“€T}êDL”­ÈztAê‹Ğ'Ä¯Ş«x<¿<ÌÒ9óÔùÍÄ_†ºØ@™
+¢^ˆ“¹&°/ğœáŒØ3W%h*˜ cÁ·Ù‰¨î>®Çzû9ª5–†œÏVÈ²lZ8S cP>–S®¹S5`IìW'c.B–iY¨ d	›Y·@ı =²´Ë˜Ø3©3.9‡¡XÎÅp# É‡#—Ú3ÂBTæŸèYƒ!eéÅ ’~.fè1®d¹ 8P›N8İøAR^6öªShæj`‘Œ€€‚Ê›/ÈÚ&†îµ˜r6KNZSC4êª”‰‰i \Û—. ²Ünş9Û>`ot$PÓQd°?£`0ö¸´&§!ÈBˆ3¨€°İÕEw#lŞñÁÁÇH4ôo*Átğ!R¡‚·ÉœXC®:"·ÿYòÁäÀdo®ádc•#T½¥îÀh+‹	éIYBJêFC‚!‚˜hãN@vc.ƒjX ?GT°h#”$DUYåÓXUØĞ
+‰Ó¤2Û.Ê¤%ÌÉÛÃÄl*[0—(³ñœBYh¨a&,Ñ"æ ÉG(İú³è”¡Z“5¦D©íi¸MMvJÉdÈ{§ˆcøH&ıõw‰­´*~mH0òş¦*Á ?vahİÄ`Z'¾í¦kèı¸Æi¶m¢dÄ‚ØìCª¼{ä¼sÜ–8Å[>® şñ¡`¡‹¡µ¦ö>AÕhÒ¡MËcÊIr‚\,«MèŠ9ÖKdJ9}¸LdÇŞ|xB2fjúTæÆ.tOCƒb<eæ‘x´£k`ò‰Òô½´óæSş:s…kF“ï¥>\ŒmÓè™›a˜§XdhˆÚ×/¨Ş<‘££ïUfLl°O2æ.3Ìoc¼ÕÅÔ
+±aƒDÃ[¨¦nÔ¢9*R, ;KåÜO•°375ÌSk°#Ø>ÔtÖj™YŞ¹>+$œ/ÇÖßÓ„Àç#Ç¨PÊ—ëM.ñ¯Tt%}Ö ŠØµPˆ±Ü+ƒ·Ñ$W¥8„R’˜”™_Îg‰¬ÈÊ5”u6Á#†iäùJË›}À¦›ëCoòP:›vşE=ûÛõ9š¡‹ÿ©£ìØæXÚĞ4ôlÉ²`½aƒ°¥ïE!üLÓGF­Šñ:›¡+—¶=»Û)™Ğ@¼'/RM³€ÁƒgyÍÉT·¶tş×›'ù8Æ˜ò5g-ºÍÁ¿¥Ğryd¡•Lâ³>ÙüÊXı¨öîéúùÈ¨H5ÓÀt®cO”«õÔNÌ9FÏ|ÚĞ9€ÛŒ”3ÕÄ&+¢¼Èa)Œ¨@HÛ’B¶œU\ŸÃ‹\?‰=Hªx3œ;AŒ¹ÄÄªX®Îƒ ƒ¸4‘1!³ÑNc_Y½0¤x—ezÒÆ,+g6Ş£ÎÒr]²“Ñ†ÚW†cQa÷uagÒ.hd#f(V’±"Æ5YïYù¯Ív°¦ú8ê(¾o±³} Ö¤aäyò„n7EÍ”8©N5ívZÅ©ÎOª;Uu2µ•FåHj5¦ššÿÃ\…&}”«Ë$m™ª _|2×?ÏŒ¡ñu8Œå’ªGå[ef8İÚ]9İõM^ôÈÛ'ë·²4ğ_tüÙ¹ÈÂIxNÁŒ<¿ÿIÄH'`Éf?ÌJ,§—vXL$<Õ‹õ«°ìÙw¦+´r<ºè8êÔh©RáOÊb*2•ê)Zir)Ş9s–Ïv§)vÓÒ¸·‹R#H}àËûa”o3OÎ¡M—…öÎ\™,¾è‚X–õ›®˜%wA}£]pb_bÖ’ÛşêRàë¿!{4À#¯ªåúeÊîİ‰şXÆÜ_²<R`öOÎ\$¨o„»w}<lÉ$/IN»E6§€ùĞD×{„«]/åT4úSìbô»¨­b«UÉq)+K$†@‰½˜©q3Ç½×·)‡yF	óòLé.¶ÇÒ§‹ŠÿŞ‘?¼!»Ç{ûääğO¤{xôÍ«ÎŞ1y¿Õó¨ĞØ¥6?hDz–Û×‘U‘ÖÙx£ôIE¬ßYç”±Ù]ob£ÏÇ®çXÏL§9Â[-£›ˆåàt¤ßµZ™0®ºğÆ«ILRÆg¢ZÃô4›Ív³ÕŞX‡UÑZëùõ¡w^ïõ{uXlÍÖêFêÙ‡¨‰qP=ŸzÀŒ@uÅ˜
+xúBmu%¶sõuíO‹e•ü¯oÿ}Œq©ğT›óD#>dŸå™_xHg¬kIM*³¶¾Ú&rfõbsóikIe#\MİYKl-3ñ¸ÄüèÔpQú\N‹‹õó:ÏÌ.nnßZÜ^«pF§ÏéÑQ£ÓùXg­`Ş~ÙÁß}ûv–qOÒc’4-©y®>½Ù˜‰¥Şè¤îW6ìâ€£O¯ä³™ªŒîÏ|pkÖ‡?´Àa€&^D6‰0°ÛÄ¥²Î£ë&ÊLvq}Ë×¥…y±˜D¡ß€´ÉİøŸÌL'~)Åî_>#'İî±µ£ı½ÃİÃ×Ã{";›Ãç¦U›r‰ÿå²´÷J}±¢¦f›*ĞÅ‹êd"tßëÒI)B—ÄG¿5Í ŞšÄEŒSŸézèÛãJ5MÃµJşòf?fÎT:¼Pü·àHhæsÓ;z2Ğ ëÃœr+-ÓYñ”ƒáù"Ÿj’ú˜„[vˆ”Íê€‹^ïv¸3ÈsV[>±«Ñª–uÁ˜M¯ùŞ…Q¸ ã‹²„¹@¢œ §¥¾ŠYÒDYê+Œ®[í[Oÿßÿoÿb¦{f£fªtF{‘}X„ì,}øHÂåj{\M9¡Õë.!Š/ÈB¨,‘üíD(Ãd<<Ù¬‡Â…E™OJ9jŸ·3^¦y+`yVø(+ŸÊ(mä>Lv¾ì{“«¯²Ékêä4u^ò©~Ğ>¨QXêDJ†ùÑåíOíé‡+Ú ­„¸D“ïFIj3-¥Í»Ùíì­îí¾Ÿ=§6)ª>=Nè‘×³J^ò|4é¼f[ó(LfFÂ/Ñ¤àš5	ÍÔ£NH¹ü8Ò”—KO‘ÁïJZspySÂ˜œ•ÁôT0êY¿.Bcq*Õè k€–çõºD]àB=Ë?P—%_J/Ô¯è3Ûeó©m*úÍ”§Éw­|3UüIc–§‚º‘R(q›oSÁ×–¨:Kå»}­\J™á=—EÃX¹18Pv¢Ü¸æ7+ÉºuÏ(ì7räŒÕ7Rcì «ÙVG*ö=şDöÓ7R‡ğº1`ëºbİ”ŞĞD°M]Ï®¿ËœÇÉÌ…|‘›àeaÈÒ,/ß°-Á©=iË®!ÈŠN½I]®¬zQ'é±r¢¦°)Ê¥ÇÊ°µÙyÌ:£­Ò\Ì‰`]~·Ü‰;ÑIÅæŒ?&=K›*vü¸3kMóÉ<™}Üò‰¨É§„e4ô×ƒÊ¹ñÄùÌs˜»¥{²øÀCsèä»|3tĞÙlßZÓm@a[ë0°çìïuwß¼9&'oOáç+mÌÒ"Ñ#{sï}@ÏÑcJ'şò^æ7.mDöÂ4–æå0ƒ«±YFweŠµ<›âJìŠÒ´¯f6LéV*z”“\>Ÿ1Ï,µô‚ú,>˜fh¡:p¹¦)bî‘Ós`j"¢<,øD>Ğüâ„IHpö¿®[ç §ı]D ¨“m(``ÏTƒ¼qH2úø(jCĞôÿëzdù°Ò¬²ÆìiÌêLšvc:;e“ƒ;z¦?şÎ-Ié%ÓÙˆ)á“rØNXôT¨xlölËï¼_=eÖ…F×‚Ş¼{ª±H7¬¸ñ,M™æöı1kí«ã‡¯gj§AO§_ &™9S]6W]¥¥Öıp™YòÔ­‚ˆÜ3ã‘RÚqe+Éd¶“Kµ	îtœH›äÛÇg’ÜñÂÜ®Sœ…y*˜üòŸ&áˆY‰¥KïnZòî€Ü’´¹ºT”šPÒ¦˜ŞH3(f±˜Z*Üî{÷|î`€GÌ	0qp&1ER¥kÙ~µÄ®)Ğ=Õ@6-1–ËŠ†{9ÚRw|j©ÓØ²]U„®^­¦&ÜW>½Ã 1ØdÎG@“Ëj&gÔV‡gÙÂ(„#Ş½Reã¶—E€
+ö>WãIèf ¿•&Åf.¹KÁÕaù§,gûúšx«o‡WÏHs…À¡İ  ‹<_Êı»ÏnÓK;Tß…Ò-ÑˆSœÌxJ;îíâ¨æëÆÑd¿$Xã·g[C÷ögQÅ~éğ3Äˆcfşúğ'±qHß~`!†1RÇÃD¡¡.{` Â\U¾9é4NºÕú[¸}Íbo"¹luù°±yØ `–ônÉ™Åóçşš)ˆz†Ñz:ú¹¡i`Zy ¥À«0ÒçöĞvnÿÊÓo¥á>1ÊªH±Ğ÷oÿoŸˆÊ£6²HÁ<)‹í$ƒÛÑ šP6Äßô1¨bÌ¢Ş©ÕÛN|Bà>/º‘D‘ä™D³£<Æ‹0L‰Pø”
+“ÒY9”{^®\z%7ùÓç^ôòõô4`ï‹:é§õNï ËÁœçJß|zoÍ×‘°XÃ"œ°™r•Äqô¸qSˆ‚ø'Ä	AJ¥iXc6áûqÿÅ¦*Ë¼vq.
+XÁˆ×ğàŞxÄ^üáœ¤ÏúÖQu¶Ö`pê½´ §«íkùêF£gÕaa¬8İ:7¯ş¤tù”7Ô5F½5ßŒùÑĞÀÑşC.‡8ùà–(¯±	Ca°pğl6ş#œ˜lŸi<ò4ş0ğ‰qc4u6P{ØñùY	ñÆíÌ{X"bìS‚şf‘Ã”1 ‘ö3oŒáCÓ¡Ô…Öğ‘‚‘•t,ù‘%+hŸñ°îÜmƒG>²Üşª¢8Ú<´3W¥HÍÀ[$èÅcÔ~xê	”˜Uv	ü«Şğø’ìÈ ^`¦nÓÃã×İ"ÉÿÛ²2`®åáz!åÓ¬±2ÏN¼{_¯S[èhá5Ke@1}õ1|hŞL¡c­ø!MÛ½ıë˜¥“ğöç	Ïj+,ˆ³-I€Æ# @òqSéyÆP¨Õ$«Ê­ËëÊkdAE³§y[oÿÏjÍùTl*Ríü.=‰`h¶pÖi5‰2X7“qŞ÷ÏhÁ
+"ËQÎ¢%Ì|‚fÎÄĞ‰a‚ô,;¨¼PXóŒôêóé©ÉM¥Êd_Ú‰­—X:Î"OÄhMaŸMy\‹‡qJò+ú…yC¬ÀçÒ"ºŞ1=ş—äcÄ;±.WU¹†?ş€xæ Ì:ÚÅô×<]*2	;ğQ9‹IC˜MLÌ+’L­†µ¼…ª®.7`ÑN®™7h÷\F0İ¨ô¤Á³…ê7 óİ´Zş¼É²Uo­Æ·%ç[k2ùV´ğ[¬fy…ük÷øuö] lûìŠWn¬=¿àRhmxé¦h¼(œ¦{Ìt>c\PĞyŸ½s:¥ÿ35Z¥ä‹µŸdq0À¶¾õ°MŸ0B^}İD1ô­s‘FJMƒé¾“$U\[Á–XŠÀ’~3 ”^ÆúŠYhÀ°h065éèî‹n‰04å}€ïxxÜ–†gÎıôMçD•
+ÅÛ¤#µ'ºô€†ÆœDv¹¾@° ‚cú5iîÒc¹ıx¶ ¥€ºìqÔe™µ3^6pöéÑØ•ìdmm4v¹ºƒxr^^¸áPAtÃôéÓı“RÏué$°ó£é“˜Æ©Ìs§VtUæÁç “•z°úŞZªA8‚ıºÄ“/Ÿ;”Ê<úò
+ĞÚË¡j¹ìó˜G©p®¤îğÔ£Lï\k2ºr¬Kã„ß
+w”,bÂ³)1¸Ò\br_Zm×O¤&¾ˆ NÏ±·–	Çêéù½so¿WVo~íÍˆïpeçld?gÏ[£ñ6é8ûË4"Æ°CŒ0A…4
+Èí¿;¡=æİn&	ÑP£3râ¢GNÇ‘°v	èÚu-†2õckıEä¬4¹z+mÁX¾xÎ\É7içOgB››²Mñ@‹Ğ¨I¦Æƒ¬G‡¹«ÚáœRh¦Ú”ˆ~—gmöWYÚáÃ;€'§6÷í¢¶IFR„yæus"ÚÄ·şa^²rf™K¶*…ÏJH›éİ1ûÉÏöŒ&8`v2t~Fm®7jÅs‘äØÒD€S?˜×Wé¼)s£É?»Oä„¦`ì%;®--^-rÎåYÓtS«¼{_ıªP˜ı6Ş)à9ƒ×*ÿ“=qÏ€aÕÎ9K®V¹o¡jæ’ÃqŞpEVœåsÆ!¬jcÓŠş•=X>óh"Iwóp*ß
+&Ò¬§-LÆ“™=ÂŸª1˜´ÙËPq˜öNámtí¼À¦”öé½–5•9%&5=ˆÛ#ˆØ`ß¿šz­¶yÔ”åW”‚‘m.·@—*šñdºfNÁ¾bJ^†KdÌ²Zìª¬±€¦á“>ªI¬ï#»@ß]@°wÑo52–N²!ZVe“Üó\‘ì^Ğ;k9¥xCêÑtÓŞw´o1çÆM‹œuÜT¡ujÁô4›K“U¡EdqàòMàòLmyk½™‡j…0;DøUÊŠvùÑKŞME‘£Yò‹Sc¬¯İwŒõ&ÆXï™zct}õ§gå¬0§[ã3«F½#—1«™Š¶¥m+ï`¶©s0CgÕÁLëËCŠ²ùd°ûõw¶ËŒü¹‘½œıHòº˜9Ì;J’cŒ“™áMu´b¢ˆf»}'‚ª*Ëo©?¦ÎÈ[®ÊA2×µi(§v]çÿhP*uÒo¦éĞóU2¡›¿º¬fHÖTTœ)™ÿİèQğ/Ëè“~éqiaVMÎSsj¡Ø9ãY<Í¹\XÇ\¯¸hbèR6çi\nŠ{5[hÚ’ûşeL£KX´/Ñ8İÁŠMÙ¹s¡Îj~Z cìÖ?}×“‘Ÿç¦ïMbÃ™Ù]No¤èŠZ…Gfv™“¨ËsBÅg5Uƒ n×`)sô/ÑŒøEÒ+˜#
+`]~ŒC(šaÑ?{‰­©Ÿ²şlñ2ù_nİ²îò4ZøÓœß=÷em®÷$fÚF^ÛV“wMï–bŞÈY"uÇå:Or”¸§¨ŠòrbåÄV3ëT“Äû)­³Ê%õÊ*ğÄÎ"^¶É‘ËÕĞ3h	Nùi©EJiµŒ²Ÿ)bNÚ×L*w5ÓAİ›ò©(ôå”8Œš;¹å4ŒXÊgs•ê)XuùØ_Ê÷ñ0ÆØÄ°,c<î±h<")0Ëó*rœ­å¥»²“†·L–Y¼Ş}äZEËI³ zIR³;o[`”[·¯ã¥"Ê»!f½b6»zkö¥¡U¸Ì !f$ûRÒ™"âEC/VCß	hê‚Í^Õqu¦xcéisŠ|×ª7ÛïK:JÊĞ7Q´›Zâ2ĞTâC^Ùi‡i ÑÖ	3RëOıgŒÀhRîå—&J£èS{ÂAcA
+>ÕİãQÏ'şÌËK°GuŸaPÕ}¿ußÒChû W!µƒ–+¾…~ªÒG]¡¿2V¦súì±¼c£×*ÇñïQ½%&à!Ô[)øvxûw?8@ğ*şˆi,\h[›YhÛ’¼ã¤6Æ(u–¾ÿ–•Ì·™Ñ»ií¤·E«’üí¨úÿ  ÿÿÜ]ÍNÛ@¾óK*U HE@B@H FuzCvƒ«8Ií˜¶ŠxŒ>AOíkğbİYÛ»^{v½NRÁ)8ñßxg<;ßÎ÷ı»zTí¸â
+^]tÁE‡ôµĞxõÇÔçëÅ;#õšéš 7x=…‹ú> )=ôİBŸ‡#“|‰;BÉğo	?%P¶’2çß•ÈVKÜ<Ü…T7$R¦”7HîVÔWg²MÔ*”•N?³)7cm•%ºò‚g~z =:ãÒ£,¾M1.~ÔÔ«Ú/¢"·<P1ğB:}şÏt`…!¤×*tãf–=Ì±ˆØµA,^(^!rîÚx…5Z‘½­íÑŠlÑ
+±û*Ğ
+¬¢©Ğ*ZU!BíÊE»:ºFa¨ÆÉ©\¹Û^TAÛÊÛ;º˜\€Tø5°Iáı’¸Šñkè² ¾Õ+. ÛÏèudáiH¯ş)óJ&|¯»FŒ	_ ÂTSè¢6¹½¸P
+\©„×¿ryÃ~Ar+¦Ô¼£’n[ÿË,“ŒàZ—š¤¹6r^`Êño…Ş£ñUÆ ²Õ"Mr
+£_j*Kv]C`ÒÑ–§JEº`ÔäÚ&œJúGs'WËúZÒ7ºxœ‰K´yº ß®êL–oÚWm5³à?hµÕa$œ­­É;ç7§Îm·3è\}¸¸=»tz§ç¤ı^OäÖ´%Ä„È×1I«Â$8¥zÎ$B	a	Õ™$áY/˜$Ç³®1Iß`•Ølôí-ƒ‡Ì=’L³"'“Ô[(y½ÏÇ7Š¶(R]kœÈîğ£mºä±®.úgš£h™gôb§“½qÒí\~ê³qn.zÎàùgÏ©¡qDL‚@7Ñ$¡©Gu}Ê4(ıf^‚÷\õpá<*[«X‡YNXZ°Ë´„m€ÁÅa½((ifÚÊ„¹@i²½œòà\[öÛØ­4cúÓUBk…îíBñR\h@©D¹2«ĞiLb4mWvJ"˜°¢Í;™ag•µB%î]:­—µ´.m]	é¨´†ó5¦¡×Å‘Âs^ƒ2€{¥ù®QÕ*+b’diOY—úß9?$ó9ær°¶KßP†Ì}KİËU3™¬ù¬qrîy.8{&vß\W·İl­¯h9Èş®" \¤ğ·‘æ²Ó”¸>¨*^¼…­óHÜ±ÅWŒ] ¢‡_øåA"M—õ`*Â-³MyÇÌ7~Ôì÷Ô÷äñÉL×ï~ måÔ»)Ö1.·UA9ÄõàÙ„+u»_òÑ»÷î|—®ëÊ´8ÅaÑ«®cŸYxrúCù×™_'lr¡'pÒBú%v)¡„#!ÙÇé(“XÔuv®B²ÙènÚ¶x“x¶!V¾é6	3‚–­
+’ SEœıÂ‹dÁu5(­!ösHzAÖÕxÿx=8 r\b•Q1wDDBåŞÉ”åo0lŸM›KSÊxÒóq=‰	ã€x0+ôÂ>N³JÃ&ºş=%ÌÄ~Ê¯ÈvŠ„çqzpŸ¾GMŠ;ÜôÒSxdìçö2ğ²Ÿ
+¼"YÏñ}İ*´js©¼á­­-|ıq¹”ùĞÜÛå­•äyY¬¾˜<'k½£CàqdoÕÜ?
+pÊB _ˆJE Ë¢w¢Z„ÜP}Ùy×èİÈsçëêƒKUåµÏÏ6ò©1Ë¨2_¨òüUG6,¨íªéq._‘épfÃt&Ól+Õì%d•³™	{Q"ı ö‘°7~õ4ñ]ALT­©«N—å˜³íhAüœ=Ã§µµ¿   ÿÿ Ğë©
