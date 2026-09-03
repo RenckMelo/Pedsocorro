@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { 
   Download, 
@@ -25,8 +26,25 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
   const { isInstallable, isInstalled, isIOS, isAndroid, install } = usePWAInstall();
   const [installSuccess, setInstallSuccess] = useState(false);
   const [activeTab, setActiveTab] = useState<'auto' | 'ios' | 'android'>('auto');
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (isIOS) {
+        setActiveTab('ios');
+      } else if (isAndroid && !isInstallable) {
+        setActiveTab('android');
+      } else {
+        setActiveTab('auto');
+      }
+    }
+  }, [isOpen, isIOS, isAndroid, isInstallable]);
+
+  if (!isOpen || !mounted) return null;
 
   const handleInstallClick = async () => {
     if (isInstallable) {
@@ -37,14 +55,14 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
     }
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <div className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6 overflow-y-auto pointer-events-auto">
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[99998]"
           onClick={onClose}
         />
 
@@ -53,10 +71,10 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.92, y: 15 }}
           transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
-          className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto"
+          className="relative z-[99999] w-full max-w-lg bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden my-auto max-h-[92vh] flex flex-col"
         >
           {/* Header Banner */}
-          <div className="relative bg-gradient-to-br from-rose-600 via-rose-700 to-slate-900 p-8 text-white">
+          <div className="relative bg-gradient-to-br from-rose-600 via-rose-700 to-slate-900 p-6 sm:p-8 text-white">
             <button 
               onClick={onClose}
               className="absolute top-5 right-5 p-2 rounded-2xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all cursor-pointer"
@@ -64,13 +82,13 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
               <X size={20} />
             </button>
 
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-4 sm:gap-5">
               <div className="relative shrink-0">
                 <div className="absolute inset-0 rounded-2xl bg-white/20 blur-md animate-pulse" />
                 <img 
-                  src="/pwa-192x192.png" 
+                  src="pwa-192x192.png" 
                   alt="Pedsocorro Icon" 
-                  className="relative w-20 h-20 rounded-2xl shadow-2xl border-2 border-white/20 object-cover"
+                  className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl shadow-2xl border-2 border-white/20 object-cover"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -79,14 +97,14 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
                 <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/15 border border-white/20 text-[10px] font-black uppercase tracking-widest text-rose-200">
                   <ShieldCheck size={12} /> App PWA Oficial
                 </div>
-                <h2 className="font-serif font-black italic text-2xl tracking-tight text-white">Pedsocorro</h2>
+                <h2 className="font-serif font-black italic text-xl sm:text-2xl tracking-tight text-white">Pedsocorro</h2>
                 <p className="text-xs text-rose-100 font-medium">Instale no Android, iPhone, iPad ou PC</p>
               </div>
             </div>
           </div>
 
-          {/* Tab Selector */}
-          <div className="p-6 space-y-6">
+          {/* Tab Selector & Body */}
+          <div className="p-6 space-y-6 overflow-y-auto max-h-[calc(92vh-120px)]">
             <div className="flex bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-2xl">
               <button
                 onClick={() => setActiveTab('auto')}
@@ -298,4 +316,6 @@ export const PWAInstallModal: React.FC<PWAInstallModalProps> = ({ isOpen, onClos
       </div>
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 };

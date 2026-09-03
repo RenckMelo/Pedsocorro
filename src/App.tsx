@@ -9119,7 +9119,6 @@ function Sidebar({ activeSection, onSelect, isOpen, setIsOpen, onOpenSuggestion 
          </nav>
 
          <div className="px-6 mt-8 space-y-4">
-            <PWAInstallButton variant="sidebar" />
             <button
                onClick={onOpenSuggestion}
                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200/50 dark:border-amber-800/30 transition-all font-bold text-sm shadow-sm"
@@ -9828,7 +9827,7 @@ return (
       
       <div className={`transition-all duration-300 ${isSidebarOpen ? 'blur-md' : ''} lg:pl-72`}>
         {/* Top Header */}
-        <header className="h-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 px-8 flex items-center justify-between">
+        <header className="h-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200 dark:border-slate-800 px-3 sm:px-8 flex items-center justify-between gap-2">
            <div className="flex items-center gap-2">
               <span className="text-slate-400 dark:text-slate-600 font-mono text-[10px] uppercase">Status:</span>
               <span className="font-black text-xs uppercase tracking-[0.2em] text-rose-600">{activeSection}</span>
@@ -9882,6 +9881,7 @@ return (
 
         {/* Content Area */}
         <main className="p-4 md:p-10 max-w-7xl mx-auto min-h-[calc(100vh-80px)]">
+           <PWAInstallButton variant="banner" className="mb-6 lg:hidden" />
            <AnimatePresence mode="wait">
 
               {activeSection === 'symptoms' && <motion.div key="sy" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}><SectionTitle title="Análise de Sintomas & Auxílio Diagnóstico" subtitle="Algoritmo de triagem clínica cruzada para Atenção Básica (UBS) e Pronto Atendimento (UPA/PS)." icon={Brain} /><SymptomDiagnosticModule /></motion.div>}
